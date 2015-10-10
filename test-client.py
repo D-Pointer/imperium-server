@@ -25,8 +25,10 @@ if __name__ == '__main__':
     logger.debug('connecting to server')
     s.connect((ip, port))
 
-    # join
-    message = struct.pack( 'hhh', headerLength + struct.calcsize( 'h' ), Packet.INFO, 42 )
+    # info
+    name = "Chakie".encode('ascii')
+    length = headerLength + struct.calcsize( 'hIh' ) + len(name)
+    message = struct.pack( 'hhhIh%ds' % len(name), length, Packet.INFO, 42, 1000230, len(name), name )
     logger.debug('sending %d bytes' % len(message) )
     len_sent = s.send(message)
 
