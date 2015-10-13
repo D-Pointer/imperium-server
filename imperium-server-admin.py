@@ -88,6 +88,18 @@ def announceGame(sock):
         print 'Failed to announce game'
 
 
+def waitForStart (sock):
+    print ''
+    print 'Waiting for game to start...'
+
+    # read the start packet
+    try:
+        data = readPacket(sock, packet.Packet.STARTS)
+        (udpPort, token) = struct.unpack('>hh', data)
+        print 'Game started ok, data on UDP port: %d, token: %d' % (udpPort, token)
+    except PacketException:
+        print 'Game failed to start'
+
 
 def joinGame(sock):
     print ''
@@ -100,8 +112,8 @@ def joinGame(sock):
     # read the start packet
     try:
         data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort,) = struct.unpack('>h', data)
-        print 'Game %d joined ok, data on UDP port: %d' % (gameId, udpPort )
+        (udpPort, token) = struct.unpack('>hh', data)
+        print 'Game %d joined ok, data on UDP port: %d, token: %d' % (gameId, udpPort, token )
     except PacketException:
         print 'Failed to join game %d' % gameId
 
@@ -203,6 +215,7 @@ def readNextPacket(sock):
 
     # extract the packet type
     (receivedType,) = struct.unpack_from('>h', data, 0)
+    print ''
     print 'read packet %s' % packet.name(receivedType)
 
 
@@ -234,10 +247,11 @@ def getInput(sock):
         print '6: ping server'
         print '7: read next packet'
         print '8: send data'
+        print '9: wait for game to start'
         print '0: quit'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, sendDataPacket)
-        choice = getInputInteger('> ', 0, len(callbacks) + 1)
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, sendDataPacket, waitForStart )
+        choice = getInputInteger('> ', 0, len(callbacks) )
 
         # call the suitable handler
         callbacks[choice](sock)

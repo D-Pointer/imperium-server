@@ -58,7 +58,7 @@ class Packet:
             data += tmp
 
         (length, ) = struct.unpack( '>h', data )
-        print "packet length:", length
+        #print "packet length:", length
 
         data = ''
         while len(data) != length:

@@ -1,7 +1,9 @@
 
 import logging
+import random
 
-from game           import Game
+from game       import Game
+from udp_server import UdpServer
 
 class GameManager:
 
@@ -72,11 +74,18 @@ class GameManager:
                 # no game uses that port
                 game.udpPort = port
                 game.active = True
-                break
-                
-            self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )
+
+                # create the UDP server
+                tokens = ( random.randint( 0, 50000 ), random.randint( 0, 30000 ) )
+                game.udpServer = UdpServer( game, tokens )
+
+                self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )
+
+                #
+                return tokens
         else:
             self.logger.warning('activateGame: game %s not among announced, can not activate' % game )
+            return None
 
 
     def getAnnouncedGames (self):

@@ -18,6 +18,9 @@ class Game:
         # not active yet
         self.active = False
 
+        # no UDP server yet
+        self.udpServer = None
+
 
     def removePlayer (self, player):
         if self.player1 == player:
