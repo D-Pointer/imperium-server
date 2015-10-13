@@ -1,7 +1,15 @@
 
 import logging
 
+from game           import Game
+
 class GameManager:
+
+    nextGameId = 0
+
+    lowUdpPort  = 30000
+    highUdpPort = 40000
+    nextUdpPort = lowUdpPort
 
     def __init__ (self):
         # no games yet
@@ -23,6 +31,13 @@ class GameManager:
         return None
 
 
+    def createGame (self, scenarioId, player1):
+        # create the game
+        game = Game( self.nextGameId, scenarioId, player1, None)
+        self.nextGameId += 1
+        return game
+
+
     def addGame (self, game):
         self.announcedGames.append( game )
 
@@ -42,6 +57,22 @@ class GameManager:
         if game in self.announcedGames:
             self.announcedGames.remove( game )
             self.activeGames.append( game )
+
+            while True:
+                port = self.nextUdpPort
+                self.nextUdpPort += 1
+                if self.nextUdpPort == self.highUdpPort:
+                    self.nextUdpPort = self.lowUdpPort
+
+                # verify that the port is not used by any other game
+                for activeGame in self.activeGames:
+                    if activeGame.udpPort == port:
+                        continue
+
+                # no game uses that port
+                game.udpPort = port
+                break
+                
             self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )
         else:
             self.logger.warning('activateGame: game %s not among announced, can not activate' % game )

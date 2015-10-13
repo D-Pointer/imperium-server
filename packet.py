@@ -9,36 +9,34 @@ class Packet:
     ANNOUNCE     = 1
     JOIN         = 2 
     LEAVE        = 3  
+    STARTS       = 4 
 
     # game info
-    GET_GAMES    = 4
-    GAME_COUNT   = 5
-    GAME         = 6
+    GET_GAMES    = 5
+    GAME_COUNT   = 6
+    GAME         = 7
 
     # player info
-    GET_PLAYERS  = 7
-    PLAYER_COUNT = 8
-    PLAYER       = 9
+    GET_PLAYERS  = 8
+    PLAYER_COUNT = 9
+    PLAYER       = 10
 
     # ping
-    PING         = 10
-    PONG         = 11 
+    PING         = 11
+    PONG         = 12 
 
     # result codes
-    OK           = 12
-    ERROR        = 13
+    OK           = 13
+    ERROR        = 14
+
+    # generic data
+    DATA         = 15
+
+    packetNames = ('INFO', 'ANNOUNCE', 'JOIN', 'LEAVE', 'STARTS', 'GET_GAMES', 'GAME_COUNT', 'GAME', 'GET_PLAYERS', 'PLAYER_COUNT', 'PLAYER', 'PING', 'PONG', 'OK', 'ERROR', 'DATA')
 
     # precalculated data lengths
     headerLength = struct.calcsize( '>hh' )
     shortLength  = struct.calcsize( '>h' )
-
-    @staticmethod
-    def name (packetType):
-        if packetType < 0 or packetType > Packet.ERROR:
-            return '<UNKNOWN>'
-
-        return ('INFO', 'ANNOUNCE', 'JOIN', 'LEAVE', 'GET_GAMES', 'GAME_COUNT', 'GAME', 'GET_PLAYERS', 'PLAYER_COUNT', 'PLAYER', 'PING', 'PONG', 'OK', 'ERROR')[ packetType ]
-
 
     @staticmethod
     def parseHeader (data):        
@@ -70,6 +68,13 @@ class Packet:
             data += tmp
 
         return data
+
+
+def name (packetType):
+    if packetType < 0 or packetType > Packet.ERROR:
+        return '<UNKNOWN>'
+
+    return Packet.packetNames[ packetType ]
 
 
 class InfoPacket (Packet):

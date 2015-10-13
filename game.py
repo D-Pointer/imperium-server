@@ -1,4 +1,6 @@
 
+import time
+
 class Game:
 
     def __init__ (self, gameId, scenarioId, player1, player2):
@@ -6,6 +8,12 @@ class Game:
         self.scenarioId = scenarioId
         self.player1 = player1
         self.player2 = player2
+
+        # record the start time
+        self.started = time.time()
+
+        # no UDP port yet
+        self.udpPort = -1
 
 
     def removePlayer (self, player):
@@ -29,4 +37,7 @@ class Game:
 
 
     def __str__ (self):
-        return "[Game %d, scenario: %d, players: %d]" % (self.gameId, self.scenarioId, self.playerCount() )
+        if self.udpPort != -1:
+            return "[Game %d, port: %d, scenario: %d, players: %d]" % (self.gameId, self.udpPort, self.scenarioId, self.playerCount() )
+        else:
+            return "[Game %d, scenario: %d, players: %d]" % (self.gameId, self.scenarioId, self.playerCount() )
