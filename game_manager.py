@@ -46,7 +46,7 @@ class GameManager:
         if game in self.announcedGames:
             self.announcedGames.remove( game )
 
-        elif game in activeGames:
+        elif game in self.activeGames:
             self.activeGames.remove( game )
 
         else:
@@ -71,6 +71,7 @@ class GameManager:
 
                 # no game uses that port
                 game.udpPort = port
+                game.active = True
                 break
                 
             self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )

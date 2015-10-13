@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 
 import sys
-import logging
-import sys
 import socket
 import struct
 import packet
@@ -82,7 +80,13 @@ def announceGame(sock):
     data = readPacket(sock, packet.Packet.GAME)
     (gameId, scenarioId, playerId) = struct.unpack('>hhh', data)
 
-    print 'Game %d with scenario %d announced ok' % (gameId, scenarioId)
+    # read status
+    status = readStatusPacket(sock)
+    if status == packet.Packet.OK:
+        print 'Game %d with scenario %d announced ok' % (gameId, scenarioId)
+    else:
+        print 'Failed to announce game'
+
 
 
 def joinGame(sock):
@@ -93,17 +97,12 @@ def joinGame(sock):
     # send the request
     sock.send(packet.JoinGamePacket(gameId).message)
 
-    # read status
-    status = readStatusPacket(sock)
-    if status == packet.Packet.OK:
-        print 'Game %d joined ok' % gameId
-
-        # read the start packet
+    # read the start packet
+    try:
         data = readPacket(sock, packet.Packet.STARTS)
         (udpPort,) = struct.unpack('>h', data)
-        print 'Game data on UDP port: %d' % udpPort
-
-    else:
+        print 'Game %d joined ok, data on UDP port: %d' % (gameId, udpPort )
+    except PacketException:
         print 'Failed to join game %d' % gameId
 
 
@@ -207,6 +206,16 @@ def readNextPacket(sock):
     print 'read packet %s' % packet.name(receivedType)
 
 
+def sendDataPacket (sock):
+    data = raw_input( 'Data to send: ')
+
+    if data is None:
+        return
+
+    # send data
+    sock.send( packet.DataPacket( data ).message )
+
+
 def quit(sock):
     global keepRunning
     keepRunning = False
@@ -224,13 +233,14 @@ def getInput(sock):
         print '5: list players'
         print '6: ping server'
         print '7: read next packet'
+        print '8: send data'
         print '0: quit'
 
-        callbacks = (announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, quit)
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, sendDataPacket)
         choice = getInputInteger('> ', 0, len(callbacks) + 1)
 
         # call the suitable handler
-        callbacks[choice - 1](sock)
+        callbacks[choice](sock)
 
 
 if __name__ == '__main__':

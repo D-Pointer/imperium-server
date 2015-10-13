@@ -10,29 +10,30 @@ class Packet:
     JOIN         = 2 
     LEAVE        = 3  
     STARTS       = 4 
+    ENDS         = 5
 
     # game info
-    GET_GAMES    = 5
-    GAME_COUNT   = 6
-    GAME         = 7
+    GET_GAMES    = 6
+    GAME_COUNT   = 7
+    GAME         = 8
 
     # player info
-    GET_PLAYERS  = 8
-    PLAYER_COUNT = 9
-    PLAYER       = 10
+    GET_PLAYERS  = 9
+    PLAYER_COUNT = 10
+    PLAYER       = 11
 
     # ping
-    PING         = 11
-    PONG         = 12 
+    PING         = 12
+    PONG         = 13
 
     # result codes
-    OK           = 13
-    ERROR        = 14
+    OK           = 14
+    ERROR        = 15
 
     # generic data
-    DATA         = 15
+    DATA         = 16
 
-    packetNames = ('INFO', 'ANNOUNCE', 'JOIN', 'LEAVE', 'STARTS', 'GET_GAMES', 'GAME_COUNT', 'GAME', 'GET_PLAYERS', 'PLAYER_COUNT', 'PLAYER', 'PING', 'PONG', 'OK', 'ERROR', 'DATA')
+    packetNames = ('INFO', 'ANNOUNCE', 'JOIN', 'LEAVE', 'STARTS', 'ENDS', 'GET_GAMES', 'GAME_COUNT', 'GAME', 'GET_PLAYERS', 'PLAYER_COUNT', 'PLAYER', 'PING', 'PONG', 'OK', 'ERROR', 'DATA')
 
     # precalculated data lengths
     headerLength = struct.calcsize( '>hh' )
@@ -57,7 +58,7 @@ class Packet:
             data += tmp
 
         (length, ) = struct.unpack( '>h', data )
-        #print "packet length:", length
+        print "packet length:", length
 
         data = ''
         while len(data) != length:
@@ -71,7 +72,7 @@ class Packet:
 
 
 def name (packetType):
-    if packetType < 0 or packetType > Packet.ERROR:
+    if packetType < 0 or packetType >= len(Packet.packetNames):
         return '<UNKNOWN>'
 
     return Packet.packetNames[ packetType ]
@@ -124,5 +125,13 @@ class PongPacket (Packet):
     def __init__ (self):
         # create the message
         self.message = struct.pack( '>hh', Packet.shortLength, Packet.PONG )
+
+
+class DataPacket (Packet):
+    def __init__ (self, data):
+        # create the message
+        dataLength = len(data)
+        packetLength = struct.calcsize( '>hhh' ) + dataLength
+        self.message = struct.pack( '>hhh%ds' % dataLength, packetLength, Packet.DATA, dataLength, data )
 
 

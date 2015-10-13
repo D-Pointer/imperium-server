@@ -15,6 +15,9 @@ class Game:
         # no UDP port yet
         self.udpPort = -1
 
+        # not active yet
+        self.active = False
+
 
     def removePlayer (self, player):
         if self.player1 == player:
