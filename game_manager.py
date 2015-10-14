@@ -76,7 +76,7 @@ class GameManager:
                 game.active = True
 
                 # create the UDP server
-                tokens = ( random.randint( 0, 50000 ), random.randint( 0, 30000 ) )
+                tokens = ( random.randint( 0, 32767 ), random.randint( 0, 32767 ) )
                 game.udpServer = UdpServer( game, tokens )
 
                 self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )

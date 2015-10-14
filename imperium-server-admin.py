@@ -14,6 +14,9 @@ games = []
 # keeps the main loop running
 keepRunning = True
 
+udpSocket = None
+udpAddress = None
+token = -1
 
 class PacketException(Exception):
     pass
@@ -94,9 +97,18 @@ def waitForStart (sock):
 
     # read the start packet
     try:
+        global udpSocket, udpAddress, token
+
         data = readPacket(sock, packet.Packet.STARTS)
         (udpPort, token) = struct.unpack('>hh', data)
         print 'Game started ok, data on UDP port: %d, token: %d' % (udpPort, token)
+
+        # create the UDP socket
+        udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
+        udpAddress = ( sock.getpeername()[0], udpPort )
+        udpSocket.connect( udpAddress )
+        print 'UDP address:', udpAddress
+
     except PacketException:
         print 'Game failed to start'
 
@@ -111,9 +123,18 @@ def joinGame(sock):
 
     # read the start packet
     try:
+        global udpSocket, udpAddress, token
+
         data = readPacket(sock, packet.Packet.STARTS)
         (udpPort, token) = struct.unpack('>hh', data)
         print 'Game %d joined ok, data on UDP port: %d, token: %d' % (gameId, udpPort, token )
+
+        # create the UDP socket
+        udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
+        udpAddress = ( sock.getpeername()[0], udpPort )
+        udpSocket.connect( udpAddress )
+        print 'UDP address:', udpAddress
+
     except PacketException:
         print 'Failed to join game %d' % gameId
 
@@ -219,7 +240,7 @@ def readNextPacket(sock):
     print 'read packet %s' % packet.name(receivedType)
 
 
-def sendDataPacket (sock):
+def sendTcpDataPacket (sock):
     data = raw_input( 'Data to send: ')
 
     if data is None:
@@ -227,6 +248,16 @@ def sendDataPacket (sock):
 
     # send data
     sock.send( packet.DataPacket( data ).message )
+
+
+def sendUdpDataPacket (sock):
+    data = raw_input( 'Data to send: ')
+
+    if data is None:
+        return
+
+    # send data
+    udpSocket.sendto( packet.UdpDataPacket( token, data ).message, udpAddress )
 
 
 def quit(sock):
@@ -239,6 +270,7 @@ def getInput(sock):
     # loop and read input
     while keepRunning:
         print ''
+        print '0: quit'
         print '1: host a new game'
         print '2: join a game'
         print '3: leave a game'
@@ -246,11 +278,11 @@ def getInput(sock):
         print '5: list players'
         print '6: ping server'
         print '7: read next packet'
-        print '8: send data'
-        print '9: wait for game to start'
-        print '0: quit'
+        print '8: wait for game to start'
+        print '9: send TCP data'
+        print '10: send UDP data'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, sendDataPacket, waitForStart )
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket )
         choice = getInputInteger('> ', 0, len(callbacks) )
 
         # call the suitable handler

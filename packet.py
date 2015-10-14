@@ -135,3 +135,11 @@ class DataPacket (Packet):
         self.message = struct.pack( '>hhh%ds' % dataLength, packetLength, Packet.DATA, dataLength, data )
 
 
+class UdpDataPacket (Packet):
+    def __init__ (self, token, data):
+        # create the message
+        dataLength = len(data)
+        packetLength = Packet.shortLength + dataLength
+        self.message = struct.pack( '>hh%ds' % dataLength, packetLength, token, data )
+
+
