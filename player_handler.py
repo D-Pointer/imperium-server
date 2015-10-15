@@ -88,6 +88,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
                 self.game.player2.send( data )
                 self.game.player2.game = None
 
+            self.game.cleanup()
             self.game = None
 
 
@@ -179,15 +180,14 @@ class PlayerHandler(asyncore.dispatcher_with_send):
                 self.game.player2 = self
 
                 # activate the game
-                tokens = self.gameManager.activateGame( self.game )
+                self.gameManager.activateGame( self.game )
 
-                self.logger.debug( 'handleJoinPacket: joined game %s, tokens: (%d, %d)' % (self.game, tokens[0], tokens[1]) )
+                self.logger.debug( 'handleJoinPacket: joined game %s', self.game )
 
                 # send to both players a "game starts" packet with their own tokens
-                data = struct.pack( '>hhhh', struct.calcsize( '>hhh' ), Packet.STARTS, self.game.udpPort, tokens[0] )
+                data = struct.pack( '>hhhhh', struct.calcsize( '>hhhh' ), Packet.STARTS, self.game.udpPort, self.game.gameId, 0 )
                 self.game.player1.send( data )
-
-                data = struct.pack( '>hhhh', struct.calcsize( '>hhh' ), Packet.STARTS, self.game.udpPort, tokens[1] )
+                data = struct.pack( '>hhhhh', struct.calcsize( '>hhhh' ), Packet.STARTS, self.game.udpPort, self.game.gameId, 1 )
                 self.game.player2.send( data )
 
         return Packet.shortLength
@@ -232,6 +232,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.send( struct.pack( '>hh', Packet.shortLength, Packet.OK ) )
 
         # no more game
+        self.game.cleanup()
         self.game = None
 
         return Packet.shortLength

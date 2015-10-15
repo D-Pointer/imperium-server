@@ -22,6 +22,12 @@ class Game:
         self.udpServer = None
 
 
+    def cleanup (self):
+        if self.udpServer is not None:
+            self.udpServer.close()
+            self.udpServer = None
+
+
     def removePlayer (self, player):
         if self.player1 == player:
             self.player1 = None
