@@ -51,7 +51,7 @@ class Packet:
         data = ''
 
         while len(data) != Packet.shortLength:
-            tmp = sock.recv( Packet.shortLength )
+            tmp = sock.recv( Packet.shortLength - len(data) )
             if not tmp:
                 return None
 
@@ -62,7 +62,7 @@ class Packet:
 
         data = ''
         while len(data) != length:
-            tmp = sock.recv( length )
+            tmp = sock.recv( length - len(data) )
             if not tmp:
                 return None
 
@@ -136,10 +136,10 @@ class DataPacket (Packet):
 
 
 class UdpDataPacket (Packet):
-    def __init__ (self, token, data):
+    def __init__ (self, playerId, gameId, data):
         # create the message
         dataLength = len(data)
-        packetLength = Packet.shortLength + dataLength
-        self.message = struct.pack( '>hh%ds' % dataLength, packetLength, token, data )
+        packetLength = struct.calcsize( '>hh' ) + dataLength
+        self.message = struct.pack( '>hhh%ds' % dataLength, packetLength, playerId, gameId, data )
 
 

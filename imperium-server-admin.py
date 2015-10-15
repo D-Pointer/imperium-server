@@ -14,9 +14,11 @@ games = []
 # keeps the main loop running
 keepRunning = True
 
+gameId = None
+playerId = None
+
 udpSocket = None
 udpAddress = None
-token = -1
 
 class PacketException(Exception):
     pass
@@ -97,23 +99,25 @@ def waitForStart (sock):
 
     # read the start packet
     try:
-        global udpSocket, udpAddress, token
+        global udpSocket, udpAddress, gameId, playerId
 
         data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, token) = struct.unpack('>hh', data)
-        print 'Game started ok, data on UDP port: %d, token: %d' % (udpPort, token)
+        (udpPort, gameId, playerId) = struct.unpack('>hhh', data)
+        print 'Game %d started ok, we are: %d, data on UDP port: %d' % (gameId, playerId, udpPort)
 
         # create the UDP socket
         udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
         udpAddress = ( sock.getpeername()[0], udpPort )
-        udpSocket.connect( udpAddress )
-        print 'UDP address:', udpAddress
+        #udpSocket.connect( udpAddress )
+        udpSocket.bind(('', 0 ))
 
     except PacketException:
         print 'Game failed to start'
 
 
 def joinGame(sock):
+    global udpSocket, udpAddress, gameId, playerId
+
     print ''
     print 'Join a game'
     gameId = getInputInteger('Game id: ', 0, 1000)
@@ -123,17 +127,15 @@ def joinGame(sock):
 
     # read the start packet
     try:
-        global udpSocket, udpAddress, token
-
         data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, token) = struct.unpack('>hh', data)
-        print 'Game %d joined ok, data on UDP port: %d, token: %d' % (gameId, udpPort, token )
+        (udpPort, gameId, playerId) = struct.unpack('>hhh', data)
+        print 'Game %d joined ok, we are: %d, data on UDP port: %d' % (gameId, playerId, udpPort )
 
         # create the UDP socket
         udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
         udpAddress = ( sock.getpeername()[0], udpPort )
-        udpSocket.connect( udpAddress )
-        print 'UDP address:', udpAddress
+        #udpSocket.connect( udpAddress )
+        udpSocket.bind(('', 0 ))
 
     except PacketException:
         print 'Failed to join game %d' % gameId
@@ -256,8 +258,29 @@ def sendUdpDataPacket (sock):
     if data is None:
         return
 
+    global udpAddress
     # send data
-    udpSocket.sendto( packet.UdpDataPacket( token, data ).message, udpAddress )
+    udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
+
+
+def readUdpPacket (sock):
+    global udpSocket, gameId
+
+    # read raw data from the UDP socket
+    data, sender = udpSocket.recvfrom( 512 )
+    if not data:
+        print 'failed to read UDP packet'
+        raise PacketException()
+
+    # extract the header
+    (length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
+
+    # extra the payload
+    headerLength = struct.calcsize( '>hhh' )
+    content = data[ headerLength : headerLength + length ]
+
+    print ''
+    print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
 
 
 def quit(sock):
@@ -281,8 +304,9 @@ def getInput(sock):
         print '8: wait for game to start'
         print '9: send TCP data'
         print '10: send UDP data'
+        print '11: read UDP data'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket )
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket )
         choice = getInputInteger('> ', 0, len(callbacks) )
 
         # call the suitable handler
@@ -290,13 +314,13 @@ def getInput(sock):
 
 
 if __name__ == '__main__':
-    ip = sys.argv[1]
+    server = sys.argv[1]
     port = int(sys.argv[2])
-    print 'Connecting to server on %s:%d' % (ip, port)
+    print 'Connecting to server on %s:%d' % (server, port)
 
     # Connect to the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip, port))
+    s.connect((server, port))
 
     # send info
     s.send(packet.InfoPacket("Admin", 1, 42).message)
