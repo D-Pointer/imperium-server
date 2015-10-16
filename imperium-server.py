@@ -16,12 +16,12 @@ logging.basicConfig(level=logging.DEBUG,
 
 class ImperiumServer(asyncore.dispatcher):
 
-    def __init__(self, host, port):
+    def __init__(self, port):
         asyncore.dispatcher.__init__(self)
         self.logger = logging.getLogger('ImperiumServer')
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
-        self.bind((host, port))
+        self.bind(('', port))
         self.listen(5)
 
         # player manager for handling all players
@@ -43,13 +43,12 @@ class ImperiumServer(asyncore.dispatcher):
 
 
 if __name__ == '__main__':
-    if len( sys.argv ) != 3:
-        print 'Missing arguments, usage %s IP port' % sys.argv[0]
+    if len( sys.argv ) != 2:
+        print 'Missing arguments, usage %s tcpPort' % sys.argv[0]
         sys.exit( 1 )
 
-    ip = sys.argv[ 1 ]
-    port = int ( sys.argv[2] )
-    server = ImperiumServer( ip, port )
+    port = int ( sys.argv[1] )
+    server = ImperiumServer( port )
 
     try:
         logging.debug('starting main loop')
