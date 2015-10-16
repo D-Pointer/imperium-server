@@ -177,11 +177,9 @@ def getPlayers(sock):
         # raw data
         data = readPacket(sock, packet.Packet.PLAYER)
 
-        (playerId, playerVersion, nameLength) = struct.unpack_from('>hIh', data, 0)
-        (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hIh'))
-
-        # print 'player %d id: %d, version: %d, name: %s' % (index, playerId, playerVersion, playerName)
-        players.append(Player(playerId, playerName, playerVersion))
+        (playerVersion, nameLength) = struct.unpack_from('>Ih', data, 0)
+        (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ih'))
+        players.append(Player( playerName, playerVersion ))
 
     print "Received %d players:" % len(players)
     for player in players:

@@ -79,10 +79,10 @@ def name (packetType):
 
 
 class InfoPacket (Packet):
-    def __init__ (self, name, playerId, version):
+    def __init__ (self, name, version):
         name = name.encode('ascii')
-        length = struct.calcsize( '>hhIh' ) + len(name)
-        self.message = struct.pack( '>hhhIh%ds' % len(name), length, Packet.INFO, playerId, version, len(name), name )
+        length = struct.calcsize( '>hIh' ) + len(name)
+        self.message = struct.pack( '>hhIh%ds' % len(name), length, Packet.INFO, version, len(name), name )
 
 
 class GetPlayersPacket (Packet):

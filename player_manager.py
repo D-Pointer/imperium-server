@@ -10,12 +10,12 @@ class PlayerManager:
         self.logger = logging.getLogger('PlayerManager')
 
 
-    def getPlayer (self, playerId):
-        for player in self.players:
-            if player.clientId == playerId:
-                return player
-
-        return None
+    # def getPlayer (self, playerId):
+    #     for player in self.players:
+    #         if player.clientId == playerId:
+    #             return player
+    #
+    #     return None
 
 
     def addPlayer (self, player):

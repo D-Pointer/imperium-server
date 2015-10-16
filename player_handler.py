@@ -14,7 +14,6 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.logger = logging.getLogger('PlayerHandler-%d' % PlayerHandler.handlerId)
         PlayerHandler.handlerId += 1
 
-        self.clientId = -1
         self.clientVersion = -1
         self.clientName = ''
         self.data = ''
@@ -123,10 +122,10 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
 
     def handleInfoPacket (self, data):
-        (self.clientId, self.clientVersion, nameLength) = struct.unpack_from( '>hIh', data, 0 )
+        (self.clientVersion, nameLength) = struct.unpack_from( '>Ih', data, 0 )
         (self.clientName, ) = struct.unpack_from( '>%ds' % nameLength, data, struct.calcsize('>hIh') )
-        self.logger.debug('handleInfoPacket: client joined, id: %d, name: %s, version: %d', self.clientId, self.clientName, self.clientVersion )
-        return struct.calcsize( '>hIh' ) + len(self.clientName)
+        self.logger.debug('handleInfoPacket: client joined, id: %d, name: %s, version: %d', self.clientName, self.clientVersion )
+        return struct.calcsize( '>Ih' ) + len(self.clientName)
 
 
     def handleAnnouncePacket (self, data):
@@ -144,8 +143,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.logger.debug('handleAnnouncePacket: announced games now: %d', len( self.gameManager.getAnnouncedGames() ) )
 
         # send the game as a response
-        length = struct.calcsize( '>hhhh' )
-        data = struct.pack( '>hhhhh', length, Packet.GAME, self.game.gameId, self.game.scenarioId, self.game.player1.clientId )
+        length = struct.calcsize( '>hhh' )
+        data = struct.pack( '>hhhh', length, Packet.GAME, self.game.gameId, self.game.scenarioId )
         self.send( data )
 
         # send an ok
@@ -244,8 +243,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.send( struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_COUNT, len( announcedGames ) ) )
 
         for game in announcedGames:
-            length = struct.calcsize( '>hhhh' )
-            data = struct.pack( '>hhhhh', length, Packet.GAME, game.gameId, game.scenarioId, game.player1.clientId )
+            length = struct.calcsize( '>hhh' )
+            data = struct.pack( '>hhhh', length, Packet.GAME, game.gameId, game.scenarioId )
             self.send( data )
 
         self.logger.debug( 'handleGetGamesPacket: sent data for %d games', len( announcedGames ) )
@@ -259,8 +258,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         for player in self.playerManager.getPlayers():
             name = player.clientName
             nameLength =  len( name )
-            packetLength = struct.calcsize( '>hhIh' ) + nameLength
-            data = struct.pack( '>hhhIh%ds' % nameLength, packetLength, Packet.PLAYER, player.clientId, player.clientVersion, nameLength, name )
+            packetLength = struct.calcsize( '>hIh' ) + nameLength
+            data = struct.pack( '>hhIh%ds' % nameLength, packetLength, Packet.PLAYER, player.clientVersion, nameLength, name )
             self.send( data )
 
         self.logger.debug( 'handleGetPlayersPacket: sent data for %d players', self.playerManager.getPlayerCount() )
