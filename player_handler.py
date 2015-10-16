@@ -124,8 +124,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
     def handleInfoPacket (self, data):
         (self.clientVersion, nameLength) = struct.unpack_from( '>Ih', data, 0 )
-        (self.clientName, ) = struct.unpack_from( '>%ds' % nameLength, data, struct.calcsize('>hIh') )
-        self.logger.debug('handleInfoPacket: client joined, id: %d, name: %s, version: %d', self.clientName, self.clientVersion )
+        (self.clientName, ) = struct.unpack_from( '>%ds' % nameLength, data, struct.calcsize('>Ih') )
+        self.logger.debug('handleInfoPacket: client joined, name: %s, version: %d', self.clientName, self.clientVersion )
         return struct.calcsize( '>Ih' ) + len(self.clientName)
 
 

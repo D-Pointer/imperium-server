@@ -321,7 +321,7 @@ if __name__ == '__main__':
     s.connect((server, port))
 
     # send info
-    s.send(packet.InfoPacket("Admin", 1, 42).message)
+    s.send(packet.InfoPacket("Admin", 42).message)
 
     # get players
     getPlayers(s)
