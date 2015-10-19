@@ -5,7 +5,7 @@ import socket
 import struct
 import packet
 import time
-
+import string
 from player import Player
 
 players = []
@@ -56,6 +56,24 @@ def readPacket(sock, packetType):
     return data[packet.Packet.shortLength:]
 
 
+def readOneOfPacket(sock, packetTypes):
+    # raw data
+    data = packet.Packet.readRawPacket(sock)
+    if not data:
+        print 'failed to read packet'
+        raise PacketException()
+
+    # extract the packet type
+    (receivedType,) = struct.unpack_from('>h', data, 0)
+
+    if receivedType not in packetTypes:
+        print 'unexpected packet, got %s, expected one of %s' % (packet.name(receivedType), string.join( map(packet.name, packetTypes) ))
+        raise PacketException()
+
+    # strip off the type
+    return data[packet.Packet.shortLength:]
+
+
 def readStatusPacket(sock):
     # raw data
     data = packet.Packet.readRawPacket(sock)
@@ -82,14 +100,12 @@ def announceGame(sock):
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
     # read the announced game data
-    data = readPacket(sock, packet.Packet.GAME)
-    (gameId, scenarioId, playerId) = struct.unpack('>hhh', data)
-
-    # read status
-    status = readStatusPacket(sock)
-    if status == packet.Packet.OK:
+    try:
+        data = readPacket(sock, packet.Packet.GAME)
+        (gameId, scenarioId) = struct.unpack('>hh', data)
         print 'Game %d with scenario %d announced ok' % (gameId, scenarioId)
-    else:
+
+    except PacketException:
         print 'Failed to announce game'
 
 
@@ -192,22 +208,28 @@ def getGames(sock):
     sock.send(packet.GetGamesPacket().message)
 
     # raw data
-    data = readPacket(sock, packet.Packet.GAME_COUNT)
-    (gameCount,) = struct.unpack('>h', data, )
+    #data = readPacket(sock, packet.Packet.GAME_COUNT)
+    #(gameCount,) = struct.unpack('>h', data, )
 
     games = []
 
-    for index in range(gameCount):
-        # raw data
-        data = readPacket(sock, packet.Packet.GAME)
-        (gameId, scenarioId, playerId) = struct.unpack('>hhh', data)
+    # read the games packet
+    data = readPacket(sock, packet.Packet.GAME)
+    (count, ) = struct.unpack_from('>h', data, 0)
 
+    offset = packet.Packet.shortLength;
+
+    for index in range(count):
+        # raw data
+        #data = readPacket(sock, packet.Packet.GAME)
+        (gameId, scenarioId) = struct.unpack_from('>hh', data, offset )
+        offset += struct.calcsize( '>hh' )
         # print 'player %d id: %d, version: %d, name: %s' % (index, playerId, playerVersion, playerName)
-        games.append((gameId, scenarioId, playerId))
+        games.append((gameId, scenarioId))
 
     print "Received %d games:" % len(games)
     for game in games:
-        print '\tGame %d, scenario: %d, hosted by: %d' % game
+        print '\tGame %d, scenario: %d' % game
 
 
 def pingServer(sock):

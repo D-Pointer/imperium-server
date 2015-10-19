@@ -14,7 +14,7 @@ class Packet:
 
     # game info
     GET_GAMES    = 6
-    GAME_COUNT   = 7
+    #GAME_COUNT   = 7
     GAME         = 8
 
     # player info

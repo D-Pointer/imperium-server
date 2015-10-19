@@ -64,7 +64,6 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
 
     def handle_close(self):
-        self.logger.debug('handle_close')
         self.close()
 
         if self.playerManager.removePlayer( self ):
@@ -241,11 +240,18 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         announcedGames = self.gameManager.getAnnouncedGames()
 
         # send the player count packet
-        self.send( struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_COUNT, len( announcedGames ) ) )
+        #self.send( struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_COUNT, len( announcedGames ) ) )
 
+        # total size of the games data
+        packetLength = Packet.shortLength + Packet.shortLength + len(announcedGames) * struct.calcsize( '>hh' )
+
+        # send the first part of the data
+        data = struct.pack( '>hhh', packetLength, Packet.GAME, len(announcedGames) )
+        self.send( data )
+
+        # now send the game specific data for each game
         for game in announcedGames:
-            length = struct.calcsize( '>hhh' )
-            data = struct.pack( '>hhhh', length, Packet.GAME, game.gameId, game.scenarioId )
+            data = struct.pack( '>hh', game.gameId, game.scenarioId )
             self.send( data )
 
         self.logger.debug( 'handleGetGamesPacket: sent data for %d games', len( announcedGames ) )
