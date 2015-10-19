@@ -239,11 +239,13 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleGetGamesPacket (self, data):
         announcedGames = self.gameManager.getAnnouncedGames()
 
-        # send the player count packet
-        #self.send( struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_COUNT, len( announcedGames ) ) )
+        # calculate the length of the announcing player for all games
+        nameLengths = 0
+        for game in announcedGames:
+            nameLengths += len( game.player1.clientName )
 
-        # total size of the games data
-        packetLength = Packet.shortLength + Packet.shortLength + len(announcedGames) * struct.calcsize( '>hh' )
+        # total size of the games data: type, count, (game id, scenario id, name length, name) * N
+        packetLength = Packet.shortLength + Packet.shortLength + len(announcedGames) * struct.calcsize( '>hhh' ) + nameLengths
 
         # send the first part of the data
         data = struct.pack( '>hhh', packetLength, Packet.GAME, len(announcedGames) )
@@ -251,7 +253,9 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         # now send the game specific data for each game
         for game in announcedGames:
-            data = struct.pack( '>hh', game.gameId, game.scenarioId )
+            announcerName = game.player1.clientName
+            nameLength = len(announcerName)
+            data = struct.pack( '>hhh%ds' % nameLength, game.gameId, game.scenarioId, nameLength, announcerName )
             self.send( data )
 
         self.logger.debug( 'handleGetGamesPacket: sent data for %d games', len( announcedGames ) )

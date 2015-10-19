@@ -207,29 +207,29 @@ def getGames(sock):
     # send the request
     sock.send(packet.GetGamesPacket().message)
 
-    # raw data
-    #data = readPacket(sock, packet.Packet.GAME_COUNT)
-    #(gameCount,) = struct.unpack('>h', data, )
-
     games = []
 
     # read the games packet
     data = readPacket(sock, packet.Packet.GAME)
     (count, ) = struct.unpack_from('>h', data, 0)
 
+    # start past the game count
     offset = packet.Packet.shortLength;
 
     for index in range(count):
-        # raw data
-        #data = readPacket(sock, packet.Packet.GAME)
-        (gameId, scenarioId) = struct.unpack_from('>hh', data, offset )
-        offset += struct.calcsize( '>hh' )
-        # print 'player %d id: %d, version: %d, name: %s' % (index, playerId, playerVersion, playerName)
-        games.append((gameId, scenarioId))
+        (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, offset )
+        offset += struct.calcsize( '>hhh' )
+
+        # get the announcing player name
+        (playerName,) = struct.unpack_from('%ds' % nameLength, data, offset)
+        offset += nameLength
+
+        # save for later
+        games.append((gameId, scenarioId, playerName))
 
     print "Received %d games:" % len(games)
     for game in games:
-        print '\tGame %d, scenario: %d' % game
+        print '\tGame %d, scenario: %d, hosted by: %s' % game
 
 
 def pingServer(sock):
