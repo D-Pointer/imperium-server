@@ -99,13 +99,22 @@ def announceGame(sock):
     # send the request
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
-    # read the announced game data
-    try:
-        data = readPacket(sock, packet.Packet.GAME)
-        (gameId, scenarioId) = struct.unpack('>hh', data)
-        print 'Game %d with scenario %d announced ok' % (gameId, scenarioId)
+    # read status
+    status = readStatusPacket(sock)
+    if status == packet.Packet.OK:
+        print 'Game announced ok'
 
-    except PacketException:
+        # read the announced game data
+        try:
+            data = readPacket(sock, packet.Packet.GAME_ADDED)
+            (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, 0)
+            (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhh'))
+
+            print 'Game %d, scenario: %d, announcer: %s' % (gameId, scenarioId, playerName)
+
+        except PacketException:
+            print 'Failed to read announced game data'
+    else:
         print 'Failed to announce game'
 
 
@@ -210,7 +219,7 @@ def getGames(sock):
     games = []
 
     # read the games packet
-    data = readPacket(sock, packet.Packet.GAME)
+    data = readPacket(sock, packet.Packet.GAMES)
     (count, ) = struct.unpack_from('>h', data, 0)
 
     # start past the game count
@@ -336,6 +345,7 @@ def getInput(sock):
 if __name__ == '__main__':
     server = sys.argv[1]
     port = int(sys.argv[2])
+    name = sys.argv[3]
     print 'Connecting to server on %s:%d' % (server, port)
 
     # Connect to the server
@@ -343,7 +353,7 @@ if __name__ == '__main__':
     s.connect((server, port))
 
     # send info
-    s.send(packet.InfoPacket("Admin", 42).message)
+    s.send(packet.InfoPacket(name, 42).message)
 
     # get players
     getPlayers(s)

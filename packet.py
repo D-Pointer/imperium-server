@@ -10,12 +10,13 @@ class Packet:
     JOIN         = 2 
     LEAVE        = 3  
     STARTS       = 4 
-    ENDS         = 5
+
+    GAME_ADDED   = 20
+    GAME_REMOVED = 21
 
     # game info
     GET_GAMES    = 6
-    #GAME_COUNT   = 7
-    GAME         = 8
+    GAMES        = 8
 
     # player info
     GET_PLAYERS  = 9
@@ -33,7 +34,23 @@ class Packet:
     # generic data
     DATA         = 16
 
-    packetNames = ('INFO', 'ANNOUNCE', 'JOIN', 'LEAVE', 'STARTS', 'ENDS', 'GET_GAMES', 'GAME_COUNT', 'GAME', 'GET_PLAYERS', 'PLAYER_COUNT', 'PLAYER', 'PING', 'PONG', 'OK', 'ERROR', 'DATA')
+    packetNames = { INFO:         'INFO',
+                    ANNOUNCE:     'ANNOUNCE',
+                    JOIN:         'JOIN',
+                    LEAVE:        'LEAVE',
+                    STARTS:       'STARTS',
+                    GET_GAMES:    'GET_GAMES',
+                    GAMES:        'GAMES',
+                    GET_PLAYERS:  'GET_PLAYERS',
+                    PLAYER_COUNT: 'PLAYER_COUNT',
+                    PLAYER:       'PLAYER',
+                    PING:         'PING',
+                    PONG:         'PONG',
+                    OK:           'OK',
+                    ERROR:        'ERROR',
+                    DATA:         'DATA',
+                    GAME_ADDED:   'GAME_ADDED',
+                    GAME_REMOVED: 'GAME_REMOVED' }
 
     # precalculated data lengths
     headerLength = struct.calcsize( '>hh' )
@@ -72,10 +89,15 @@ class Packet:
 
 
 def name (packetType):
-    if packetType < 0 or packetType >= len(Packet.packetNames):
+    if not Packet.packetNames.has_key(packetType):
         return '<UNKNOWN>'
 
     return Packet.packetNames[ packetType ]
+
+
+class OkPacket (Packet):
+    def __init__ (self):
+         self.message = struct.pack( '>hh', Packet.shortLength, Packet.OK )
 
 
 class InfoPacket (Packet):

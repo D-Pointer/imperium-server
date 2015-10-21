@@ -3,7 +3,7 @@ import asyncore
 import socket
 import struct
 
-from packet         import Packet, name
+from packet         import Packet, name, OkPacket
 
 class PlayerHandler(asyncore.dispatcher_with_send):
 
@@ -74,17 +74,13 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         # do we have a game?
         if self.game is not None:
             self.logger.debug('handle_close: ending game %s' % self.game )
-            data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.ENDS, self.game.gameId )
+            data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
 
-            if self.game.player1 is not None and self.game.player1 != self:
-                # player 1 is the connected opponent
-                self.game.player1.send( data )
-                self.game.player1.game = None
+            # send the game to all connected players
+            for player in self.playerManager.getPlayers():
+                player.send( data )
 
-            elif self.game.player2 is not None and self.game.player2 != self:
-                # player 2 is the connected opponent
-                self.game.player2.send( data )
-                self.game.player2.game = None
+            self.gameManager.removeGame( self.game )
 
             self.game.cleanup()
             self.game = None
@@ -142,13 +138,16 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.logger.debug('handleAnnouncePacket: announce game: %d with scenario: %d', self.game.gameId, self.game.scenarioId )
         self.logger.debug('handleAnnouncePacket: announced games now: %d', len( self.gameManager.getAnnouncedGames() ) )
 
-        # send the game as a response
-        length = struct.calcsize( '>hhh' )
-        data = struct.pack( '>hhhh', length, Packet.GAME, self.game.gameId, self.game.scenarioId )
-        self.send( data )
+        # send an ok to the announcing player
+        self.send( OkPacket().message )
 
-        # send an ok
-        self.send( struct.pack( '>hh', Packet.shortLength, Packet.OK ) )
+        nameLength = len( self.clientName )
+        length = struct.calcsize( '>hhhh' ) + nameLength
+        data = struct.pack( '>hhhhh%ds' % nameLength, length, Packet.GAME_ADDED, self.game.gameId, self.game.scenarioId, nameLength, self.clientName )
+
+        # send the game to all connected players
+        for player in self.playerManager.getPlayers():
+            player.send( data )
 
         return Packet.shortLength
 
@@ -207,13 +206,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         self.logger.debug('handleLeavePacket: leaving game: %s', self.game )
 
-        if self.game.removePlayer( self ) == 0:
-            # the game is now empty
-            self.logger.debug('handleLeavePacket: game: %s is now empty, removing', self.game )
-            self.gameManager.removeGame( self.game )
-        else:
-            data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.ENDS, self.game.gameId )
-
+        if self.game.removePlayer( self ) > 0:
             self.logger.debug('handleLeavePacket: ending game: %s for opponents', self.game )
 
             if self.game.player1 is not None and self.game.player1 != self:
@@ -227,7 +220,15 @@ class PlayerHandler(asyncore.dispatcher_with_send):
                 self.game.player2.game = None
 
         # send response
-        self.send( struct.pack( '>hh', Packet.shortLength, Packet.OK ) )
+        self.send( OkPacket().message )
+
+        self.logger.debug('handleLeavePacket: removing game: %s', self.game )
+        self.gameManager.removeGame( self.game )
+
+        # tell all connected players that the game has been removed
+        data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
+        for player in self.playerManager.getPlayers():
+            player.send( data )
 
         # no more game
         self.game.cleanup()
@@ -248,7 +249,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         packetLength = Packet.shortLength + Packet.shortLength + len(announcedGames) * struct.calcsize( '>hhh' ) + nameLengths
 
         # send the first part of the data
-        data = struct.pack( '>hhh', packetLength, Packet.GAME, len(announcedGames) )
+        data = struct.pack( '>hhh', packetLength, Packet.GAMES, len(announcedGames) )
         self.send( data )
 
         # now send the game specific data for each game
