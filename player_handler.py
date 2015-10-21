@@ -49,7 +49,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
             # get the packet length
             (packetLength, packetType) = Packet.parseHeader( self.data )
-            self.logger.debug('handle_read: packet: %s, length: %d bytes', name( packetType ), packetLength )
+            self.logger.info('handle_read: packet: %s', name( packetType ) )
 
             # can we read the rest of the packet?
             if len(self.data) < packetLength:
@@ -76,12 +76,11 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             self.logger.debug('handle_close: ending game %s' % self.game )
             data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
 
-            # send the game to all connected players
+            # tell all connected players that the game has been removed
             for player in self.playerManager.getPlayers():
                 player.send( data )
 
             self.gameManager.removeGame( self.game )
-
             self.game.cleanup()
             self.game = None
 
@@ -127,6 +126,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleAnnouncePacket (self, data):
         # do we already have a game?
         if self.game is not None:
+            self.logger.warning('handleAnnouncePacket: we already have a game: %s, can not announce a new game' % self.game )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
             return Packet.shortLength
 
@@ -155,6 +155,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleJoinPacket (self, data):
         # do we already have a game?
         if self.game is not None:
+            self.logger.warning('handleJoinPacket: we already have a game: %s, can not join new game' % self.game )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
             return Packet.shortLength
 
@@ -206,31 +207,18 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         self.logger.debug('handleLeavePacket: leaving game: %s', self.game )
 
-        if self.game.removePlayer( self ) > 0:
-            self.logger.debug('handleLeavePacket: ending game: %s for opponents', self.game )
-
-            if self.game.player1 is not None and self.game.player1 != self:
-                # player 1 is the connected opponent
-                self.game.player1.send( data )
-                self.game.player1.game = None
-
-            elif self.game.player2 is not None and self.game.player2 != self:
-                # player 2 is the connected opponent
-                self.game.player2.send( data )
-                self.game.player2.game = None
-
         # send response
         self.send( OkPacket().message )
-
-        self.logger.debug('handleLeavePacket: removing game: %s', self.game )
-        self.gameManager.removeGame( self.game )
 
         # tell all connected players that the game has been removed
         data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
         for player in self.playerManager.getPlayers():
             player.send( data )
 
+        self.logger.debug('handleLeavePacket: removing game: %s', self.game )
+
         # no more game
+        self.gameManager.removeGame( self.game )
         self.game.cleanup()
         self.game = None
 

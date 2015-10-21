@@ -178,6 +178,16 @@ def leaveGame(sock):
     status = readStatusPacket(sock)
     if status == packet.Packet.OK:
         print 'Game left ok'
+
+        # read the left game data
+        try:
+            data = readPacket(sock, packet.Packet.GAME_REMOVED)
+            (gameId, ) = struct.unpack('>h', data)
+
+            print 'Game %d left' % gameId
+
+        except PacketException:
+            print 'Failed to read announced game data'
     else:
         print 'Failed to leave game'
 

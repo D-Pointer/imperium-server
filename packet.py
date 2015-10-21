@@ -3,35 +3,27 @@ import struct
 
 class Packet:
 
+    # sent by the players
     INFO         = 0
-
-    # handle games
     ANNOUNCE     = 1
-    JOIN         = 2 
-    LEAVE        = 3  
-    STARTS       = 4 
+    JOIN         = 2
+    LEAVE        = 3
+    GET_GAMES    = 6
+    GET_PLAYERS  = 9
+    PING         = 12
 
+    # sent by the server
+    STARTS       = 4
     GAME_ADDED   = 20
     GAME_REMOVED = 21
-
-    # game info
-    GET_GAMES    = 6
     GAMES        = 8
-
-    # player info
-    GET_PLAYERS  = 9
     PLAYER_COUNT = 10
     PLAYER       = 11
-
-    # ping
-    PING         = 12
     PONG         = 13
-
-    # result codes
     OK           = 14
     ERROR        = 15
 
-    # generic data
+    # sent by both
     DATA         = 16
 
     packetNames = { INFO:         'INFO',
