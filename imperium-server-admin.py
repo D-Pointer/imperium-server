@@ -298,6 +298,7 @@ def sendUdpDataPacket (sock):
         return
 
     global udpAddress
+
     # send data
     udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
 
@@ -322,6 +323,28 @@ def readUdpPacket (sock):
     print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
 
 
+def subscribe (sock):
+    sock.send( packet.SubscribePacket().message )
+
+    # read status
+    status = readStatusPacket(sock)
+    if status == packet.Packet.OK:
+        print 'Subscribed ok to game status updates'
+    else:
+        print 'Failed to subscribed to game status updates'
+
+
+def unsubscribe (sock):
+    sock.send( packet.UnsubscribePacket().message )
+
+    # read status
+    status = readStatusPacket(sock)
+    if status == packet.Packet.OK:
+        print 'Unsubscribed ok from game status updates'
+    else:
+        print 'Failed to unsubscribed from game status updates'
+
+
 def quit(sock):
     global keepRunning
     keepRunning = False
@@ -344,8 +367,10 @@ def getInput(sock):
         print '9: send TCP data'
         print '10: send UDP data'
         print '11: read UDP data'
+        print '12: subscribe to game status updates'
+        print '13: unsubscribe from game status updates'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket )
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket, subscribe, unsubscribe )
         choice = getInputInteger('> ', 0, len(callbacks) )
 
         # call the suitable handler
@@ -363,7 +388,10 @@ if __name__ == '__main__':
     s.connect((server, port))
 
     # send info
-    s.send(packet.InfoPacket(name, 42).message)
+    s.send( packet.InfoPacket(name, 42).message )
+
+    # we want update
+    subscribe( s )
 
     # get players
     getPlayers(s)

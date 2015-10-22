@@ -11,6 +11,8 @@ class Packet:
     GET_GAMES    = 6
     GET_PLAYERS  = 9
     PING         = 12
+    SUBSCRIBE    = 30
+    UNSUBSCRIBE  = 31
 
     # sent by the server
     STARTS       = 4
@@ -42,7 +44,10 @@ class Packet:
                     ERROR:        'ERROR',
                     DATA:         'DATA',
                     GAME_ADDED:   'GAME_ADDED',
-                    GAME_REMOVED: 'GAME_REMOVED' }
+                    GAME_REMOVED: 'GAME_REMOVED',
+                    SUBSCRIBE:    'SUBSCRIBE',
+                    UNSUBSCRIBE:  'UNSUBSCRIBE',
+                    }
 
     # precalculated data lengths
     headerLength = struct.calcsize( '>hh' )
@@ -139,6 +144,18 @@ class PongPacket (Packet):
     def __init__ (self):
         # create the message
         self.message = struct.pack( '>hh', Packet.shortLength, Packet.PONG )
+
+
+class SubscribePacket (Packet):
+    def __init__ (self):
+        # create the message
+        self.message = struct.pack( '>hh', Packet.shortLength, Packet.SUBSCRIBE )
+
+
+class UnsubscribePacket (Packet):
+    def __init__ (self):
+        # create the message
+        self.message = struct.pack( '>hh', Packet.shortLength, Packet.UNSUBSCRIBE )
 
 
 class DataPacket (Packet):

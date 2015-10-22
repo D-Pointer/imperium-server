@@ -24,6 +24,9 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         # our game that we're announing or in
         self.game = None
 
+        # are we subscribed to game status updated?
+        self.subscribed = False
+
 
     def handle_read(self):
         try:
@@ -78,7 +81,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
             # tell all connected players that the game has been removed
             for player in self.playerManager.getPlayers():
-                player.send( data )
+                if player.subscribed:
+                    player.send( data )
 
             self.gameManager.removeGame( self.game )
             self.game.cleanup()
@@ -106,6 +110,12 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         elif packetType == Packet.PING:
             return self.handlePingPacket( data )
+
+        elif packetType == Packet.SUBSCRIBE:
+            return self.handleSubscribePacket( data )
+
+        elif packetType == Packet.UNSUBSCRIBE:
+            return self.handleUnsubscribePacket( data )
 
         elif packetType == Packet.DATA:
             return self.handleDataPacket( data )
@@ -147,7 +157,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         # send the game to all connected players
         for player in self.playerManager.getPlayers():
-            player.send( data )
+            if player.subscribed:
+                player.send( data )
 
         return Packet.shortLength
 
@@ -188,6 +199,12 @@ class PlayerHandler(asyncore.dispatcher_with_send):
                 data = struct.pack( '>hhhhh', struct.calcsize( '>hhhh' ), Packet.STARTS, self.game.udpPort, self.game.gameId, 1 )
                 self.game.player2.send( data )
 
+                # tell all other connected players that the game has been removed from them
+                data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
+                for player in self.playerManager.getPlayers():
+                    if player.subscribed and player is not self.game.player1 and player is not self.game.player2:
+                        player.send( data )
+
         return Packet.shortLength
 
 
@@ -213,7 +230,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         # tell all connected players that the game has been removed
         data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
         for player in self.playerManager.getPlayers():
-            player.send( data )
+            if player.subscribed:
+                player.send( data )
 
         self.logger.debug('handleLeavePacket: removing game: %s', self.game )
 
@@ -270,6 +288,22 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         # send the player count packet
         self.send( struct.pack( '>hh', Packet.shortLength, Packet.PONG ) )
         self.logger.debug( 'handlePingPacket: sent pong' )
+        return 0
+
+
+    def handleSubscribePacket (self, data):
+        # send the player count packet
+        self.logger.debug( 'handleSubscribePacket: subscribing to game status updates' )
+        self.subscribed = True
+        self.send( OkPacket().message )
+        return 0
+
+
+    def handleUnsubscribePacket (self, data):
+        # send the player count packet
+        self.logger.debug( 'handleUnsubscribePacket: unsubscribing from game status updates' )
+        self.subscribed = False
+        self.send( OkPacket().message )
         return 0
 
 
