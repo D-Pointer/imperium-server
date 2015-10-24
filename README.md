@@ -12,6 +12,17 @@ The packet length contains the length excluding the length field itself. A minim
 
 ---
 
+### Info packet
+The Info packet tells the server who the player is and what name he/she will go by. This should be the first packet sent by any client. Contents:
+
+* client version (unsigned int). A coded version number where 1.2.3 becomes 102030. Can be used to validate that the client is suitably new.
+
+#### Reply
+* OkPacket
+* ErrorPacket
+
+---
+
 ### Announce packet
 The announce packet announces a game to other players. One of the other players can then choose to join that gane.
 
