@@ -16,7 +16,11 @@ The announce packet announces a game to other players. One of the other players 
 * scenario id (unsigned short)
 * tag (unsigned short)
 
-The scenario id is the id of the scenario that the player announces that he/she will host. The tag is an id for the announcement. The reply is an Ok or Error packet with the received tag.
+The scenario id is the id of the scenario that the player announces that he/she will host. The tag is an id for the announcement. 
+
+#### Reply
+* OkPacket if the game was announced ok
+* ErrorPacket if the game could not be announced, i.e. the player already has announced or joined another game.
 
 
 ### Subscribe packet
@@ -24,7 +28,8 @@ The subscribe packet indicates that the client wants to receive updates to games
 
 * tag (unsigned short)
 
-The reply is always an Ok packet with the received tag.
+#### Reply
+* OkPacket
 
 
 ### Unubscribe packet
@@ -32,7 +37,8 @@ The unsubscribe packet indicates that the client no longer wants to receive upda
 
 * tag (unsigned short)
 
-The reply is always an Ok packet with the received tag.
+#### Reply
+* OkPacket
 
 
 ### Ok packet
