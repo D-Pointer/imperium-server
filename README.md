@@ -34,3 +34,10 @@ The unsubscribe packet indicates that the client no longer wants to receive upda
 
 The reply is always an Ok packet with the received tag.
 
+
+### Ok packet
+The Ok packet is only sent by the server in response to some other packet. All packets that have a tag will always receive an Ok or Error packet that contains the tag. The Ok packet means that original packet sent by the client was successfully executed. 
+
+
+### Error packet
+This is similar to the Ok packet but means the action failed. It also contains a tag identifying the original packet to which the failure is related.
