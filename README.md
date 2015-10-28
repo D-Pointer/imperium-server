@@ -64,3 +64,7 @@ The Ok packet is only sent by the server in response to some other packet. All p
 
 ### Error packet
 This is similar to the Ok packet but means the action failed. It also contains a tag identifying the original packet to which the failure is related.
+
+
+## UDP data
+There is no custom UDP protocol. Everything sent to the server will simply be sent as-is to the other player. The only exception to this is the first packet sent by both player which will be discarded. The first packet is used by the server to get the address and port of the client's sockets. Until both players have sent one packet all other data is discarded. Once both players have sent one dummy packet (the contents is irrelevant) all further packets are just relayed.
