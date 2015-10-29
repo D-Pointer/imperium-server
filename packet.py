@@ -24,6 +24,7 @@ class Packet:
     PONG         = 13
     OK           = 14
     ERROR        = 15
+    START_ACTION = 32
 
     # sent by both
     DATA         = 16
@@ -47,6 +48,7 @@ class Packet:
                     GAME_REMOVED: 'GAME_REMOVED',
                     SUBSCRIBE:    'SUBSCRIBE',
                     UNSUBSCRIBE:  'UNSUBSCRIBE',
+                    START_ACTION: 'START_ACTION',
                     }
 
     # precalculated data lengths
@@ -93,15 +95,20 @@ def name (packetType):
 
 
 class OkPacket (Packet):
-    def __init__ (self):
-         self.message = struct.pack( '>hh', Packet.shortLength, Packet.OK )
+    def __init__ (self, tag=0):
+         self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.OK, tag )
+
+
+class ErrorPacket (Packet):
+    def __init__ (self, tag=0):
+         self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.ERROR, tag )
 
 
 class InfoPacket (Packet):
-    def __init__ (self, name, version):
+    def __init__ (self, name, version, tag):
         name = name.encode('ascii')
-        length = struct.calcsize( '>hIh' ) + len(name)
-        self.message = struct.pack( '>hhIh%ds' % len(name), length, Packet.INFO, version, len(name), name )
+        length = struct.calcsize( '>hhIh' ) + len(name)
+        self.message = struct.pack( '>hhhIh%ds' % len(name), length, Packet.INFO, tag, version, len(name), name )
 
 
 class GetPlayersPacket (Packet):
@@ -117,9 +124,9 @@ class GetGamesPacket (Packet):
 
 
 class AnnounceGamePacket (Packet):
-    def __init__ (self, scenarioId):
+    def __init__ (self, scenarioId, tag):
         # create the message
-        self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.ANNOUNCE, scenarioId )
+        self.message = struct.pack( '>hhhh', Packet.shortLength * 3, Packet.ANNOUNCE, scenarioId, tag )
 
 
 class JoinGamePacket (Packet):
@@ -129,9 +136,9 @@ class JoinGamePacket (Packet):
 
 
 class LeaveGamePacket (Packet):
-    def __init__ (self, gameId):
+    def __init__ (self):
         # create the message
-        self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.LEAVE, gameId )
+        self.message = struct.pack( '>hh', Packet.shortLength * 2, Packet.LEAVE )
 
 
 class PingPacket (Packet):
@@ -147,15 +154,15 @@ class PongPacket (Packet):
 
 
 class SubscribePacket (Packet):
-    def __init__ (self):
+    def __init__ (self, tag):
         # create the message
-        self.message = struct.pack( '>hh', Packet.shortLength, Packet.SUBSCRIBE )
+        self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.SUBSCRIBE, tag )
 
 
 class UnsubscribePacket (Packet):
-    def __init__ (self):
+    def __init__ (self, tag):
         # create the message
-        self.message = struct.pack( '>hh', Packet.shortLength, Packet.UNSUBSCRIBE )
+        self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.UNSUBSCRIBE, tag )
 
 
 class DataPacket (Packet):
@@ -172,5 +179,11 @@ class UdpDataPacket (Packet):
         dataLength = len(data)
         packetLength = struct.calcsize( '>hh' ) + dataLength
         self.message = struct.pack( '>hhh%ds' % dataLength, packetLength, playerId, gameId, data )
+
+
+class StartActionPacket (Packet):
+    def __init__ (self):
+        # create the message
+        self.message = struct.pack( '>h', Packet.START_ACTION )
 
 

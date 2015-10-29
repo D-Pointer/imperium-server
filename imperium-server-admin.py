@@ -88,20 +88,24 @@ def readStatusPacket(sock):
         print 'unexpected packet, got %s, expected OK or ERROR' % packet.name(receivedType)
         raise PacketException()
 
-    return receivedType
+    # ok/error, so get the tag too
+    (tag,) = struct.unpack_from('>h', data, packet.Packet.shortLength)
+
+    return (tag, receivedType)
 
 
 def announceGame(sock):
     print ''
     print 'Announce a new game'
     scenarioId = getInputInteger('Scenario id: ', 0, 1000)
+    tag = 0
 
     # send the request
-    sock.send(packet.AnnounceGamePacket(scenarioId).message)
+    sock.send(packet.AnnounceGamePacket(scenarioId, tag).message)
 
     # read status
-    status = readStatusPacket(sock)
-    if status == packet.Packet.OK:
+    readTag, status = readStatusPacket(sock)
+    if status == packet.Packet.OK and tag == readTag:
         print 'Game announced ok'
 
         # read the announced game data
@@ -110,7 +114,7 @@ def announceGame(sock):
             (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, 0)
             (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhh'))
 
-            print 'Game %d, scenario: %d, announcer: %s' % (gameId, scenarioId, playerName)
+            print 'Game %d, tag: %d, scenario: %d, announcer: %s' % (gameId, tag, scenarioId, playerName)
 
         except PacketException:
             print 'Failed to read announced game data'
@@ -175,7 +179,7 @@ def leaveGame(sock):
     sock.send(packet.LeaveGamePacket(gameId).message)
 
     # read status
-    status = readStatusPacket(sock)
+    tag, status = readStatusPacket(sock)
     if status == packet.Packet.OK:
         print 'Game left ok'
 
@@ -300,11 +304,12 @@ def sendUdpDataPacket (sock):
     global udpAddress
 
     # send data
-    udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
+    udpSocket.sendto( data, udpAddress )
+    #udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
 
 
 def readUdpPacket (sock):
-    global udpSocket, gameId
+    global udpSocket #, gameId
 
     # read raw data from the UDP socket
     data, sender = udpSocket.recvfrom( 512 )
@@ -313,22 +318,37 @@ def readUdpPacket (sock):
         raise PacketException()
 
     # extract the header
-    (length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
+    #(length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
 
     # extra the payload
-    headerLength = struct.calcsize( '>hhh' )
-    content = data[ headerLength : headerLength + length ]
+    #headerLength = struct.calcsize( '>hhh' )
+    #content = data[ headerLength : headerLength + length ]
 
     print ''
-    print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
+    print 'read UDP packet from %s, bytes: %d, data: "%s"' % ( sender, len(data), data )
+    #print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
+
+
+
+def sendInfo (sock, name):
+    tag = 0
+    sock.send( packet.InfoPacket( name, 42, tag ).message )
+
+    # read status
+    readTag, status = readStatusPacket(sock)
+    if status == packet.Packet.OK and tag == readTag:
+        print 'Info sent ok'
+    else:
+        print 'Failed to send our'
 
 
 def subscribe (sock):
-    sock.send( packet.SubscribePacket().message )
+    tag = 0
+    sock.send( packet.SubscribePacket( tag ).message )
 
     # read status
-    status = readStatusPacket(sock)
-    if status == packet.Packet.OK:
+    readTag, status = readStatusPacket(sock)
+    if status == packet.Packet.OK and tag == readTag:
         print 'Subscribed ok to game status updates'
     else:
         print 'Failed to subscribed to game status updates'
@@ -388,7 +408,7 @@ if __name__ == '__main__':
     s.connect((server, port))
 
     # send info
-    s.send( packet.InfoPacket(name, 42).message )
+    sendInfo( s, name )
 
     # we want update
     subscribe( s )

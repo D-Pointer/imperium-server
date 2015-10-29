@@ -1,10 +1,7 @@
 
-import sys
 import asyncore
 import logging
 import socket
-import struct
-
 import packet
 
 class UdpServer(asyncore.dispatcher):
@@ -20,7 +17,7 @@ class UdpServer(asyncore.dispatcher):
         self.bind(('', game.udpPort ))
 
         # the two players
-        self.players = [ None, None ]
+        self.players = []
 
         # both players logged in?
         self.started = False
@@ -40,35 +37,28 @@ class UdpServer(asyncore.dispatcher):
 
         self.logger.debug( 'handle_read: received %d bytes from %s', len(data), str(addr) )
 
-        while data != '':
-            (length, playerId, gameId, ) = struct.unpack_from( '>hhh', data, 0 )
-            #self.logger.debug( 'handle_read: game %d, sender: %d, content length: %d', gameId, playerId, length )
+        if not self.started:
+            # just save the address as the player
+            if not addr in self.players:
+                self.players.append( addr )
 
-            # the right game?
-            if gameId != self.game.gameId:
-                self.logger.warning( 'handle_read: invalid game %d, ignoring', gameId )
+            # do we have both players now?
+            if len ( self.players ) == 2:
+                self.started = True
+                self.logger.debug( 'handle_read: both players have sent an initial packet' )
 
-            elif not self.started:
-                # just save the address as the player
-                self.players[ playerId ] = addr
-                self.logger.debug( 'handle_read: saving %s as player %d', addr, playerId )
-                    
-                # do we have both players now?
-                if not None in self.players:
-                    self.started = True
-                    self.logger.debug( 'handle_read: both players have sent an initial packet' )
+                # send a few start action packets
+                startActionPacket = packet.StartActionPacket()
+                for index in range ( 5 ):
+                    self.sendto( startActionPacket.message, self.players[ 0 ] )
+                    self.sendto( startActionPacket.message, self.players[ 1 ] )
 
+        else:
+            # already started, just send to the other
+            if addr == self.players[0]:
+                self.sendto( data, self.players[ 1 ] )
             else:
-                # already started, just send to the other
-                if playerId == 0:
-                    self.logger.debug( 'handle_read: sending %d bytes to player 2', len(data) )
-                    self.sendto( data, self.players[ 1 ] )
-                else:
-                    self.logger.debug( 'handle_read: sending %d bytes to player 1', len(data) )
-                    self.sendto( data, self.players[ 0 ] )
-
-            # strip off the handled data
-            data = data[ packet.Packet.shortLength + length : ]
+                self.sendto( data, self.players[ 0 ] )
 
     def handle_write(self):
         pass
