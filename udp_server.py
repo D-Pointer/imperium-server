@@ -3,6 +3,7 @@ import asyncore
 import logging
 import socket
 import packet
+import struct
 
 class UdpServer(asyncore.dispatcher):
 
@@ -54,6 +55,11 @@ class UdpServer(asyncore.dispatcher):
                     self.sendto( startActionPacket.message, self.players[ 1 ] )
 
         else:
+            # a custom packet such as ping?
+            if self.handleCustomPacket( data, addr ):
+                # packet handled
+                return
+
             # already started, just send to the other
             if addr == self.players[0]:
                 self.sendto( data, self.players[ 1 ] )
@@ -63,3 +69,25 @@ class UdpServer(asyncore.dispatcher):
     def handle_write(self):
         pass
         
+
+    def handleCustomPacket (self, data, sender):
+        (packetType, ) = struct.unpack_from( '>h', data, 0 )
+
+        # a ping?
+        if packetType == packet.Packet.PING:
+            (timestamp, ) = struct.unpack_from( '>L', data, packet.Packet.shortLength )
+            pong = struct.pack( '>hL', packet.Packet.PONG, timestamp )
+
+            if sender == self.players[0]:
+                self.logger.debug( 'handleCustomPacket: sending pong for %d to player 2', timestamp )
+                self.sendto( pong, self.players[ 0 ] )
+            else:
+                self.logger.debug( 'handleCustomPacket: sending pong for %d to player 1', timestamp )
+
+                self.sendto( pong, self.players[ 1 ] )
+            
+
+            return True
+
+        # nothing we handle
+        return False
