@@ -131,8 +131,9 @@ def waitForStart (sock):
         global udpSocket, udpAddress, gameId, playerId
 
         data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, gameId, playerId) = struct.unpack('>hhh', data)
-        print 'Game %d started ok, we are: %d, data on UDP port: %d' % (gameId, playerId, udpPort)
+        (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
+        (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
+        print 'Game %d started ok, we are: %d, opponent is: %s, data on UDP port: %d' % (gameId, playerId, opponentName, udpPort)
 
         # create the UDP socket
         udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
@@ -157,8 +158,9 @@ def joinGame(sock):
     # read the start packet
     try:
         data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, gameId, playerId) = struct.unpack('>hhh', data)
-        print 'Game %d joined ok, we are: %d, data on UDP port: %d' % (gameId, playerId, udpPort )
+        (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
+        (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
+        print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (gameId, playerId, opponentName, udpPort)
 
         # create the UDP socket
         udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
