@@ -188,12 +188,19 @@ class PlayerHandler(asyncore.dispatcher_with_send):
                 # activate the game
                 self.gameManager.activateGame( self.game )
 
+                # player names
+                player1Name = self.game.player1.clientName
+                player2Name = self.game.player2.clientName
+
                 self.logger.debug( 'handleJoinPacket: joined game %s', self.game )
 
                 # send to both players a "game starts" packet with their own tokens
-                data = struct.pack( '>hhhhh', struct.calcsize( '>hhhh' ), Packet.STARTS, self.game.udpPort, self.game.gameId, 0 )
+                dataLength = struct.calcsize( '>hhhhh' ) + len(player2Name)
+                data = struct.pack( '>hhhhhh%ds' % len(player2Name), dataLength, Packet.STARTS, self.game.udpPort, self.game.gameId, 0, len(player2Name), player2Name )
                 self.game.player1.send( data )
-                data = struct.pack( '>hhhhh', struct.calcsize( '>hhhh' ), Packet.STARTS, self.game.udpPort, self.game.gameId, 1 )
+
+                dataLength = struct.calcsize( '>hhhhh' ) + len(player1Name)
+                data = struct.pack( '>hhhhhh%ds' % len(player1Name), dataLength, Packet.STARTS, self.game.udpPort, self.game.gameId, 1, len(player1Name), player1Name )
                 self.game.player2.send( data )
 
                 # tell all other connected players that the game has been removed from them
