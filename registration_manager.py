@@ -17,23 +17,29 @@ class RegistrationManager:
         self.nextId = 1
 
         # read in all players
-        for line in open( 'players.db').readlines():
-            parts = line.split(' ')
+        try:
+            file = open( 'data/players.db')
 
-            id = int( parts[0] )
-            secret = int( parts[-1] )
-            name = string.join( parts[1:-1] )
+            for line in file.readlines():
+                parts = line.split(' ')
 
-            player = Player( id, name, secret )
-            self.players[ id ] = player
+                id = int( parts[0] )
+                secret = int( parts[-1] )
+                name = string.join( parts[1:-1] )
 
-            #self.logger.debug( 'player: %s', player )
+                player = Player( id, name, secret )
+                self.players[ id ] = player
 
-            # also cache the name as used
-            self.used_names.append( name )
+                #self.logger.debug( 'player: %s', player )
 
-            # new largest id?
-            self.nextId = max( self.nextId, id + 1 )
+                # also cache the name as used
+                self.used_names.append( name )
+
+                # new largest id?
+                self.nextId = max( self.nextId, id + 1 )
+
+        except:
+            self.logger.info( '__init__: creating player database data/players.db' )
 
         self.logger.info( '__init__: loaded %d players', len( self.players ))
 
@@ -53,7 +59,7 @@ class RegistrationManager:
         self.used_names.append( name )
 
         # save the new player
-        file = open( 'players.db', 'a')
+        file = open( 'data/players.db', 'a')
         file.write( '%d %s %d\n' %( id, name, secret ) )
         file.close()
 

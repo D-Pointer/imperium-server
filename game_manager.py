@@ -20,6 +20,11 @@ class GameManager:
 
         self.logger = logging.getLogger('GameManager')
 
+        try:
+            self.nextGameId = int( open( 'data/games.seq' ).readline() )
+        except:
+            self.nextGameId = 0
+
 
     def getGame (self, gameId):
         for game in self.announcedGames:
@@ -37,6 +42,15 @@ class GameManager:
         # create the game
         game = Game( self.nextGameId, scenarioId, player1, None)
         self.nextGameId += 1
+
+        # save the updated game id sequence
+        try:
+            file = open( 'data/games.seq', 'w')
+            file.write( str(self.nextGameId) )
+            file.close()
+        except:
+            self.logger.error( 'createGame: failed to save updated game id sequence!' )
+
         return game
 
 
