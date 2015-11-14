@@ -71,7 +71,7 @@ def readOneOfPacket(sock, packetTypes):
         raise PacketException()
 
     # strip off the type
-    return data[packet.Packet.shortLength:]
+    return receivedType, data[packet.Packet.shortLength:]
 
 
 def readStatusPacket(sock):
@@ -198,33 +198,33 @@ def leaveGame(sock):
         print 'Failed to leave game'
 
 
-def getPlayers(sock):
+def getPlayerCount(sock):
     # send the request
-    sock.send(packet.GetPlayersPacket().message)
+    sock.send(packet.GetPlayerCountPacket().message)
 
     # raw data
     data = readPacket(sock, packet.Packet.PLAYER_COUNT)
 
     (playerCount,) = struct.unpack('>h', data)
-    # print 'players: %d' % playerCount
+    print 'Connected players: %d' % playerCount
 
     # clear the list
-    players = []
+    #players = []
 
     # get rid of the first packet
     # response = response[ packet.Packet.headerLength + struct.calcsize( '>h' ): ]
 
-    for index in range(playerCount):
-        # raw data
-        data = readPacket(sock, packet.Packet.PLAYER)
+    #for index in range(playerCount):
+    #    # raw data
+    #    data = readPacket(sock, packet.Packet.PLAYER)
 
-        (playerVersion, nameLength) = struct.unpack_from('>Ih', data, 0)
-        (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ih'))
-        players.append(Player( playerName, playerVersion ))
+    #    (playerVersion, nameLength) = struct.unpack_from('>h', data, 0)
+    #    (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ih'))
+    #    players.append(Player( playerName, playerVersion ))
 
-    print "Received %d players:" % len(players)
-    for player in players:
-        print '\t', player
+    #print "Received %d players:" % len(players)
+    #for player in players:
+    #    print '\t', player
 
 
 def getGames(sock):
@@ -331,17 +331,34 @@ def readUdpPacket (sock):
     #print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
 
 
-
-def sendInfo (sock, name):
+def register (sock, name, secret):
     tag = 0
-    sock.send( packet.InfoPacket( name, 42, tag ).message )
+    sock.send( packet.RegisterPacket( tag, name, secret ).message )
+
+    # read the response
+    packetType, data = readOneOfPacket( sock, (packet.Packet.REGISTER_OK, packet.Packet.ERROR ) )
+
+    if packetType == packet.Packet.ERROR:
+        print "Failed to register"
+        return
+
+    # ok/error, so get the tag too
+    (tag, id) = struct.unpack('>hI', data )
+    print 'Registered ok, id: %d' % id
+
+
+def login (sock, id, secret):
+    tag = 0
+    sock.send( packet.LoginPacket( id, secret, 42, tag ).message )
 
     # read status
     readTag, status = readStatusPacket(sock)
     if status == packet.Packet.OK and tag == readTag:
-        print 'Info sent ok'
+        print 'Logged in ok'
+        return True
     else:
-        print 'Failed to send our'
+        print 'Failed to log in'
+        return False
 
 
 def subscribe (sock):
@@ -382,7 +399,7 @@ def getInput(sock):
         print '2: join a game'
         print '3: leave a game'
         print '4: list games'
-        print '5: list players'
+        print '5: get player count'
         print '6: ping server'
         print '7: read next packet'
         print '8: wait for game to start'
@@ -392,7 +409,7 @@ def getInput(sock):
         print '12: subscribe to game status updates'
         print '13: unsubscribe from game status updates'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayers, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket, subscribe, unsubscribe )
+        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayerCount, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket, subscribe, unsubscribe )
         choice = getInputInteger('> ', 0, len(callbacks) )
 
         # call the suitable handler
@@ -402,21 +419,27 @@ def getInput(sock):
 if __name__ == '__main__':
     server = sys.argv[1]
     port = int(sys.argv[2])
-    name = sys.argv[3]
+    id = int( sys.argv[3] )
+    secret = int( sys.argv[4] )
+
     print 'Connecting to server on %s:%d' % (server, port)
 
     # Connect to the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((server, port))
 
-    # send info
-    sendInfo( s, name )
+    # register
+    #register( s, name, secret )
+
+    # log in
+    if not login( s, id, secret ):
+        sys.exit( 1 )
 
     # we want update
     subscribe( s )
 
     # get players
-    getPlayers(s)
+    getPlayerCount( s )
 
     # get games
     getGames(s)

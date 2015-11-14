@@ -8,6 +8,7 @@ import socket
 from player_handler import PlayerHandler
 from player_manager import PlayerManager
 from game_manager   import GameManager
+from registration_manager import RegistrationManager
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s: %(message)s',
@@ -30,13 +31,16 @@ class ImperiumServer(asyncore.dispatcher):
         # game manager for handling all games
         self.gameManager = GameManager()
 
+        # registration manager for handling authentication
+        self.registrationManager = RegistrationManager()
+
 
     def handle_accept(self):
         pair = self.accept()
         if pair is not None:
             sock, addr = pair
             self.logger.debug( 'handle_accept: incoming connection from %s' % repr(addr) )
-            handler = PlayerHandler( sock , self.playerManager, self.gameManager )
+            handler = PlayerHandler( sock , self.playerManager, self.gameManager, self.registrationManager )
 
             self.playerManager.addPlayer( handler )
             self.logger.debug( 'handle_accept: players now: %d' % self.playerManager.getPlayerCount() )

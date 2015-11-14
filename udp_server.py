@@ -46,7 +46,7 @@ class UdpServer(asyncore.dispatcher):
             # do we have both players now?
             if len ( self.players ) == 2:
                 self.started = True
-                self.logger.debug( 'handle_read: both players have sent an initial packet' )
+                self.logger.debug( 'handle_read: both players have sent an initial packet, sending START_ACTION' )
 
                 # send a few start action packets
                 startActionPacket = packet.StartActionPacket()

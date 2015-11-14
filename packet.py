@@ -4,17 +4,20 @@ import struct
 class Packet:
 
     # sent by the players
-    INFO         = 0
+    REGISTER     = 40
+    LOGIN        = 0
     ANNOUNCE     = 1
     JOIN         = 2
     LEAVE        = 3
     GET_GAMES    = 6
     GET_PLAYERS  = 9
+    GET_PLAYER_COUNT = 33
     PING         = 12
     SUBSCRIBE    = 30
     UNSUBSCRIBE  = 31
 
     # sent by the server
+    REGISTER_OK  = 41
     STARTS       = 4
     GAME_ADDED   = 20
     GAME_REMOVED = 21
@@ -24,12 +27,19 @@ class Packet:
     PONG         = 13
     OK           = 14
     ERROR        = 15
-    START_ACTION = 32
 
     # sent by both
     DATA         = 16
 
-    packetNames = { INFO:         'INFO',
+    # UDP packets
+    START_ACTION = 200
+    DUMMY        = 201
+    MISSION      = 202
+    UNIT_STATS   = 203
+
+    packetNames = { REGISTER:     'REGISTER',
+                    REGISTER_OK:  'REGISTER_OK',
+                    LOGIN:        'LOGIN',
                     ANNOUNCE:     'ANNOUNCE',
                     JOIN:         'JOIN',
                     LEAVE:        'LEAVE',
@@ -37,6 +47,7 @@ class Packet:
                     GET_GAMES:    'GET_GAMES',
                     GAMES:        'GAMES',
                     GET_PLAYERS:  'GET_PLAYERS',
+                    GET_PLAYER_COUNT: 'GET_PLAYER_COUNT',
                     PLAYER_COUNT: 'PLAYER_COUNT',
                     PLAYER:       'PLAYER',
                     PING:         'PING',
@@ -49,6 +60,9 @@ class Packet:
                     SUBSCRIBE:    'SUBSCRIBE',
                     UNSUBSCRIBE:  'UNSUBSCRIBE',
                     START_ACTION: 'START_ACTION',
+                    DUMMY:        'DUMMY',
+                    MISSION:      'MISSION',
+                    UNIT_STATS:   'UNIT_STATS',
                     }
 
     # precalculated data lengths
@@ -104,11 +118,28 @@ class ErrorPacket (Packet):
          self.message = struct.pack( '>hhh', Packet.shortLength * 2, Packet.ERROR, tag )
 
 
-class InfoPacket (Packet):
-    def __init__ (self, name, version, tag):
-        name = name.encode('ascii')
-        length = struct.calcsize( '>hhIh' ) + len(name)
-        self.message = struct.pack( '>hhhIh%ds' % len(name), length, Packet.INFO, tag, version, len(name), name )
+class RegisterPacket (Packet):
+    def __init__ (self, tag, name, secret):
+        nameLength = len( name )
+        packetLength = struct.calcsize( '>hhIh') + nameLength
+        self.message = struct.pack( '>hhhIh%ds' % nameLength, packetLength, Packet.REGISTER, tag, secret, nameLength, name )
+
+
+class RegisterOkPacket (Packet):
+    def __init__ (self, tag, id):
+        length = struct.calcsize( '>hhI' )
+        self.message = struct.pack( '>hhhI', length, Packet.REGISTER_OK, tag, id )
+
+
+class LoginPacket (Packet):
+    def __init__ (self, id, secret, version, tag):
+        self.message = struct.pack( '>hhhIII', struct.calcsize( '>hhIII' ), Packet.LOGIN, tag, id, secret, version )
+
+
+class GetPlayerCountPacket (Packet):
+    def __init__ (self):
+        # create the message
+        self.message = struct.pack( '>hh', Packet.shortLength, Packet.GET_PLAYER_COUNT )
 
 
 class GetPlayersPacket (Packet):
