@@ -336,7 +336,8 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
     def handleSubscribePacket (self, data):
         # send the player count packet
-        (tag, ) = struct.unpack( '>h', data )
+        self.logger.debug( 'handleSubscribePacket: data: %d', len(data) )
+        (tag, ) = struct.unpack_from( '>h', data, 0 )
         self.logger.debug( 'handleSubscribePacket: subscribing to game status updates, tag: %d', tag )
         self.subscribed = True
         self.send( OkPacket( tag ).message )
@@ -344,7 +345,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
     def handleUnsubscribePacket (self, data):
         # send the player count packet
-        (tag, ) = struct.unpack( '>h', data )
+        (tag, ) = struct.unpack_from( '>h', data, 0 )
         self.logger.debug( 'handleUnsubscribePacket: unsubscribing from game status updates, tag: %d', tag )
         self.subscribed = False
         self.send( OkPacket( tag ).message )
