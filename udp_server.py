@@ -1,15 +1,14 @@
 
 import asyncore
-import logging
 import socket
 import packet
 import struct
 
 class UdpServer(asyncore.dispatcher):
 
-    def __init__(self, game):
+    def __init__(self, game, logger):
         asyncore.dispatcher.__init__(self)
-        self.logger = logging.getLogger('UdpServer-%d' % game.gameId)
+        self.logger = logger
 
         self.game = game
 
@@ -23,8 +22,19 @@ class UdpServer(asyncore.dispatcher):
         # both players logged in?
         self.started = False
 
+        # packets relayed in the full game
+        self.packetsSent = 0
+        self.bytesSent = 0
+
         self.logger.debug( 'UDP server initialized, port: %d', game.udpPort )
 
+
+    def getPacketsSent (self):
+        return self.packetsSent
+
+
+    def getBytesSent (self):
+        return self.bytesSent
 
     def handle_connect(self):
         pass
@@ -36,7 +46,7 @@ class UdpServer(asyncore.dispatcher):
         if not data:
             return
 
-        self.logger.debug( 'handle_read: received %d bytes from %s', len(data), str(addr) )
+        self.logger.debug( 'received %d bytes from %s', len(data), str(addr) )
 
         if not self.started:
             # just save the address as the player
@@ -46,7 +56,7 @@ class UdpServer(asyncore.dispatcher):
             # do we have both players now?
             if len ( self.players ) == 2:
                 self.started = True
-                self.logger.debug( 'handle_read: both players have sent an initial packet, sending START_ACTION' )
+                self.logger.debug( 'both players have sent an initial packet, sending START_ACTION' )
 
                 # send a few start action packets
                 startActionPacket = packet.StartActionPacket()
@@ -63,8 +73,15 @@ class UdpServer(asyncore.dispatcher):
             # already started, just send to the other
             if addr == self.players[0]:
                 self.sendto( data, self.players[ 1 ] )
-            else:
+            elif addr == self.players[1]:
                 self.sendto( data, self.players[ 0 ] )
+            else:
+                self.logger.error( 'received a UDP packet from someone not a player: ' + addr )
+                return
+
+            self.packetsSent += 1
+            self.bytesSent += len( data )
+
 
     def handle_write(self):
         pass
@@ -79,10 +96,10 @@ class UdpServer(asyncore.dispatcher):
             pong = struct.pack( '>hL', packet.Packet.PONG, timestamp )
 
             if sender == self.players[0]:
-                self.logger.debug( 'handleCustomPacket: sending pong for %d to player 2', timestamp )
+                self.logger.debug( 'sending pong for %d to player 2', timestamp )
                 self.sendto( pong, self.players[ 0 ] )
             else:
-                self.logger.debug( 'handleCustomPacket: sending pong for %d to player 1', timestamp )
+                self.logger.debug( 'sending pong for %d to player 1', timestamp )
 
                 self.sendto( pong, self.players[ 1 ] )
             

@@ -1,4 +1,3 @@
-import logging
 import asyncore
 import socket
 import struct
@@ -10,9 +9,9 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
     handlerId = 0
 
-    def __init__ (self, sock, playerManager, gameManager, registrationManager):
+    def __init__ (self, sock, logger, playerManager, gameManager, registrationManager):
         asyncore.dispatcher_with_send.__init__(self, sock)
-        self.logger = logging.getLogger('PlayerHandler-%d' % PlayerHandler.handlerId)
+        self.logger = logger
         PlayerHandler.handlerId += 1
 
         # no player data yet
@@ -39,7 +38,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         try:
             data = self.recv(8192)
         except socket.error:
-            self.logger.debug('handle_read: failed to receive data')
+            self.logger.debug('failed to receive data')
             return
 
         if not data:
@@ -54,16 +53,16 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
             # can we read a header?
             if len(self.data) < Packet.headerLength:
-                self.logger.debug('handle_read: can not read full header' )
+                self.logger.debug('can not read full header' )
                 return
 
             # get the packet length
             (packetLength, packetType) = Packet.parseHeader( self.data )
-            self.logger.info('handle_read: packet: %s, size: %d', name( packetType ), packetLength )
+            self.logger.info('packet: %s, size: %d', name( packetType ), packetLength )
 
             # can we read the rest of the packet?
             if len(self.data) < packetLength:
-                self.logger.warning('handle_read: can not read full packet' )
+                self.logger.warning('can not read full packet' )
                 return
 
             # handle the packet
@@ -77,13 +76,13 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.close()
 
         if self.playerManager.removePlayer( self ):
-            self.logger.debug('handle_close: player removed, now %d players' % self.playerManager.getPlayerCount() )
+            self.logger.debug('player removed, now %d players' % self.playerManager.getPlayerCount() )
         else:
-            self.logger.warning('handle_close: self not found among players!')
+            self.logger.warning('self not found among players!')
 
         # do we have a game?
         if self.game is not None:
-            self.logger.debug('handle_close: ending game %s' % self.game )
+            self.logger.debug('ending game %s' % self.game )
             data = struct.pack( '>hhh', struct.calcsize( '>hh' ), Packet.GAME_REMOVED, self.game.gameId )
 
             # tell all connected players that the game has been removed
@@ -134,49 +133,48 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             self.handleDataPacket( data )
 
         else:
-            self.logger.error( 'handlePacket: unknown packet type: %d', packetType )
+            self.logger.error( 'unknown packet type: %d', packetType )
 
 
     def handleRegisterPacket (self, data):
         ( tag, secret, nameLength) = struct.unpack_from( '>hIh', data, 0 )
         ( name, ) = struct.unpack_from( '>%ds' % nameLength, data, struct.calcsize('>hIh') )
 
-        self.logger.debug( 'handleRegisterPacket: registering %s, secret %d, tag: %d', name, secret, tag )
+        self.logger.debug( 'registering %s, secret %d, tag: %d', name, secret, tag )
 
         # already registered?
         if self.player is not None:
-            self.logger.warning( 'handleRegisterPacket: player already logged in, can not register')
+            self.logger.warning( 'player already logged in, can not register')
             self.send( ErrorPacket( tag ).message )
             return
 
         # try to register the new player
         self.player = self.registrationManager.register( name, secret )
         if self.player is None:
-            self.logger.warning( 'handleRegisterPacket: name %s already taken, can not register', name)
+            self.logger.warning( 'name %s already taken, can not register', name)
             self.send( ErrorPacket( tag ).message )
             return
 
-        self.logger.debug('handleRegisterPacket: player: %s, tag: %d', self.player, tag )
+        self.logger.debug('player: %s, tag: %d', self.player, tag )
 
         # send an ok to the registering player
         self.send( RegisterOkPacket( tag, self.player.id ).message )
 
 
     def handleLoginPacket (self, data):
-        self.logger.debug('handleLoginPacket: data length: %d', len(data) )
         ( tag, id, secret, version) = struct.unpack( '>hIII', data )
-        self.logger.debug('handleLoginPacket: validating client, id: %d, secret: %d, version: %d, tag: %d', id, secret, version, tag )
+        self.logger.debug('validating client, id: %d, secret: %d, version: %d, tag: %d', id, secret, version, tag )
 
         self.player = self.registrationManager.getPlayer( id, secret )
 
         # player ok?
         if self.player is None:
             self.send( ErrorPacket( tag ).message )
-            self.logger.debug('handleLoginPacket: failed to log in player with id: %d', id )
+            self.logger.debug('failed to log in player with id: %d', id )
         else:
             # logged in ok
             self.send( OkPacket( tag ).message )
-            self.logger.debug('handleLoginPacket: player logged in ok: %s', self.player )
+            self.logger.debug('player logged in ok: %s', self.player )
 
 
     def handleAnnouncePacket (self, data):
@@ -184,15 +182,15 @@ class PlayerHandler(asyncore.dispatcher_with_send):
 
         # do we already have a game?
         if self.game is not None:
-            self.logger.warning('handleAnnouncePacket: we already have a game: %s, can not announce a new game' % self.game )
+            self.logger.warning('we already have a game: %s, can not announce a new game' % self.game )
             self.send( ErrorPacket( tag ).message )
             return
 
         # create a new announced game
         self.game = self.gameManager.createGame( scenarioId, self )
         self.gameManager.addGame( self.game )
-        self.logger.debug('handleAnnouncePacket: announce game: %d with scenario: %d, tag: %d', self.game.gameId, self.game.scenarioId, tag )
-        self.logger.debug('handleAnnouncePacket: announced games now: %d', len( self.gameManager.getAnnouncedGames() ) )
+        self.logger.debug('announce game: %d with scenario: %d, tag: %d', self.game.gameId, self.game.scenarioId, tag )
+        self.logger.debug('announced games now: %d', len( self.gameManager.getAnnouncedGames() ) )
 
         # send an ok to the announcing player
         self.send( OkPacket( tag ).message )
@@ -210,7 +208,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleJoinPacket (self, data):
         # do we already have a game?
         if self.game is not None:
-            self.logger.warning('handleJoinPacket: we already have a game: %s, can not join new game' % self.game )
+            self.logger.warning('we already have a game: %s, can not join new game' % self.game )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
 
         (gameId, ) = struct.unpack_from( '>h', data, 0 )
@@ -219,15 +217,15 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         self.game = self.gameManager.getGame( gameId )
 
         if self.game is None:
-            self.logger.warning('handleJoinPacket: no game found with id: %d', gameId )
+            self.logger.warning('no game found with id: %d', gameId )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
             return
 
-        self.logger.debug('handleJoinPacket: joining game: %s', self.game )
+        self.logger.debug('joining game: %s', self.game )
 
         # sanity check
         if self.game.player2 is not None:
-            self.logger.warning( 'handleJoinPacket: game %s is already full, can not join' % self.game)
+            self.logger.warning( 'game %s is already full, can not join' % self.game)
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
         else:
             self.game.player2 = self
@@ -239,7 +237,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             player1Name = self.game.player1.player.name
             player2Name = self.player.name
 
-            self.logger.debug( 'handleJoinPacket: joined game %s', self.game )
+            self.logger.debug( 'joined game %s', self.game )
 
             # send to both players a "game starts" packet with their own tokens
             dataLength = struct.calcsize( '>hhhhh' ) + len(player2Name)
@@ -260,12 +258,12 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleLeavePacket (self, data):
         # do we already have a game?
         if self.game is None:
-            self.logger.warning('handleLeavePacket: no current game, can not leave' )
+            self.logger.warning('no current game, can not leave' )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
 
         (tag, ) = struct.unpack_from( '>h', data, 0 )
 
-        self.logger.debug('handleLeavePacket: leaving game: %s', self.game )
+        self.logger.debug('leaving game: %s', self.game )
 
         # send response
         self.send( OkPacket( tag ).message )
@@ -276,7 +274,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             if player.subscribed:
                 player.send( data )
 
-        self.logger.debug('handleLeavePacket: removing game: %s', self.game )
+        self.logger.debug('removing game: %s', self.game )
 
         # no more game
         self.gameManager.removeGame( self.game )
@@ -306,7 +304,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             data = struct.pack( '>hhh%ds' % nameLength, game.gameId, game.scenarioId, nameLength, announcerName )
             self.send( data )
 
-        self.logger.debug( 'handleGetGamesPacket: sent data for %d games', len( announcedGames ) )
+        self.logger.debug( 'sent data for %d games', len( announcedGames ) )
 
 
     def handleGetPlayerCountPacket (self, data):
@@ -325,20 +323,19 @@ class PlayerHandler(asyncore.dispatcher_with_send):
             data = struct.pack( '>hhh%ds' % nameLength, packetLength, Packet.PLAYER, nameLength, name )
             self.send( data )
 
-        self.logger.debug( 'handleGetPlayersPacket: sent data for %d players', self.playerManager.getPlayerCount() )
+        self.logger.debug( 'sent data for %d players', self.playerManager.getPlayerCount() )
 
 
     def handlePingPacket (self, data):
         # send the player count packet
         self.send( struct.pack( '>hh', Packet.shortLength, Packet.PONG ) )
-        self.logger.debug( 'handlePingPacket: sent pong' )
+        self.logger.debug( 'sent pong' )
 
 
     def handleSubscribePacket (self, data):
         # send the player count packet
-        self.logger.debug( 'handleSubscribePacket: data: %d', len(data) )
         (tag, ) = struct.unpack_from( '>h', data, 0 )
-        self.logger.debug( 'handleSubscribePacket: subscribing to game status updates, tag: %d', tag )
+        self.logger.debug( 'subscribing to game status updates, tag: %d', tag )
         self.subscribed = True
         self.send( OkPacket( tag ).message )
 
@@ -346,7 +343,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleUnsubscribePacket (self, data):
         # send the player count packet
         (tag, ) = struct.unpack_from( '>h', data, 0 )
-        self.logger.debug( 'handleUnsubscribePacket: unsubscribing from game status updates, tag: %d', tag )
+        self.logger.debug( 'unsubscribing from game status updates, tag: %d', tag )
         self.subscribed = False
         self.send( OkPacket( tag ).message )
 
@@ -354,7 +351,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handleDataPacket (self, data):
         # do we already have a game?
         if self.game is None or not self.game.active:
-            self.logger.warning('handleLeavePacket: no current active game' )
+            self.logger.warning( 'no current active game' )
             self.send( struct.pack( '>hh', Packet.shortLength, Packet.ERROR ) )
 
         # the length of the data includes the data length 'h'
@@ -365,9 +362,9 @@ class PlayerHandler(asyncore.dispatcher_with_send):
         newData = struct.pack( '>hhh%ds' % dataLength, packetLength, Packet.DATA, dataLength, data )
 
         if self != self.game.player1:
-            self.logger.debug( 'handleDataPacket: sending %d bytes of data to player 1', dataLength )
+            self.logger.debug( 'sending %d bytes of data to player 1', dataLength )
             self.game.player1.send( newData )
         else:
-            self.logger.debug( 'handleDataPacket: sending %d bytes of data to player 2', dataLength )
+            self.logger.debug( 'sending %d bytes of data to player 2', dataLength )
             self.game.player2.send( newData )
 

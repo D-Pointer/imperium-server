@@ -1,17 +1,16 @@
 
-import logging
 import string
 
 from player import Player
 
 class RegistrationManager:
 
-    def __init__ (self):
+    def __init__ (self, logger):
         # no players yet
         self.players = {}
         self.used_names = []
 
-        self.logger = logging.getLogger('RegistrationManager')
+        self.logger = logger
 
         # start from 1 as 0 is used in Imperium to mean "no id"
         self.nextId = 1
@@ -39,9 +38,9 @@ class RegistrationManager:
                 self.nextId = max( self.nextId, id + 1 )
 
         except:
-            self.logger.info( '__init__: creating player database data/players.db' )
+            self.logger.info( 'creating player database data/players.db' )
 
-        self.logger.info( '__init__: loaded %d players', len( self.players ))
+        self.logger.info( 'loaded %d players', len( self.players ))
 
 
     def register (self, name, secret):
@@ -63,21 +62,21 @@ class RegistrationManager:
         file.write( '%d %s %d\n' %( id, name, secret ) )
         file.close()
 
-        self.logger.debug( 'register: players: %d', len( self.players ) )
+        self.logger.debug( 'players: %d', len( self.players ) )
 
         return player
 
 
     def getPlayer (self, id, secret):
         if not self.players.has_key( id ):
-            self.logger.warning( 'getPlayer: no player with id %d', id )
+            self.logger.warning( 'no player with id %d', id )
             return None
 
         player = self.players[ id ]
 
         # correct secret?
         if player.secret != secret:
-            self.logger.warning( 'getPlayer: secret does not match: %d != %d', secret, player.secret )
+            self.logger.warning( 'secret does not match: %d != %d', secret, player.secret )
             return None
 
         return player

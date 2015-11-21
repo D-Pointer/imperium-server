@@ -1,7 +1,4 @@
 
-import logging
-import random
-
 from game       import Game
 from udp_server import UdpServer
 
@@ -13,12 +10,12 @@ class GameManager:
     highUdpPort = 40000
     nextUdpPort = lowUdpPort
 
-    def __init__ (self):
+    def __init__ (self, logger):
         # no games yet
         self.announcedGames = []
         self.activeGames = []
 
-        self.logger = logging.getLogger('GameManager')
+        self.logger = logger
 
         try:
             self.nextGameId = int( open( 'data/games.seq' ).readline() )
@@ -40,7 +37,7 @@ class GameManager:
 
     def createGame (self, scenarioId, player1):
         # create the game
-        game = Game( self.nextGameId, scenarioId, player1, None)
+        game = Game( self.nextGameId, scenarioId, player1, None, self.logger)
         self.nextGameId += 1
 
         # save the updated game id sequence
@@ -49,7 +46,7 @@ class GameManager:
             file.write( str(self.nextGameId) )
             file.close()
         except:
-            self.logger.error( 'createGame: failed to save updated game id sequence!' )
+            self.logger.error( 'failed to save updated game id sequence!' )
 
         return game
 
@@ -66,7 +63,7 @@ class GameManager:
             self.activeGames.remove( game )
 
         else:
-            self.logger.warning('removeGame: game %s not found, can not remove' % game )
+            self.logger.warning('game %s not found, can not remove' % game )
 
 
     def activateGame (self, game):
@@ -85,17 +82,16 @@ class GameManager:
                     if activeGame.udpPort == port:
                         continue
 
-                # no game uses that port
-                game.udpPort = port
-                game.active = True
+                # no game uses that port, start it
+                game.start( port )
 
                 # create the UDP server
-                game.udpServer = UdpServer( game )
+                game.udpServer = UdpServer( game, self.logger )
 
-                self.logger.debug( 'activateGame: game %s activated, active games now %d' % ( game, len(self.activeGames) ) )
+                self.logger.debug( 'game %s activated, active games now %d' % ( game, len(self.activeGames) ) )
                 return
         else:
-            self.logger.warning('activateGame: game %s not among announced, can not activate' % game )
+            self.logger.warning('game %s not among announced, can not activate' % game )
 
 
 

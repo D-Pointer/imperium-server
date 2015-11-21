@@ -1,13 +1,11 @@
 
-import logging
-
 class PlayerManager:
 
-    def __init__ (self):
+    def __init__ (self, logger):
         # no players yet
         self.players = []
 
-        self.logger = logging.getLogger('PlayerManager')
+        self.logger = logger
 
 
     def addPlayer (self, player):
@@ -20,7 +18,7 @@ class PlayerManager:
             return True
 
         else:
-            self.logger.warning('removePlayer: player %s not found, can not remove' % player )
+            self.logger.warning('player %s not found, can not remove' % player )
             return False
             
 
