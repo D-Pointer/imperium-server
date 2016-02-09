@@ -80,3 +80,11 @@ class RegistrationManager:
             return None
 
         return player
+
+
+    def getPlayers (self):
+        return self.players.values()
+
+
+    def getPlayerCount (self):
+        return len( self.players )

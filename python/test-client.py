@@ -54,6 +54,6 @@ if __name__ == '__main__':
         # logger.debug('response from server: "%d %d"', v1, v2)
 
     # Clean up
-    logger.debug('closing socket')
+    logger.debug('closing getSocket')
     s.close()
     logger.debug('done')

@@ -20,6 +20,7 @@ playerId = None
 udpSocket = None
 udpAddress = None
 
+
 class PacketException(Exception):
     pass
 
@@ -67,7 +68,8 @@ def readOneOfPacket(sock, packetTypes):
     (receivedType,) = struct.unpack_from('>h', data, 0)
 
     if receivedType not in packetTypes:
-        print 'unexpected packet, got %s, expected one of %s' % (packet.name(receivedType), string.join( map(packet.name, packetTypes) ))
+        print 'unexpected packet, got %s, expected one of %s' % (
+        packet.name(receivedType), string.join(map(packet.name, packetTypes)))
         raise PacketException()
 
     # strip off the type
@@ -122,7 +124,7 @@ def announceGame(sock):
         print 'Failed to announce game'
 
 
-def waitForStart (sock):
+def waitForStart(sock):
     print ''
     print 'Waiting for game to start...'
 
@@ -133,13 +135,14 @@ def waitForStart (sock):
         data = readPacket(sock, packet.Packet.STARTS)
         (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
         (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
-        print 'Game %d started ok, we are: %d, opponent is: %s, data on UDP port: %d' % (gameId, playerId, opponentName, udpPort)
+        print 'Game %d started ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
+        gameId, playerId, opponentName, udpPort)
 
         # create the UDP socket
-        udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
-        udpAddress = ( sock.getpeername()[0], udpPort )
-        #udpSocket.connect( udpAddress )
-        udpSocket.bind(('', 0 ))
+        udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udpAddress = (sock.getpeername()[0], udpPort)
+        # udpSocket.connect( udpAddress )
+        udpSocket.bind(('', 0))
 
     except PacketException:
         print 'Game failed to start'
@@ -160,13 +163,14 @@ def joinGame(sock):
         data = readPacket(sock, packet.Packet.STARTS)
         (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
         (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
-        print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (gameId, playerId, opponentName, udpPort)
+        print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
+        gameId, playerId, opponentName, udpPort)
 
         # create the UDP socket
-        udpSocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
-        udpAddress = ( sock.getpeername()[0], udpPort )
-        #udpSocket.connect( udpAddress )
-        udpSocket.bind(('', 0 ))
+        udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udpAddress = (sock.getpeername()[0], udpPort)
+        # udpSocket.connect( udpAddress )
+        udpSocket.bind(('', 0))
 
     except PacketException:
         print 'Failed to join game %d' % gameId
@@ -188,7 +192,7 @@ def leaveGame(sock):
         # read the left game data
         try:
             data = readPacket(sock, packet.Packet.GAME_REMOVED)
-            (gameId, ) = struct.unpack('>h', data)
+            (gameId,) = struct.unpack('>h', data)
 
             print 'Game %d left' % gameId
 
@@ -209,12 +213,12 @@ def getPlayerCount(sock):
     print 'Connected players: %d' % playerCount
 
     # clear the list
-    #players = []
+    # players = []
 
     # get rid of the first packet
     # response = response[ packet.Packet.headerLength + struct.calcsize( '>h' ): ]
 
-    #for index in range(playerCount):
+    # for index in range(playerCount):
     #    # raw data
     #    data = readPacket(sock, packet.Packet.PLAYER)
 
@@ -222,8 +226,8 @@ def getPlayerCount(sock):
     #    (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ih'))
     #    players.append(Player( playerName, playerVersion ))
 
-    #print "Received %d players:" % len(players)
-    #for player in players:
+    # print "Received %d players:" % len(players)
+    # for player in players:
     #    print '\t', player
 
 
@@ -236,14 +240,14 @@ def getGames(sock):
 
     # read the games packet
     data = readPacket(sock, packet.Packet.GAMES)
-    (count, ) = struct.unpack_from('>h', data, 0)
+    (count,) = struct.unpack_from('>h', data, 0)
 
     # start past the game count
     offset = packet.Packet.shortLength;
 
     for index in range(count):
-        (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, offset )
-        offset += struct.calcsize( '>hhh' )
+        (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, offset)
+        offset += struct.calcsize('>hhh')
 
         # get the announcing player name
         (playerName,) = struct.unpack_from('%ds' % nameLength, data, offset)
@@ -287,18 +291,18 @@ def readNextPacket(sock):
     print 'read packet %s' % packet.name(receivedType)
 
 
-def sendTcpDataPacket (sock):
-    data = raw_input( 'Data to send: ')
+def sendTcpDataPacket(sock):
+    data = raw_input('Data to send: ')
 
     if data is None:
         return
 
     # send data
-    sock.send( packet.DataPacket( data ).message )
+    sock.send(packet.DataPacket(data).message)
 
 
-def sendUdpDataPacket (sock):
-    data = raw_input( 'Data to send: ')
+def sendUdpDataPacket(sock):
+    data = raw_input('Data to send: ')
 
     if data is None:
         return
@@ -306,50 +310,50 @@ def sendUdpDataPacket (sock):
     global udpAddress
 
     # send data
-    udpSocket.sendto( data, udpAddress )
-    #udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
+    udpSocket.sendto(data, udpAddress)
+    # udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
 
 
-def readUdpPacket (sock):
-    global udpSocket #, gameId
+def readUdpPacket(sock):
+    global udpSocket  # , gameId
 
     # read raw data from the UDP socket
-    data, sender = udpSocket.recvfrom( 512 )
+    data, sender = udpSocket.recvfrom(512)
     if not data:
         print 'failed to read UDP packet'
         raise PacketException()
 
     # extract the header
-    #(length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
+    # (length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
 
     # extra the payload
-    #headerLength = struct.calcsize( '>hhh' )
-    #content = data[ headerLength : headerLength + length ]
+    # headerLength = struct.calcsize( '>hhh' )
+    # content = data[ headerLength : headerLength + length ]
 
     print ''
-    print 'read UDP packet from %s, bytes: %d, data: "%s"' % ( sender, len(data), data )
-    #print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
+    print 'read UDP packet from %s, bytes: %d, data: "%s"' % (sender, len(data), data)
+    # print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
 
 
-def register (sock, name, secret):
+def register(sock, name, secret):
     tag = 0
-    sock.send( packet.RegisterPacket( tag, name, secret ).message )
+    sock.send(packet.RegisterPacket(tag, name, secret).message)
 
     # read the response
-    packetType, data = readOneOfPacket( sock, (packet.Packet.REGISTER_OK, packet.Packet.ERROR ) )
+    packetType, data = readOneOfPacket(sock, (packet.Packet.REGISTER_OK, packet.Packet.ERROR))
 
     if packetType == packet.Packet.ERROR:
         print "Failed to register"
         return
 
     # ok/error, so get the tag too
-    (tag, id) = struct.unpack('>hI', data )
+    (tag, id) = struct.unpack('>hI', data)
     print 'Registered ok, id: %d' % id
 
 
-def login (sock, id, secret):
+def login(sock, id, secret):
     tag = 0
-    sock.send( packet.LoginPacket( id, secret, 42, tag ).message )
+    sock.send(packet.LoginPacket(id, secret, 42, tag).message)
 
     # read status
     readTag, status = readStatusPacket(sock)
@@ -361,9 +365,9 @@ def login (sock, id, secret):
         return False
 
 
-def subscribe (sock):
+def subscribe(sock):
     tag = 0
-    sock.send( packet.SubscribePacket( tag ).message )
+    sock.send(packet.SubscribePacket(tag).message)
 
     # read status
     readTag, status = readStatusPacket(sock)
@@ -373,8 +377,8 @@ def subscribe (sock):
         print 'Failed to subscribed to game status updates'
 
 
-def unsubscribe (sock):
-    sock.send( packet.UnsubscribePacket().message )
+def unsubscribe(sock):
+    sock.send(packet.UnsubscribePacket().message)
 
     # read status
     status = readStatusPacket(sock)
@@ -409,37 +413,43 @@ def getInput(sock):
         print '12: subscribe to game status updates'
         print '13: unsubscribe from game status updates'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, getGames, getPlayerCount, pingServer, readNextPacket, waitForStart, sendTcpDataPacket, sendUdpDataPacket, readUdpPacket, subscribe, unsubscribe )
-        choice = getInputInteger('> ', 0, len(callbacks) )
+        callbacks = (
+        quit, announceGame, joinGame, leaveGame, getGames, getPlayerCount, pingServer, readNextPacket, waitForStart,
+        sendTcpDataPacket, sendUdpDataPacket, readUdpPacket, subscribe, unsubscribe)
+        choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler
         callbacks[choice](sock)
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 5:
+        print "Usage: %s server port id secret" % sys.argv[0]
+        exit(1)
+
     server = sys.argv[1]
     port = int(sys.argv[2])
-    id = int( sys.argv[3] )
-    secret = int( sys.argv[4] )
+    id = int(sys.argv[3])
+    secret = int(sys.argv[4])
 
     print 'Connecting to server on %s:%d' % (server, port)
 
     # Connect to the server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = getSocket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((server, port))
 
     # register
-    #register( s, name, secret )
+    # register( s, name, secret )
 
     # log in
-    if not login( s, id, secret ):
-        sys.exit( 1 )
+    if not login(s, id, secret):
+        sys.exit(1)
 
     # we want update
-    subscribe( s )
+    subscribe(s)
 
     # get players
-    getPlayerCount( s )
+    getPlayerCount(s)
 
     # get games
     getGames(s)

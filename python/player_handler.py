@@ -37,7 +37,7 @@ class PlayerHandler(asyncore.dispatcher_with_send):
     def handle_read(self):
         try:
             data = self.recv(8192)
-        except socket.error:
+        except getSocket.error:
             self.logger.debug('failed to receive data')
             return
 

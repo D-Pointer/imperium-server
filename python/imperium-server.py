@@ -6,6 +6,9 @@ import sys
 import asyncore
 import socket
 
+import datetime
+
+from imperium_stats_server import ImperiumStatsServer
 from player_handler import PlayerHandler
 from player_manager import PlayerManager
 from game_manager   import GameManager
@@ -21,7 +24,7 @@ class ImperiumServer(asyncore.dispatcher):
 
         self.logger = logger
 
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.create_socket(socket.AF_INET, getSocket.SOCK_STREAM)
         self.set_reuse_addr()
         self.bind(('', port))
         self.listen(5)
@@ -34,6 +37,9 @@ class ImperiumServer(asyncore.dispatcher):
 
         # registration manager for handling authentication
         self.registrationManager = RegistrationManager( logger )
+        self.started = datetime.datetime.now()
+
+        self.logger.info( 'initialized server on port: %d', port )
 
 
     def handle_accept(self):
@@ -75,6 +81,9 @@ if __name__ == '__main__':
 
     # create the real server
     server = ImperiumServer( port, logger )
+
+    # create the stats server
+    server = ImperiumStatsServer( port + 1, server, logger )
 
     try:
         logger.info('starting main loop')

@@ -1,0 +1,31 @@
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+#include <set>
+
+#include <boost/asio.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/bind.hpp>
+
+#include "Session.hpp"
+
+using boost::asio::ip::tcp;
+
+class Server {
+public:
+    Server (boost::asio::io_service &io_service, short port);
+
+    void handleAccept (Session *session, const boost::system::error_code &error);
+
+
+private:
+
+    void sessionTerminated (Session * session);
+
+    boost::asio::io_service &m_io_service;
+    tcp::acceptor m_acceptor;
+    std::set<Session *> m_sessions;
+};
+
+
+#endif
