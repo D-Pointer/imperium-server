@@ -1,6 +1,20 @@
 #include <iostream>
+#include <sstream>
 
 #include "Packet.hpp"
+
+const std::vector<std::string> Packet::packetNames = {
+        "LoginPacket",
+        "LoginOkPacket",
+        "AnnounceGamePacket",
+        "JoinGamePacket",
+        "LeaveGamePacket",
+        "GameAddedPacket",
+        "GameRemovedPacket",
+        "GameStartsPacket",
+        "ErrorPacket",
+};
+
 
 Packet::Packet (PacketType type, const unsigned char *data, size_t dataLength)
         : m_type( type ), m_data( data ),
@@ -57,3 +71,11 @@ std::string Packet::getString (size_t offset, size_t length) const {
     return std::string((const char *) ( m_data + offset ), length );
 }
 
+
+std::string Packet::getPacketName (unsigned short packetType) {
+    if ( packetType >= Packet::packetNames.size() ) {
+        return (std::stringstream() << "invalid packet: " << packetType).str();
+    }
+
+    return Packet::packetNames[ packetType ];
+}

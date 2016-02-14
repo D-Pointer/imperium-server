@@ -7,7 +7,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
-#include "Session.hpp"
+#include "PlayerHandler.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -15,16 +15,17 @@ class Server {
 public:
     Server (boost::asio::io_service &io_service, short port);
 
-    void handleAccept (Session *session, const boost::system::error_code &error);
+    void handleAccept (PlayerHandler *playerHandler, const boost::system::error_code &error);
 
 
 private:
 
-    void sessionTerminated (Session * session);
+    void sessionTerminated (PlayerHandler * playerHandler);
 
     boost::asio::io_service &m_io_service;
     tcp::acceptor m_acceptor;
-    std::set<Session *> m_sessions;
+
+    std::set<PlayerHandler *> m_playerHandlers;
 };
 
 

@@ -3,6 +3,8 @@
 
 enum Errors {
     InvalidName,
+    NameTaken,
+    ServerFull,
 };
 
 #endif //IMPERIUM_SERVER_ERRORS_HPP

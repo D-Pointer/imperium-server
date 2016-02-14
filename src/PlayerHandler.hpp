@@ -2,46 +2,40 @@
 #define SESSION_HPP
 
 #include <vector>
+#include <memory>
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
 
 #include "Packet.hpp"
-#include "PlayerState.hpp"
+#include "Player.hpp"
 
-using boost::asio::ip::tcp;
+//using boost::asio::ip::tcp;
 
 /**
  *
  **/
-class Session {
+class PlayerHandler {
 public:
 
-    Session (boost::asio::io_service &io_service);
+    PlayerHandler (boost::asio::io_service &io_service);
 
-    virtual ~Session ();
-
-    /**
-     * Returns the TCP getSocket connected to the player.
-     */
-    tcp::socket &getSocket ();
-
-    /**
-     * Returns the player unique id.
-     */
-    unsigned int getId () const {
-        return m_id;
-    }
+    virtual ~PlayerHandler ();
 
     /**
      * Signal emitted when the session terminates.
      */
-    boost::signals2::signal<void (Session *)> terminated;
+    boost::signals2::signal<void (PlayerHandler *)> terminated;
 
     /**
      * Starts the session. Reads the first header.
      **/
     void start ();
+
+    boost::asio::ip::tcp::socket & getSocket () {
+        return m_socket;
+    }
+
+    std::string toString () const;
 
 
 private:
@@ -63,28 +57,19 @@ private:
 
     void handleLeaveGamePacket (const SharedPacket &packet);
 
-    void handleResult ();
+    void broadcastGameAdded (const SharedGame & game, const SharedPlayer & announcer);
+    void broadcastGameRemoved (const SharedGame & game);
 
-    bool sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+    boost::asio::ip::tcp::socket m_socket;
 
-    bool sendHeader (Packet::PacketType packetType, unsigned short length);
-
-
-    unsigned int m_id;
-    static unsigned int m_nextId;
-
-    tcp::socket m_socket;
     unsigned short m_packetType;
     unsigned short m_dataLength;
     unsigned char *m_data;
 
-    // the player name
-    std::string m_name;
-
-    // the player's state
-    PlayerState m_state;
+    // the player we manage
+    SharedPlayer m_player;
 };
 
-typedef boost::shared_ptr<Session> SharedSession;
+typedef std::shared_ptr<PlayerHandler> SharedPlayerHandler;
 
 #endif

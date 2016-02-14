@@ -14,6 +14,8 @@ public:
 
     void addGame (const SharedGame & game);
 
+    void removeGame (const SharedGame & game);
+
 
 private:
 

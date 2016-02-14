@@ -13,9 +13,18 @@ set(SOURCE_FILES
         src/Version.hpp
         src/Server.hpp
         src/Server.cpp
-        src/Session.hpp
-        src/Session.cpp
-        src/Packet.cpp src/Packet.hpp src/PlayerState.hpp src/Errors.hpp src/GameManager.cpp src/GameManager.hpp src/Game.cpp src/Game.hpp)
+        src/PlayerHandler.hpp
+        src/PlayerHandler.cpp
+        src/Packet.cpp
+        src/Packet.hpp
+        src/PlayerState.hpp
+        src/Errors.hpp
+        src/GameManager.cpp
+        src/GameManager.hpp
+        src/PlayerManager.cpp
+        src/PlayerManager.hpp
+        src/Game.cpp
+        src/Game.hpp src/Definitions.hpp src/Player.cpp src/Player.hpp)
 
 add_executable(imperium_server ${SOURCE_FILES})
 

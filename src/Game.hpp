@@ -1,8 +1,9 @@
 
-#ifndef IMPERIUM_SERVER_GAME_HPP
-#define IMPERIUM_SERVER_GAME_HPP
+#ifndef GAME_HPP
+#define GAME_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <string>
 
 class Game {
 
@@ -12,7 +13,12 @@ public:
 
     unsigned int getId () const;
 
-    unsigned int getAnnouncedId () const;
+    unsigned short getAnnouncedId () const;
+
+//    const SharedPlayer & getPlayer1 () const;
+//    const SharedPlayer & getPlayer2 () const;
+
+    std::string toString () const;
 
 
 private:
@@ -22,8 +28,12 @@ private:
 
     // the announced game id
     unsigned short m_announcedId;
+
+    // the players
+//    SharedPlayer m_player1;
+//    SharedPlayer m_player2;
 };
 
-typedef boost::shared_ptr<Game> SharedGame;
+typedef std::shared_ptr<Game> SharedGame;
 
 #endif //IMPERIUM_SERVER_GAME_HPP

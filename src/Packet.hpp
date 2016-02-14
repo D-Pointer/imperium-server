@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <vector>
 
 /**
  * Packet class.
@@ -13,13 +14,18 @@ class Packet {
 public:
 
     enum PacketType {
-        LoginPacket = 0,
-        LoginOkPacket,
-        ErrorPacket,
-        AnnounceGamePacket,
+        LoginPacket = 0, // in
+        LoginOkPacket,   // out
+        AnnounceGamePacket, // in
         JoinGamePacket,
         LeaveGamePacket,
+        GameAddedPacket,
+        GameRemovedPacket,
         GameStartsPacket,
+
+        // result codes
+                ErrorPacket,     // out
+
     };
 
     Packet (PacketType type, const unsigned char *data, size_t dataLength);
@@ -45,6 +51,8 @@ public:
 
     std::string getString (size_t offset, size_t length) const;
 
+    static std::string getPacketName (unsigned short packet);
+
 
 private:
 
@@ -54,8 +62,11 @@ private:
     // raw data
     const unsigned char *m_data;
     size_t m_dataLength;
+
+    // names of all packets
+    static const std::vector<std::string> packetNames;
 };
 
-typedef boost::shared_ptr<Packet> SharedPacket;
+typedef std::shared_ptr<Packet> SharedPacket;
 
 #endif //IMPERIUM_SERVER_PACKET_HPP

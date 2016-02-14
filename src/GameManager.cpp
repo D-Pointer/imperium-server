@@ -15,3 +15,11 @@ void GameManager::addGame (const SharedGame & game) {
     m_games.insert( game );
     std::cout << "GameManager::addGame: added game: " << game->getId() << ", games now: " << m_games.size() << std::endl;
 }
+
+
+void GameManager::removeGame (const SharedGame & game) {
+    std::lock_guard<std::mutex> lock( m_mutex );
+
+    m_games.erase( game );
+    std::cout << "GameManager::removeGame: removed game: " << game->getId() << ", games now: " << m_games.size() << std::endl;
+}

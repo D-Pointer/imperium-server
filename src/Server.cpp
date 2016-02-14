@@ -5,12 +5,13 @@
 #include <iostream>
 
 #include "Server.hpp"
+#include "PlayerManager.hpp"
 
 using boost::asio::ip::tcp;
 
 Server::Server (boost::asio::io_service &io_service, short port)
         : m_io_service( io_service ), m_acceptor( io_service, tcp::endpoint( tcp::v4(), port )) {
-    Session *session = new Session( m_io_service );
+    PlayerHandler *session = new PlayerHandler( m_io_service );
     session->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
 
     // reuse addresses
@@ -21,29 +22,33 @@ Server::Server (boost::asio::io_service &io_service, short port)
 }
 
 
-void Server::handleAccept (Session *session, const boost::system::error_code &error) {
+void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::error_code &error) {
     std::cout << "Server::handleAccept: new client" << std::endl;
 
     if ( !error ) {
         // start and save for later
-        session->start();
-        m_sessions.insert( session );
-        std::cout << "Server::handleAccept: sessions now: " << m_sessions.size() << std::endl;
+        playerHandler->start();
+
+        m_playerHandlers.insert( playerHandler );
+        std::cout << "Server::handleAccept: player handlers now: " << m_playerHandlers.size() << std::endl;
 
         // start a new session that we listen on
-        session = new Session( m_io_service );
-        session->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
-        m_acceptor.async_accept( session->getSocket(),
-                                 boost::bind( &Server::handleAccept, this, session, boost::asio::placeholders::error ));
+        playerHandler = new PlayerHandler( m_io_service );
+        playerHandler->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
+        m_acceptor.async_accept( playerHandler->getSocket(),
+                                 boost::bind( &Server::handleAccept, this, playerHandler, boost::asio::placeholders::error ));
     }
     else {
-        delete session;
+        std::cout << "Server::handleAccept: got error: " << error.message() << ", deleting handler" << std::endl;
+        delete playerHandler;
     }
 }
 
 
-void Server::sessionTerminated (Session * session) {
-    std::cout << "Server::sessionTerminated: session: " << session->getId() << " terminated" << std::endl;
-    m_sessions.erase( session );
-    std::cout << "Server::sessionTerminated: sessions left: " << m_sessions.size() << std::endl;
+void Server::sessionTerminated (PlayerHandler * player) {
+    std::cout << "Server::sessionTerminated: player: " << player->toString() << " terminated" << std::endl;
+    m_playerHandlers.erase( player );
+    std::cout << "Server::sessionTerminated: players left: " << PlayerManager::instance().getPlayerCount() << std::endl;
+
+    delete player;
 }
