@@ -13,6 +13,9 @@ const std::vector<std::string> Packet::packetNames = {
         "AnnounceOkPacket",
         "AlreadyAnnouncedPacket",
         "GameAddedPacket",
+        "GameRemovedPacket",
+        "LeaveGamePacket",
+        "NoGamePacket",
 };
 
 

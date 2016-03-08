@@ -9,13 +9,13 @@ class Game {
 
 public:
 
-    Game (unsigned short announcedId, unsigned int playerId);
+    Game (unsigned short scenarioId, unsigned int playerId);
 
     ~Game ();
 
     unsigned int getGameId () const;
 
-    unsigned short getAnnouncedId () const;
+    unsigned short getScenariodId () const;
 
     unsigned int getPlayerId () const;
 
@@ -28,7 +28,7 @@ private:
     static unsigned int m_nextId;
 
     // the announced game id
-    unsigned short m_announcedId;
+    unsigned short m_scenarioId;
 
     // the announcing/owning player
     unsigned int m_playerId;

@@ -22,6 +22,9 @@ public:
         AnnounceOkPacket, // out
         AlreadyAnnouncedPacket, // error out
         GameAddedPacket, // out
+        GameRemovedPacket, // out
+        LeaveGamePacket, // in
+        NoGamePacket,
     };
 
     Packet (PacketType type, const unsigned char *data, size_t dataLength);

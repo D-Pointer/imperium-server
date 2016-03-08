@@ -27,8 +27,6 @@ bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost:
     try {
         // wrap the header as a buffer and send off
         boost::asio::write( m_tcpSocket, buffers );
-        std::cout << "Player::sendPacket: packet sent ok" << std::endl;
-
         return true;
     }
     catch (std::exception &ex) {
@@ -91,7 +89,7 @@ bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
         // wrap the header as a buffer and send off
         boost::asio::write( m_tcpSocket, buffers );
 
-        std::cout << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType) << ", payload length: " << length << std::endl;
+        std::cout << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType) << std::endl; //", payload length: " << length << std::endl;
     }
     catch (std::exception &ex) {
         std::cout << "Player::sendHeader: error sending header: " << ex.what() << std::endl;

@@ -62,7 +62,7 @@ SharedPlayer PlayerManager::getPlayer (unsigned int playerId)  {
 bool PlayerManager::broadcastPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
-    std::cout << "PlayerManager::broadcastPacket: broadcasting packet: " << packetType << " to " << m_players.size() << " players" << std::endl;
+    std::cout << "PlayerManager::broadcastPacket: broadcasting packet: " << Packet::getPacketName(packetType) << " to " << m_players.size() << " players" << std::endl;
 
     std::for_each( std::begin( m_players ), std::end( m_players ),
                    [ = ] (SharedPlayer player) {

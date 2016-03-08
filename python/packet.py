@@ -11,15 +11,9 @@ class Packet:
     ANNOUNCE_OK = 6
     ALREADY_ANNOUNCED = 7
     GAME_ADDED = 8
-
-    JOIN = 2
-    LEAVE = 3
-    GET_GAMES = 6
-    GET_PLAYERS = 9
-    GET_PLAYER_COUNT = 33
-    PING = 12
-    SUBSCRIBE = 30
-    UNSUBSCRIBE = 31
+    GAME_REMOVED = 9
+    LEAVE_GAME = 10
+    NO_GAME = 11
 
     # sent by both
     DATA = 16
@@ -40,6 +34,9 @@ class Packet:
         ANNOUNCE_OK: 'ANNOUNCE_OK',
         ALREADY_ANNOUNCED: 'ALREADY_ANNOUNCED',
         GAME_ADDED: 'GAME_ADDED',
+        GAME_REMOVED: 'GAME_REMOVED',
+        LEAVE_GAME: 'LEAVE_GAME',
+        NO_GAME: 'NO_GAME'
     }
 
     # precalculated data lengths
@@ -98,6 +95,13 @@ class AnnounceGamePacket(Packet):
         self.message = struct.pack('>hhh', Packet.ANNOUNCE, Packet.shortLength, scenarioId)
 
 
+class LeaveGamePacket(Packet):
+    def __init__(self):
+        # create the message
+        self.message = struct.pack('>hh', Packet.LEAVE_GAME, 0)
+
+
+
 class OkPacket(Packet):
     def __init__(self, tag=0):
         self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.OK, tag)
@@ -144,12 +148,6 @@ class JoinGamePacket(Packet):
     def __init__(self, gameId):
         # create the message
         self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.JOIN, gameId)
-
-
-class LeaveGamePacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength * 2, Packet.LEAVE)
 
 
 class PingPacket(Packet):

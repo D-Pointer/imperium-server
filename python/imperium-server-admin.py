@@ -54,27 +54,36 @@ def readPacket(sock, packetType):
 
 
 def handleLoginOk():
-    print "Login ok"
+    print "### login ok"
 
 
 def handleLoginError(reason):
-    print "Error logging in: %s" % reason
+    print "### error logging in: %s" % reason
     sys.exit(1)
 
 
 def handleAnnounceOk(data):
     (gameId,) = struct.unpack('>I', data)
-    print "Announced ok, game id: %d" % gameId
+    print "### announced ok, game id: %d" % gameId
 
 
 def handleAlreadyAnnounced():
-    print "Already announced a game, can not announce new"
+    print "### already announced a game, can not announce new"
 
 
 def handleGameAdded(data):
     (gameId, scenarioid, nameLength) = struct.unpack_from('>Ihh', data, 0)
     (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ihh'))
-    print "Game added by %s, id: %d, scenario: %d" % (playerName, gameId, scenarioid)
+    print "### game added by %s, id: %d, scenario: %d" % (playerName, gameId, scenarioid)
+
+
+def handleGameRemoved(data):
+    (gameId, ) = struct.unpack('>I', data)
+    print "### game %d removed" % gameId
+
+
+def handleNoGame():
+    print "### no game, can not leave"
 
 
 def readNextPacket(sock):
@@ -99,6 +108,12 @@ def readNextPacket(sock):
 
         elif receivedType == packet.Packet.GAME_ADDED:
             handleGameAdded(data)
+
+        elif receivedType == packet.Packet.GAME_REMOVED:
+            handleGameRemoved(data)
+
+        elif receivedType == packet.Packet.NO_GAME:
+            handleGameRemoved(data)
 
 
 def readOneOfPacket(sock, packetTypes):
@@ -222,29 +237,31 @@ def joinGame(sock):
 
 
 def leaveGame(sock):
-    print ''
-    print 'Leave a new game we are in or hosting'
-    gameId = getInputInteger('Game id: ', 0, 1000)
+    # print ''
+    # print 'Leave a new game we are in or hosting'
+    # gameId = getInputInteger('Game id: ', 0, 1000)
+
+    print 'Leaving game'
 
     # send the request
-    sock.send(packet.LeaveGamePacket(gameId).message)
+    sock.send(packet.LeaveGamePacket().message)
 
     # read status
-    tag, status = readStatusPacket(sock)
-    if status == packet.Packet.OK:
-        print 'Game left ok'
-
-        # read the left game data
-        try:
-            data = readPacket(sock, packet.Packet.GAME_REMOVED)
-            (gameId,) = struct.unpack('>h', data)
-
-            print 'Game %d left' % gameId
-
-        except PacketException:
-            print 'Failed to read announced game data'
-    else:
-        print 'Failed to leave game'
+    # tag, status = readStatusPacket(sock)
+    # if status == packet.Packet.OK:
+    #     print 'Game left ok'
+    #
+    #     # read the left game data
+    #     try:
+    #         data = readPacket(sock, packet.Packet.GAME_REMOVED)
+    #         (gameId,) = struct.unpack('>h', data)
+    #
+    #         print 'Game %d left' % gameId
+    #
+    #     except PacketException:
+    #         print 'Failed to read announced game data'
+    # else:
+    #     print 'Failed to leave game'
 
 
 # def getPlayerCount(sock):
@@ -415,20 +432,17 @@ def login(sock, name):
 
 
 def quit(sock):
-    global keepRunning
-    keepRunning = False
     print 'quitting'
-
+    sys.exit( 0 )
 
 def getInput(sock):
     # loop and read input
-    while keepRunning:
+    while True:
         print ''
         print '0: quit'
-        # print '1: read next packet'
         print '1: announce a new game'
+        print '2: leave a game'
         # print '2: join a game'
-        # print '3: leave a game'
         # print '4: list games'
         # print '5: get player count'
         # print '6: ping server'
@@ -439,7 +453,7 @@ def getInput(sock):
         # print '12: subscribe to game status updates'
         # print '13: unsubscribe from game status updates'
 
-        callbacks = (quit, announceGame)
+        callbacks = (quit, announceGame, leaveGame )
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler
