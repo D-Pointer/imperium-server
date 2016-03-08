@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -12,7 +13,7 @@
 #include "Definitions.hpp"
 
 PlayerHandler::PlayerHandler (boost::asio::io_service &io_service) : m_socket( io_service ), m_data(0) {
-    m_player = SharedPlayer( new Player( m_socket ));
+    m_player = std::make_shared<Player>( m_socket );
 
 }
 
@@ -25,10 +26,12 @@ PlayerHandler::~PlayerHandler () {
     if ( m_player ) {
         // does the player have a game?
         if ( m_player->getGame()) {
-            // TODO: clean up game
+            GameManager::instance().removeGame( m_player->getGame() );
         }
 
-        // TODO: clean up player
+        // clean up player
+        PlayerManager::instance().removePlayer( m_player );
+        m_player.reset();
     }
 }
 
@@ -101,13 +104,13 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
                 handleAnnounceGamePacket( packet );
                 break;
 
-            case Packet::JoinGamePacket:
-                handleJoinGamePacket( packet );
-                break;
-
-            case Packet::LeaveGamePacket:
-                handleLeaveGamePacket( packet );
-                break;
+//            case Packet::JoinGamePacket:
+//                handleJoinGamePacket( packet );
+//                break;
+//
+//            case Packet::LeaveGamePacket:
+//                handleLeaveGamePacket( packet );
+//                break;
 
             default:
                 std::cout << "PlayerHandler::handlePacket: unknown packet type: " << (int) m_packetType << std::endl;
@@ -131,7 +134,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // too many players?
     if ( PlayerManager::instance().getPlayerCount() >= s_maxPlayers ) {
         std::cout << "PlayerHandler::handleLoginPacket: server is full, failing login" << std::endl;
-        m_player->sendPacket( Packet::ErrorPacket, (unsigned short) Errors::ServerFull );
+        m_player->sendPacket( Packet::ServerFullPacket );
         return;
     }
 
@@ -142,7 +145,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // invalid name?
     if ( nameLength == 0 || nameLength > 50 ) {
         std::cout << "PlayerHandler::handleLoginPacket: bad name length: " << nameLength << ", failing login" << std::endl;
-        m_player->sendPacket( Packet::ErrorPacket, (unsigned short) Errors::InvalidName );
+        m_player->sendPacket( Packet::InvalidNamePacket);
         return;
     }
 
@@ -152,7 +155,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // name already taken?
     if ( PlayerManager::instance().isNameTaken( name )) {
         std::cout << "PlayerHandler::handleLoginPacket: name '" << name << "' is already taken, failing login" << std::endl;
-        m_player->sendPacket( Packet::ErrorPacket, (unsigned short) Errors::NameTaken );
+        m_player->sendPacket( Packet::NameTakenPacket );
         return;
     }
 
@@ -163,16 +166,39 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // only now add the player to the set of connected player
     PlayerManager::instance().addPlayer( m_player );
 
-    // assemble the response packet
-    std::vector<boost::asio::const_buffer> buffers;
+    // player login ok
+    m_player->sendPacket( Packet::LoginOkPacket );
 
-    unsigned int netId = htonl( m_player->getId());
-    buffers.push_back( boost::asio::buffer( &netId, sizeof( unsigned int )));
+    // send all current games as "game added" packets
+    for ( auto game : GameManager::instance().getAllGames() ) {
+        std::vector<boost::asio::const_buffer> buffers;
 
-    // and send the packet
-    m_player->sendPacket( Packet::LoginOkPacket, buffers );
+        // the id of the added game
+        unsigned int netGameId = htonl( game->getGameId());
+        buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned int )));
 
-    // TODO: send all games
+        // the id of the scenario
+        unsigned short netScenarioId = htons( game->getAnnouncedId());
+        buffers.push_back( boost::asio::buffer( &netScenarioId, sizeof( unsigned short )));
+
+        // get the player owning the game
+        SharedPlayer owner = PlayerManager::instance().getPlayer( game->getPlayerId() );
+        if ( ! owner ) {
+            continue;
+        }
+
+        // name length
+        std::string name = owner->getName();
+        unsigned short netnameLength = htons( name.length() );
+        buffers.push_back( boost::asio::buffer( &netnameLength, sizeof( unsigned short )));
+
+        // raw name
+        buffers.push_back( boost::asio::buffer( &name[0], name.length() ));
+
+        // send to the logged in player
+        std::cout << "PlayerHandler::handleLoginPacket: sending game: " << game->toString() << " to player: " << m_player->toString() << std::endl;
+        m_player->sendPacket( Packet::GameAddedPacket, buffers );
+    }
 }
 
 
@@ -186,20 +212,26 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
 
     // do we have an old game?
     if ( game ) {
-        std::cout << "PlayerHandler::handleAnnounceGamePacket: removing old game: " << game->getAnnouncedId() << std::endl;
-        broadcastGameRemoved( game );
-        GameManager::instance().removeGame( game );
+        std::cout << "PlayerHandler::handleAnnounceGamePacket: old game already announced: " << game->getAnnouncedId() << ", can not announce new" << std::endl;
+        m_player->sendPacket( Packet::AlreadyAnnouncedPacket );
+        return;
     }
 
     // create the new game
-    game = SharedGame( new Game( announcedId ));
+    game = std::make_shared<Game>( announcedId, m_player->getId() );
     m_player->setGame( game );
     GameManager::instance().addGame( game );
 
     // player has now announced a game
     m_player->setState( PlayerState::AnnouncedGame );
 
-    // send out the game to everyone else
+    // all ok, send a response with the announced game id
+    std::vector<boost::asio::const_buffer> buffers;
+    unsigned int netGameId = htonl( game->getGameId());
+    buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned int )));
+    m_player->sendPacket( Packet::AnnounceOkPacket, buffers );
+
+    // send out the game to everyone
     broadcastGameAdded( game, m_player );
 }
 
@@ -227,7 +259,7 @@ void PlayerHandler::broadcastGameAdded (const SharedGame &game, const SharedPlay
     std::vector<boost::asio::const_buffer> buffers;
 
     // the id of the added game
-    unsigned int netGameId = htonl( game->getId());
+    unsigned int netGameId = htonl( game->getGameId());
     buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned int )));
 
     // the id of the scenario
@@ -242,6 +274,7 @@ void PlayerHandler::broadcastGameAdded (const SharedGame &game, const SharedPlay
     // raw name
     buffers.push_back( boost::asio::buffer( &name[0], name.length() ));
 
+    // send to everyone
     PlayerManager::instance().broadcastPacket( Packet::GameAddedPacket, buffers );
 }
 
@@ -250,9 +283,9 @@ void PlayerHandler::broadcastGameRemoved (const SharedGame &game) {
     std::vector<boost::asio::const_buffer> buffers;
 
     // the id of the removed game
-    unsigned short netGameId = htons( game->getId());
+    unsigned short netGameId = htons( game->getGameId());
     buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned short )));
 
-    PlayerManager::instance().broadcastPacket( Packet::GameRemovedPacket, buffers );
+    //PlayerManager::instance().broadcastPacket( Packet::GameRemovedPacket, buffers );
 }
 

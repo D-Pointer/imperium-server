@@ -4,12 +4,22 @@ unsigned int Player::m_nextId = 0;
 
 Player::Player (boost::asio::ip::tcp::socket &tcpSocket)
         : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_name("unknown"), m_state( PlayerState::Connected ) {
+}
 
+
+Player::~Player () {
+    std::cout << "Player::~Player" << std::endl;
+}
+
+
+bool Player::sendPacket (Packet::PacketType packetType) {
+    // just send a header, we have no data
+    return sendHeader( packetType, 0);
 }
 
 
 bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
-    std::cout << "Player::sendPacket: sending packet: " << packetType << " to player: " << toString() << std::endl;
+    std::cout << "Player::sendPacket: sending packet: " << Packet::getPacketName(packetType) << " to player: " << toString() << std::endl;
 
     // send a suitable header
     sendHeader( packetType, boost::asio::buffer_size( buffers ));
@@ -56,7 +66,7 @@ std::string Player::toString () const {
     std::stringstream ss;
     ss << "[Player " << m_id << ' ' << ( m_name != "" ? m_name : "unnamed" );
     if ( m_game ) {
-        ss << m_game->toString();
+        ss << " " << m_game->toString();
     }
     ss << ']';
 
@@ -81,7 +91,7 @@ bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
         // wrap the header as a buffer and send off
         boost::asio::write( m_tcpSocket, buffers );
 
-        std::cout << "Player::sendHeader: sent header for packet: " << packetType << ", payload length: " << length << std::endl;
+        std::cout << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType) << ", payload length: " << length << std::endl;
     }
     catch (std::exception &ex) {
         std::cout << "Player::sendHeader: error sending header: " << ex.what() << std::endl;

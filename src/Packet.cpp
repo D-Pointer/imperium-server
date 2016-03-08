@@ -6,13 +6,13 @@
 const std::vector<std::string> Packet::packetNames = {
         "LoginPacket",
         "LoginOkPacket",
+        "InvalidNamePacket",
+        "NameTakenPacket",
+        "ServerFullPacket",
         "AnnounceGamePacket",
-        "JoinGamePacket",
-        "LeaveGamePacket",
+        "AnnounceOkPacket",
+        "AlreadyAnnouncedPacket",
         "GameAddedPacket",
-        "GameRemovedPacket",
-        "GameStartsPacket",
-        "ErrorPacket",
 };
 
 
@@ -73,9 +73,9 @@ std::string Packet::getString (size_t offset, size_t length) const {
 
 
 std::string Packet::getPacketName (unsigned short packetType) {
-    if ( packetType >= Packet::packetNames.size() ) {
-        return (std::stringstream() << "invalid packet: " << packetType).str();
+    if ( packetType >= Packet::packetNames.size()) {
+        return ( std::stringstream() << "invalid packet: " << packetType ).str();
     }
 
-    return Packet::packetNames[ packetType ];
+    return Packet::packetNames[packetType];
 }

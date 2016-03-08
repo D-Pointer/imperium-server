@@ -5,12 +5,42 @@ Network server for Imperium.
 
 ### Header
 Each packet contains two mandatory fields:
-* packet length (unsigned short)
 * packet type (unsigned short)
+* packet length (unsigned short)
 
-The packet length contains the length excluding the length field itself. A minimal packet that only contains a packet type will thus have a length of 2, i.e. enough to fit the packet type. Any packet specific extra data comes after the header.
+The packet length contains the length of the payload. If the packet type does not require any payload this will be 0.
 
 ---
+
+### Login
+Sent by clients.
+
+* name length (unsigned short)
+* name (name length of characters), not null terminated
+
+Responses:
+
+* Error packet, server full
+* Error packet, invalid name. The name must be 1 to 50 characters long.
+* Error packet, name taken by another player.
+* Ok packet.
+
+
+### Player Id
+Sent by the server as a response to a Login packet when the login was successful. Contains the server assigned player id.
+
+* player id (unsigned int)
+
+
+### Announce
+Sent by players when they announce a game that some other player can join.
+
+* game id (unsigned short). This is a game specific id that the server does not interpret in any way.
+
+Responses:
+
+
+
 
 ### Info packet
 The Info packet tells the server who the player is and what name he/she will go by. This should be the first packet sent by any client. Contents:

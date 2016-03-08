@@ -1,5 +1,5 @@
-#ifndef SESSION_HPP
-#define SESSION_HPP
+#ifndef PLAYER_HANDLER_HPP
+#define PLAYER_HANDLER_HPP
 
 #include <vector>
 #include <memory>
@@ -8,8 +8,6 @@
 
 #include "Packet.hpp"
 #include "Player.hpp"
-
-//using boost::asio::ip::tcp;
 
 /**
  *

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 
 #include "PlayerManager.hpp"
 
@@ -9,7 +8,7 @@ PlayerManager &PlayerManager::instance () {
 }
 
 
-bool PlayerManager::isNameTaken (const std::string & name) {
+bool PlayerManager::isNameTaken (const std::string &name) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     for ( auto player : m_players ) {
@@ -40,8 +39,23 @@ void PlayerManager::removePlayer (const SharedPlayer &player) {
 }
 
 
-size_t PlayerManager::getPlayerCount () const {
+size_t PlayerManager::getPlayerCount ()  {
+    std::lock_guard<std::mutex> lock( m_mutex );
+
     return m_players.size();
+}
+
+
+SharedPlayer PlayerManager::getPlayer (unsigned int playerId)  {
+    std::lock_guard<std::mutex> lock( m_mutex );
+
+    for ( auto player : m_players ) {
+        if ( player->getId() == playerId ) {
+            return player;
+        }
+    }
+
+    return SharedPlayer();
 }
 
 
@@ -51,7 +65,7 @@ bool PlayerManager::broadcastPacket (Packet::PacketType packetType, const std::v
     std::cout << "PlayerManager::broadcastPacket: broadcasting packet: " << packetType << " to " << m_players.size() << " players" << std::endl;
 
     std::for_each( std::begin( m_players ), std::end( m_players ),
-                   [= ] (SharedPlayer player) {
+                   [ = ] (SharedPlayer player) {
                        player->sendPacket( packetType, buffers );
                    } );
 

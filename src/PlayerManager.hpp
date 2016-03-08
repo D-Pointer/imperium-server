@@ -7,20 +7,31 @@
 #include "Player.hpp"
 #include "Packet.hpp"
 
+/**
+ * TODO: make the players a map.
+ */
 class PlayerManager {
 
 public:
 
-    static PlayerManager & instance ();
+    static PlayerManager &instance ();
 
-    bool isNameTaken (const std::string & name);
+    bool isNameTaken (const std::string &name);
 
     void addPlayer (const SharedPlayer &player);
 
     void removePlayer (const SharedPlayer &player);
 
-    size_t getPlayerCount () const;
+    /**
+     * Returns the player with the given id or a null shared reference if not found.
+     */
+    SharedPlayer getPlayer (unsigned int playerId);
 
+    size_t getPlayerCount ();
+
+    /**
+     * Sends the given packet to all players.
+     */
     bool broadcastPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
 
 

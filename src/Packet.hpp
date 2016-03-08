@@ -10,22 +10,18 @@
  * Packet class.
  */
 class Packet {
-
 public:
 
     enum PacketType {
         LoginPacket = 0, // in
-        LoginOkPacket,   // out
+        LoginOkPacket, // out
+        InvalidNamePacket, // error out
+        NameTakenPacket, // error out
+        ServerFullPacket, // error out
         AnnounceGamePacket, // in
-        JoinGamePacket,
-        LeaveGamePacket,
-        GameAddedPacket,
-        GameRemovedPacket,
-        GameStartsPacket,
-
-        // result codes
-                ErrorPacket,     // out
-
+        AnnounceOkPacket, // out
+        AlreadyAnnouncedPacket, // error out
+        GameAddedPacket, // out
     };
 
     Packet (PacketType type, const unsigned char *data, size_t dataLength);

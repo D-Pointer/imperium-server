@@ -15,6 +15,8 @@ public:
 
     Player (boost::asio::ip::tcp::socket &tcpSocket);
 
+    ~Player ();
+
     /**
      * Returns the TCP getSocket connected to the player.
      */
@@ -56,6 +58,8 @@ public:
     void clearGame () {
         m_game.reset();
     }
+
+    bool sendPacket (Packet::PacketType packetType);
 
     bool sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
 

@@ -16,6 +16,11 @@ public:
 
     void removeGame (const SharedGame & game);
 
+    /**
+     * Returns a copy of the set of all games.
+     */
+    std::set<SharedGame> getAllGames ();
+
 
 private:
 
@@ -33,4 +38,4 @@ private:
 };
 
 
-#endif //IMPERIUM_SERVER_GAMEMANAGER_HPP
+#endif 

@@ -9,14 +9,15 @@ class Game {
 
 public:
 
-    Game (unsigned short announcedId);
+    Game (unsigned short announcedId, unsigned int playerId);
 
-    unsigned int getId () const;
+    ~Game ();
+
+    unsigned int getGameId () const;
 
     unsigned short getAnnouncedId () const;
 
-//    const SharedPlayer & getPlayer1 () const;
-//    const SharedPlayer & getPlayer2 () const;
+    unsigned int getPlayerId () const;
 
     std::string toString () const;
 
@@ -29,9 +30,8 @@ private:
     // the announced game id
     unsigned short m_announcedId;
 
-    // the players
-//    SharedPlayer m_player1;
-//    SharedPlayer m_player2;
+    // the announcing/owning player
+    unsigned int m_playerId;
 };
 
 typedef std::shared_ptr<Game> SharedGame;
