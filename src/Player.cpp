@@ -1,14 +1,16 @@
+
 #include "Player.hpp"
+#include "Log.hpp"
 
 unsigned int Player::m_nextId = 0;
 
-Player::Player (boost::asio::ip::tcp::socket &tcpSocket)
-        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_name("unknown"), m_state( PlayerState::Connected ) {
+Player::Player (boost::asio::ip::tcp::socket &tcpSocket, boost::asio::ip::udp::socket &udpSocket)
+        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_udpSocket(udpSocket), m_name("unknown") {
 }
 
 
 Player::~Player () {
-    std::cout << "Player::~Player" << std::endl;
+    logDebug << "Player::~Player";
 }
 
 
@@ -19,7 +21,7 @@ bool Player::sendPacket (Packet::PacketType packetType) {
 
 
 bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
-    std::cout << "Player::sendPacket: sending packet: " << Packet::getPacketName(packetType) << " to player: " << toString() << std::endl;
+    logDebug << "Player::sendPacket: sending packet: " << Packet::getPacketName(packetType) << " to player: " << toString();
 
     // send a suitable header
     sendHeader( packetType, boost::asio::buffer_size( buffers ));
@@ -30,33 +32,9 @@ bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost:
         return true;
     }
     catch (std::exception &ex) {
-        std::cout << "Player::sendPacket: error sending remove packet: " << ex.what() << std::endl;
+        logError << "Player::sendPacket: error sending packet: " << ex.what();
         return false;
     }
-}
-
-
-bool Player::sendPacket (Packet::PacketType packetType, unsigned short value) {
-    // assemble the error response packet
-    std::vector<boost::asio::const_buffer> buffers;
-
-    unsigned short netValue = htons( value );
-    buffers.push_back( boost::asio::buffer( &netValue, sizeof( unsigned short )));
-
-    // and send the packet
-    return sendPacket( packetType, buffers );
-}
-
-
-bool Player::sendPacket (Packet::PacketType packetType, unsigned int value) {
-    // assemble the error response packet
-    std::vector<boost::asio::const_buffer> buffers;
-
-    unsigned int netValue = htonl( value );
-    buffers.push_back( boost::asio::buffer( &netValue, sizeof( unsigned int )));
-
-    // and send the packet
-    return sendPacket( packetType, buffers );
 }
 
 
@@ -89,10 +67,15 @@ bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
         // wrap the header as a buffer and send off
         boost::asio::write( m_tcpSocket, buffers );
 
-        std::cout << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType) << std::endl; //", payload length: " << length << std::endl;
+        // statistics
+        m_statistics.m_lastSentTcp = time(0);
+        m_statistics.m_packetsSentTcp++;
+        m_statistics.m_bytesSentTcp += length;
+
+        //logDebug << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType); //", payload length: " << length;
     }
     catch (std::exception &ex) {
-        std::cout << "Player::sendHeader: error sending header: " << ex.what() << std::endl;
+        logError << "Player::sendHeader: error sending header: " << ex.what();
         return false;
     }
 

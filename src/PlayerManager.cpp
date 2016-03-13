@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "PlayerManager.hpp"
+#include "Log.hpp"
 
 PlayerManager &PlayerManager::instance () {
     static PlayerManager instance;
@@ -27,7 +28,7 @@ void PlayerManager::addPlayer (const SharedPlayer &player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     m_players.insert( player );
-    std::cout << "PlayerManager::addPlayer: added player: " << player->toString() << ", players now: " << m_players.size() << std::endl;
+    logDebug << "PlayerManager::addPlayer: added player: " << player->toString() << ", players now: " << m_players.size();
 }
 
 
@@ -35,7 +36,7 @@ void PlayerManager::removePlayer (const SharedPlayer &player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     m_players.erase( player );
-    std::cout << "PlayerManager::removePlayer: removed player: " << player->toString() << ", players now: " << m_players.size() << std::endl;
+    logDebug << "PlayerManager::removePlayer: removed player: " << player->toString() << ", players now: " << m_players.size();
 }
 
 
@@ -62,7 +63,7 @@ SharedPlayer PlayerManager::getPlayer (unsigned int playerId)  {
 bool PlayerManager::broadcastPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
-    std::cout << "PlayerManager::broadcastPacket: broadcasting packet: " << Packet::getPacketName(packetType) << " to " << m_players.size() << " players" << std::endl;
+    logDebug << "PlayerManager::broadcastPacket: broadcasting packet: " << Packet::getPacketName(packetType) << " to " << m_players.size() << " players";
 
     std::for_each( std::begin( m_players ), std::end( m_players ),
                    [ = ] (SharedPlayer player) {

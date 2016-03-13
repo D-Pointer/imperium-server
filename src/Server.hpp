@@ -26,6 +26,9 @@ private:
     tcp::acceptor m_acceptor;
 
     std::set<PlayerHandler *> m_playerHandlers;
+
+    // the next available UDP port
+    static unsigned short m_nextUdpPort;
 };
 
 

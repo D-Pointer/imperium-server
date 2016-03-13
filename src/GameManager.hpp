@@ -4,6 +4,8 @@
 #include <mutex>
 #include <set>
 
+#include <boost/filesystem/path.hpp>
+
 #include "Game.hpp"
 
 class GameManager {
@@ -12,7 +14,9 @@ public:
 
     static GameManager & instance ();
 
-    void addGame (const SharedGame & game);
+    SharedGame getGame (unsigned int gameId);
+
+    SharedGame createGame (unsigned short scenarioId, unsigned int playerId);
 
     void removeGame (const SharedGame & game);
 
@@ -27,14 +31,18 @@ private:
     /**
      * Hidden constructor.
      */
-    GameManager () {
-
-    }
+    GameManager ();
 
     std::mutex m_mutex;
 
     // all active games
     std::set<SharedGame> m_games;
+
+    // next available game id
+    unsigned int m_nextId;
+
+    // path to the sequence file
+    boost::filesystem::path m_sequenceFile;
 };
 
 

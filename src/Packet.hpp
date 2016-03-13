@@ -24,7 +24,17 @@ public:
         GameAddedPacket, // out
         GameRemovedPacket, // out
         LeaveGamePacket, // in
-        NoGamePacket,
+        NoGamePacket, // error out
+        JoinGamePacket, // in
+        GameJoinedPacket, // out
+        InvalidGamePacket, // error out
+        AlreadyHasGamePacket, // error out
+        GameFullPacket, // error out
+        GameEndedPacket, // out
+        DataPacket,
+        UdpPingPacket, // UDP in
+        UdpPongPacket, // UDP out
+        UdpData,
     };
 
     Packet (PacketType type, const unsigned char *data, size_t dataLength);

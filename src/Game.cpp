@@ -1,19 +1,24 @@
 
-#include <iostream>
 #include <sstream>
 
 #include "Game.hpp"
 #include "PlayerHandler.hpp"
+#include "Log.hpp"
 
-unsigned int Game::m_nextId = 0;
-
-Game::Game (unsigned short scenarioId, unsigned int playerId) : m_id( m_nextId++), m_scenarioId(scenarioId), m_playerId(playerId) {
-    std::cout << "Game::Game: created game: " << m_id << " for announced game: " << m_scenarioId << " by player: " << playerId << std::endl;
+Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId)
+        : m_id(id), m_scenarioId(scenarioId), m_playerId1(playerId), m_playerId2(0), m_started(false), m_startTime(0), m_endTime(0) {
+    logDebug << "Game::Game: created game: " << m_id << " for announced game: " << m_scenarioId << " by player: " << playerId;
+    m_creationTime = time(0);
 }
 
 
 Game::~Game () {
-    std::cout << "Game::~Game" << std::endl;
+    logDebug << "Game::~Game";
+}
+
+
+bool Game::hasStarted () const {
+   return m_started;
 }
 
 
@@ -27,13 +32,46 @@ unsigned short Game::getScenariodId () const {
 }
 
 
-unsigned int Game::getPlayerId () const {
-    return m_playerId;
+unsigned int Game::getPlayerId1 () const {
+    return m_playerId1;
 }
 
 
+unsigned int Game::getPlayerId2 () const {
+    return m_playerId2;
+}
+
+
+void Game::setPlayerId2 (unsigned int playerId2) {
+    m_playerId2 = playerId2;
+    m_started = true;
+    m_startTime = time(0);
+}
+
+
+void Game::endGame () {
+    if ( m_endTime == 0 ) {
+        m_endTime = time( 0 );
+    }
+}
+
+
+time_t Game::getCreationTime () const {
+    return m_creationTime;
+}
+
+
+time_t Game::getStartTime () const {
+    return m_startTime;
+}
+
+
+time_t Game::getEndTime () const {
+    return m_endTime;
+}
+
 std::string Game::toString () const {
     std::stringstream ss;
-    ss << "[Game " << m_id << " player: " << m_playerId << " scenario: " << m_scenarioId << ']';
+    ss << "[Game " << m_id << " player: " << m_playerId1 << " scenario: " << m_scenarioId << ']';
     return ss.str();
 }

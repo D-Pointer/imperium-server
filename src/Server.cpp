@@ -6,49 +6,60 @@
 
 #include "Server.hpp"
 #include "PlayerManager.hpp"
+#include "Log.hpp"
 
 using boost::asio::ip::tcp;
 
+
+unsigned short Server::m_nextUdpPort = 12000;
+
 Server::Server (boost::asio::io_service &io_service, short port)
         : m_io_service( io_service ), m_acceptor( io_service, tcp::endpoint( tcp::v4(), port )) {
-    PlayerHandler *session = new PlayerHandler( m_io_service );
+
+    // the UDP port that this player will use
+    unsigned short udpPort = m_nextUdpPort++;
+
+    PlayerHandler *session = new PlayerHandler( m_io_service, udpPort );
     session->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
 
     // reuse addresses
     m_acceptor.set_option( boost::asio::ip::tcp::acceptor::reuse_address( true ));
 
-    m_acceptor.async_accept( session->getSocket(),
+    m_acceptor.async_accept( session->getTcpSocket(),
                              boost::bind( &Server::handleAccept, this, session, boost::asio::placeholders::error ));
 }
 
 
 void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::error_code &error) {
-    std::cout << "Server::handleAccept: new client" << std::endl;
+    logInfo << "Server::handleAccept: new client";
 
     if ( !error ) {
         // start and save for later
         playerHandler->start();
 
         m_playerHandlers.insert( playerHandler );
-        std::cout << "Server::handleAccept: player handlers now: " << m_playerHandlers.size() << std::endl;
+        logDebug << "Server::handleAccept: player handlers now: " << m_playerHandlers.size();
+
+        // the UDP port that this player will use
+        unsigned short udpPort = m_nextUdpPort++;
 
         // start a new session that we listen on
-        playerHandler = new PlayerHandler( m_io_service );
+        playerHandler = new PlayerHandler( m_io_service, udpPort );
         playerHandler->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
-        m_acceptor.async_accept( playerHandler->getSocket(),
+        m_acceptor.async_accept( playerHandler->getTcpSocket(),
                                  boost::bind( &Server::handleAccept, this, playerHandler, boost::asio::placeholders::error ));
     }
     else {
-        std::cout << "Server::handleAccept: got error: " << error.message() << ", deleting handler" << std::endl;
+        logError << "Server::handleAccept: got error: " << error.message() << ", deleting handler";
         delete playerHandler;
     }
 }
 
 
 void Server::sessionTerminated (PlayerHandler * player) {
-    std::cout << "Server::sessionTerminated: player: " << player->toString() << " terminated" << std::endl;
+    logInfo << "Server::sessionTerminated: player: " << player->toString() << " terminated";
     m_playerHandlers.erase( player );
-    std::cout << "Server::sessionTerminated: players left: " << PlayerManager::instance().getPlayerCount() << std::endl;
+    logDebug << "Server::sessionTerminated: players left: " << PlayerManager::instance().getPlayerCount();
 
     delete player;
 }

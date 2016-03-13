@@ -4,21 +4,63 @@ import sys
 import socket
 import struct
 import packet
-import time
-import string
+import datetime
 import thread
 
-#players = []
-#games = []
+server = None
+port = -1
 
-# keeps the main loop running
-#keepRunning = True
-
-#gameId = None
-#playerId = None
+#udpServer = None
 
 udpSocket = None
 udpAddress = None
+
+# class UdpServer(asyncore.dispatcher):
+#
+#     def __init__(self, host, port, serverPort):
+#         asyncore.dispatcher.__init__(self)
+#         self.create_socket(socket.AF_INET, socket.SOCK_DGRAM)
+#         self.set_reuse_addr()
+#         print "--- %s %d %d" % (host, port, serverPort)
+#         self.bind(('', port))
+#
+#         self.serverAddress = (host, serverPort)
+#         print "--- server started"
+#
+#     def handle_connect(self):
+#         print "--- handle_connect"
+#
+#     def handle_read(self):
+#         data, addr = self.recvfrom(2048)
+#         print "--- handle_read: from: %s, data: %s" % ( str(addr), data )
+#
+#     def handle_write(self):
+#         pass
+#
+#     def sendPing(self):
+#         # send ping
+#         print "--- sending ping"
+#         self.sendto( packet.PingPacket().message, self.serverAddress )
+#
+#
+#     def run(self):
+#         print "--- starting main UDP loop"
+#         asyncore.loop()
+
+
+def readUdpPackets(udpSocket):
+    print "--- reading UDP packets"
+    while True:
+        data, addr = udpSocket.recvfrom(2048)
+        print "--- read %d bytes from %s:%d" % (len(data), addr[0], addr[1] )
+
+        (packetType, ) = struct.unpack_from('>h', data, 0)
+
+        if packetType == packet.Packet.UDP_PONG:
+            (oldTime, ) = struct.unpack_from('>L', data, struct.calcsize('>h') )
+            now = datetime.datetime.now()
+            milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
+            print "--- pong received, time: %d ms" % (milliseconds - oldTime)
 
 
 class PacketException(Exception):
@@ -86,6 +128,30 @@ def handleNoGame():
     print "### no game, can not leave"
 
 
+def handleGameJoined(data):
+    (udpPort, nameLength, ) = struct.unpack_from('>hh', data, 0)
+    (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hh'))
+    print "### game joined, UDP port: %d, opponent: %s" % (udpPort, opponentName)
+    print "### starting UDP thread"
+
+    global udpAddress, udpSocket
+    udpAddress = (server, udpPort )
+    udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    thread.start_new_thread( readUdpPackets, (udpSocket, ))
+
+
+def handleGameJoinError(reason):
+    print "### error joining game: %s" % reason
+
+
+def handleGameEnded():
+    print "### game has ended"
+
+
+def handleData(data):
+    print "### received data '%s'" % data
+
+
 def readNextPacket(sock):
     while True:
         receivedType, data = packet.Packet.readRawPacket(sock)
@@ -113,47 +179,26 @@ def readNextPacket(sock):
             handleGameRemoved(data)
 
         elif receivedType == packet.Packet.NO_GAME:
-            handleGameRemoved(data)
+            handleNoGame()
 
+        # game join results
+        elif receivedType == packet.Packet.GAME_JOINED:
+            handleGameJoined(data)
+        elif receivedType == packet.Packet.INVALID_GAME:
+            handleGameJoinError("invalid game")
+        elif receivedType == packet.Packet.ALREADY_HAS_GAME:
+            handleGameJoinError("we already have a game")
+        elif receivedType == packet.Packet.GAME_FULL:
+            handleGameJoinError("game full")
 
-def readOneOfPacket(sock, packetTypes):
-    # raw data
-    data = packet.Packet.readRawPacket(sock)
-    if not data:
-        print 'failed to read packet'
-        raise PacketException()
+        elif receivedType == packet.Packet.GAME_ENDED:
+            handleGameEnded()
 
-    # extract the packet type
-    (receivedType,) = struct.unpack_from('>h', data, 0)
+        elif receivedType == packet.Packet.DATA:
+            handleData( data )
 
-    if receivedType not in packetTypes:
-        print 'unexpected packet, got %s, expected one of %s' % (
-            packet.name(receivedType), string.join(map(packet.name, packetTypes)))
-        raise PacketException()
-
-    # strip off the type
-    return receivedType, data[packet.Packet.shortLength:]
-
-
-def readStatusPacket(sock):
-    # raw data
-    data = packet.Packet.readRawPacket(sock)
-    if not data:
-        print 'failed to read status packet'
-        raise PacketException()
-
-    # extract the packet type
-    (receivedType,) = struct.unpack_from('>h', data, 0)
-
-    if receivedType != packet.Packet.OK and receivedType != packet.Packet.ERROR:
-        print 'unexpected packet, got %s, expected OK or ERROR' % packet.name(receivedType)
-        raise PacketException()
-
-    # ok/error, so get the tag too
-    (tag,) = struct.unpack_from('>h', data, packet.Packet.shortLength)
-
-    return (tag, receivedType)
-
+        else:
+            print "### unknown packet type: %d" % receivedType
 
 def announceGame(sock):
     print ''
@@ -184,56 +229,28 @@ def announceGame(sock):
     #     print 'Failed to announce game'
 
 
-def waitForStart(sock):
-    print ''
-    print 'Waiting for game to start...'
-
-    # read the start packet
-    try:
-        global udpSocket, udpAddress, gameId, playerId
-
-        data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
-        (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
-        print 'Game %d started ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
-            gameId, playerId, opponentName, udpPort)
-
-        # create the UDP socket
-        udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udpAddress = (sock.getpeername()[0], udpPort)
-        # udpSocket.connect( udpAddress )
-        udpSocket.bind(('', 0))
-
-    except PacketException:
-        print 'Game failed to start'
-
-
 def joinGame(sock):
-    global udpSocket, udpAddress, gameId, playerId
-
-    print ''
-    print 'Join a game'
-    gameId = getInputInteger('Game id: ', 0, 1000)
+    gameId = getInputInteger('Game to join id: ', 0, 1000)
 
     # send the request
     sock.send(packet.JoinGamePacket(gameId).message)
 
-    # read the start packet
-    try:
-        data = readPacket(sock, packet.Packet.STARTS)
-        (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
-        (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
-        print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
-            gameId, playerId, opponentName, udpPort)
-
-        # create the UDP socket
-        udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udpAddress = (sock.getpeername()[0], udpPort)
-        # udpSocket.connect( udpAddress )
-        udpSocket.bind(('', 0))
-
-    except PacketException:
-        print 'Failed to join game %d' % gameId
+    # # read the start packet
+    # try:
+    #     data = readPacket(sock, packet.Packet.STARTS)
+    #     (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
+    #     (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
+    #     print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
+    #         gameId, playerId, opponentName, udpPort)
+    #
+    #     # create the UDP socket
+    #     udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #     udpAddress = (sock.getpeername()[0], udpPort)
+    #     # udpSocket.connect( udpAddress )
+    #     udpSocket.bind(('', 0))
+    #
+    # except PacketException:
+    #     print 'Failed to join game %d' % gameId
 
 
 def leaveGame(sock):
@@ -262,6 +279,97 @@ def leaveGame(sock):
     #         print 'Failed to read announced game data'
     # else:
     #     print 'Failed to leave game'
+
+
+
+def pingServer(sock):
+    print ''
+    print 'Sending ping'
+    udpSocket.sendto( packet.UdpPingPacket().message, udpAddress )
+
+
+def sendTcpDataPacket(sock):
+    data = raw_input('Data to send: ')
+
+    if data is None:
+        return
+
+    # send data
+    sock.send(packet.DataPacket(data).message)
+
+
+def sendUdpDataPacket(sock):
+    data = raw_input('Data to send: ')
+
+    if data is None:
+        return
+
+    global udpAddress
+
+    # send data
+    udpSocket.sendto(data, udpAddress)
+
+
+def login(sock, name):
+    sock.send(packet.LoginPacket(name).message)
+
+
+def quit(sock):
+    print 'quitting'
+    sys.exit( 0 )
+
+def getInput(sock):
+    # loop and read input
+    while True:
+        print ''
+        print '0: quit'
+        print '1: announce a new game'
+        print '2: join a game'
+        print '3: leave a game'
+        print '4: ping'
+        print '5: send TCP data'
+        # print '2: join a game'
+        # print '4: list games'
+
+        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, sendTcpDataPacket )
+        choice = getInputInteger('> ', 0, len(callbacks))
+
+        # call the suitable handler
+        callbacks[choice](sock)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print "Usage: %s server port name" % sys.argv[0]
+        exit(1)
+
+    server = sys.argv[1]
+    port = int(sys.argv[2])
+    name = sys.argv[3]
+
+    print 'Connecting to server on %s:%d' % (server, port)
+
+    # Connect to the server
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((server, port))
+    except:
+        print 'Error connecting to the server, aborting'
+        sys.exit(1)
+
+    # log in
+    login(s, name)
+
+    # set up a thread to read packets
+    thread.start_new_thread(readNextPacket, (s,))
+
+    try:
+        getInput(s)
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+    s.close()
+
 
 
 # def getPlayerCount(sock):
@@ -323,89 +431,43 @@ def leaveGame(sock):
 #         print '\tGame %d, scenario: %d, hosted by: %s' % game
 
 
-def pingServer(sock):
-    print ''
-    print 'Pinging server 5 times'
-
-    for i in range(5):
-        startTime = time.time()
-
-        # send ping
-        sock.send(packet.PingPacket().message)
-
-        # read pong
-        readPacket(sock, packet.Packet.PONG)
-
-        elapsedTime = time.time() - startTime
-        print "Received pong in %f ms" % (elapsedTime * 1000)
-
-
-def sendTcpDataPacket(sock):
-    data = raw_input('Data to send: ')
-
-    if data is None:
-        return
-
-    # send data
-    sock.send(packet.DataPacket(data).message)
-
-
-def sendUdpDataPacket(sock):
-    data = raw_input('Data to send: ')
-
-    if data is None:
-        return
-
-    global udpAddress
-
-    # send data
-    udpSocket.sendto(data, udpAddress)
-    # udpSocket.sendto( packet.UdpDataPacket( playerId, gameId, data ).message, udpAddress )
-
-
-def readUdpPacket(sock):
-    global udpSocket  # , gameId
-
-    # read raw data from the UDP socket
-    data, sender = udpSocket.recvfrom(512)
-    if not data:
-        print 'failed to read UDP packet'
-        raise PacketException()
-
-    # extract the header
-    # (length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
-
-    # extra the payload
-    # headerLength = struct.calcsize( '>hhh' )
-    # content = data[ headerLength : headerLength + length ]
-
-    print ''
-    print 'read UDP packet from %s, bytes: %d, data: "%s"' % (sender, len(data), data)
-    # print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
-
-
-# def register(sock, name, secret):
-#     tag = 0
-#     sock.send(packet.RegisterPacket(tag, name, secret).message)
+# def readOneOfPacket(sock, packetTypes):
+#     # raw data
+#     data = packet.Packet.readRawPacket(sock)
+#     if not data:
+#         print 'failed to read packet'
+#         raise PacketException()
 #
-#     # read the response
-#     packetType, data = readOneOfPacket(sock, (packet.Packet.REGISTER_OK, packet.Packet.ERROR))
+#     # extract the packet type
+#     (receivedType,) = struct.unpack_from('>h', data, 0)
 #
-#     if packetType == packet.Packet.ERROR:
-#         print "Failed to register"
-#         return
+#     if receivedType not in packetTypes:
+#         print 'unexpected packet, got %s, expected one of %s' % (
+#             packet.name(receivedType), string.join(map(packet.name, packetTypes)))
+#         raise PacketException()
+#
+#     # strip off the type
+#     return receivedType, data[packet.Packet.shortLength:]
+#
+#
+# def readStatusPacket(sock):
+#     # raw data
+#     data = packet.Packet.readRawPacket(sock)
+#     if not data:
+#         print 'failed to read status packet'
+#         raise PacketException()
+#
+#     # extract the packet type
+#     (receivedType,) = struct.unpack_from('>h', data, 0)
+#
+#     if receivedType != packet.Packet.OK and receivedType != packet.Packet.ERROR:
+#         print 'unexpected packet, got %s, expected OK or ERROR' % packet.name(receivedType)
+#         raise PacketException()
 #
 #     # ok/error, so get the tag too
-#     (tag, id) = struct.unpack('>hI', data)
-#     print 'Registered ok, id: %d' % id
-
-
-def login(sock, name):
-    sock.send(packet.LoginPacket(name).message)
-    # if not readNextPacket( sock ):
-    #    return False
-
-    # return True
+#     (tag,) = struct.unpack_from('>h', data, packet.Packet.shortLength)
+#
+#     return (tag, receivedType)
 
 
 # def subscribe(sock):
@@ -431,72 +493,63 @@ def login(sock, name):
 #         print 'Failed to unsubscribed from game status updates'
 
 
-def quit(sock):
-    print 'quitting'
-    sys.exit( 0 )
-
-def getInput(sock):
-    # loop and read input
-    while True:
-        print ''
-        print '0: quit'
-        print '1: announce a new game'
-        print '2: leave a game'
-        # print '2: join a game'
-        # print '4: list games'
-        # print '5: get player count'
-        # print '6: ping server'
-        # print '8: wait for game to start'
-        # print '9: send TCP data'
-        # print '10: send UDP data'
-        # print '11: read UDP data'
-        # print '12: subscribe to game status updates'
-        # print '13: unsubscribe from game status updates'
-
-        callbacks = (quit, announceGame, leaveGame )
-        choice = getInputInteger('> ', 0, len(callbacks))
-
-        # call the suitable handler
-        callbacks[choice](sock)
+# def waitForStart(sock):
+#     print ''
+#     print 'Waiting for game to start...'
+#
+#     # read the start packet
+#     try:
+#         global udpSocket, udpAddress, gameId, playerId
+#
+#         data = readPacket(sock, packet.Packet.STARTS)
+#         (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
+#         (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
+#         print 'Game %d started ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
+#             gameId, playerId, opponentName, udpPort)
+#
+#         # create the UDP socket
+#         udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#         udpAddress = (sock.getpeername()[0], udpPort)
+#         # udpSocket.connect( udpAddress )
+#         udpSocket.bind(('', 0))
+#
+#     except PacketException:
+#         print 'Game failed to start'
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print "Usage: %s server port name" % sys.argv[0]
-        exit(1)
+# def register(sock, name, secret):
+#     tag = 0
+#     sock.send(packet.RegisterPacket(tag, name, secret).message)
+#
+#     # read the response
+#     packetType, data = readOneOfPacket(sock, (packet.Packet.REGISTER_OK, packet.Packet.ERROR))
+#
+#     if packetType == packet.Packet.ERROR:
+#         print "Failed to register"
+#         return
+#
+#     # ok/error, so get the tag too
+#     (tag, id) = struct.unpack('>hI', data)
+#     print 'Registered ok, id: %d' % id
 
-    server = sys.argv[1]
-    port = int(sys.argv[2])
-    name = sys.argv[3]
 
-    print 'Connecting to server on %s:%d' % (server, port)
+# def readUdpPacket(sock):
+#     global udpSocket  # , gameId
+#
+#     # read raw data from the UDP socket
+#     data, sender = udpSocket.recvfrom(512)
+#     if not data:
+#         print 'failed to read UDP packet'
+#         raise PacketException()
+#
+#     # extract the header
+#     # (length, senderId, tmpGameId, ) = struct.unpack_from('>hhh', data, 0)
+#
+#     # extra the payload
+#     # headerLength = struct.calcsize( '>hhh' )
+#     # content = data[ headerLength : headerLength + length ]
+#
+#     print ''
+#     print 'read UDP packet from %s, bytes: %d, data: "%s"' % (sender, len(data), data)
+#     # print 'read UDP packet from %d, game: %d, bytes: %d, data: "%s"' % ( senderId, tmpGameId, len(content), content )
 
-    # Connect to the server
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((server, port))
-    except:
-        print 'Error connecting to the server, aborting'
-        sys.exit(1)
-
-    # log in
-    login(s, name)
-
-    # set up a thread to read packets
-    thread.start_new_thread(readNextPacket, (s,))
-
-    # we want update
-    # subscribe(s)
-
-    # get players
-    # getPlayerCount(s)
-
-    # get games
-    # getGames(s)
-
-    try:
-        getInput(s)
-    except (KeyboardInterrupt, EOFError):
-        pass
-
-    s.close()

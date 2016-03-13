@@ -5,9 +5,11 @@
 #include <memory>
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
+#include <boost/array.hpp>
 
 #include "Packet.hpp"
 #include "Player.hpp"
+#include "UdpHandler.hpp"
 
 /**
  *
@@ -15,7 +17,7 @@
 class PlayerHandler {
 public:
 
-    PlayerHandler (boost::asio::io_service &io_service);
+    PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort);
 
     virtual ~PlayerHandler ();
 
@@ -29,8 +31,12 @@ public:
      **/
     void start ();
 
-    boost::asio::ip::tcp::socket & getSocket () {
-        return m_socket;
+    boost::asio::ip::tcp::socket & getTcpSocket () {
+        return m_tcpSocket;
+    }
+
+    boost::asio::ip::udp::socket & getUdpSocket () {
+        return m_udpSocket;
     }
 
     std::string toString () const;
@@ -55,17 +61,26 @@ private:
 
     void handleLeaveGamePacket (const SharedPacket &packet);
 
+    void handleDataPacket (const SharedPacket &packet);
+
     void broadcastGameAdded (const SharedGame & game, const SharedPlayer & announcer);
     void broadcastGameRemoved (const SharedGame & game);
 
-    boost::asio::ip::tcp::socket m_socket;
+
+    boost::asio::ip::tcp::socket m_tcpSocket;
+
+    boost::asio::ip::udp::socket m_udpSocket;
 
     unsigned short m_packetType;
     unsigned short m_dataLength;
     unsigned char *m_data;
 
-    // the player we manage
+    // the player we manage as well as the peer player
     SharedPlayer m_player;
+    SharedPlayer m_peer;
+
+    // UDP handler
+    SharedUdpHandler m_udpHandler;
 };
 
 typedef std::shared_ptr<PlayerHandler> SharedPlayerHandler;

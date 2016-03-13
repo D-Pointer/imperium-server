@@ -1,7 +1,7 @@
-#include <iostream>
 #include <sstream>
 
 #include "Packet.hpp"
+#include "Log.hpp"
 
 const std::vector<std::string> Packet::packetNames = {
         "LoginPacket",
@@ -16,13 +16,23 @@ const std::vector<std::string> Packet::packetNames = {
         "GameRemovedPacket",
         "LeaveGamePacket",
         "NoGamePacket",
+        "JoinGamePacket",
+        "GameJoinedPacket",
+        "InvalidGamePacket",
+        "AlreadyHasGamePacket",
+        "GameFullPacket",
+        "GameEndedPacket",
+        "DataPacket",
+        "UdpPingPacket",
+        "UdpPongPacket",
+        "UdpData",
 };
 
 
 Packet::Packet (PacketType type, const unsigned char *data, size_t dataLength)
         : m_type( type ), m_data( data ),
           m_dataLength( dataLength ) {
-    std::cout << "Packet::Packet: creating a packet: " << type << ", data size: " << dataLength << std::endl;
+    logDebug << "Packet::Packet: creating a packet: " << Packet::getPacketName(type) << ", data size: " << dataLength;
 }
 
 
@@ -38,9 +48,8 @@ unsigned short Packet::getUnsignedShort (size_t offset) const {
     unsigned short value;
 
     if ( offset + sizeof( unsigned short ) > m_dataLength ) {
-        std::cout << "Packet::getUnsignedShort: out of bounds! Offset: " << offset << ", type size: " <<
-        sizeof( unsigned short )
-        << ", data length: " << m_dataLength << std::endl;
+        logError << "Packet::getUnsignedShort: out of bounds! Offset: " << offset << ", type size: " << sizeof( unsigned short ) << ", data length: " <<
+        m_dataLength;
         return value;
     }
 
@@ -53,9 +62,8 @@ unsigned int Packet::getUnsignedInt (size_t offset) const {
     unsigned int value;
 
     if ( offset + sizeof( unsigned int ) > m_dataLength ) {
-        std::cout << "Packet::getUnsignedInt: out of bounds! Offset: " << offset << ", type size: " <<
-        sizeof( unsigned int )
-        << ", data length: " << m_dataLength << std::endl;
+        logError << "Packet::getUnsignedInt: out of bounds! Offset: " << offset << ", type size: " << sizeof( unsigned int ) << ", data length: " <<
+        m_dataLength;
         return value;
     }
 
@@ -66,8 +74,7 @@ unsigned int Packet::getUnsignedInt (size_t offset) const {
 
 std::string Packet::getString (size_t offset, size_t length) const {
     if ( offset + length > m_dataLength ) {
-        std::cout << "Packet::getString: out of bounds! Offset: " << offset << ", length: " << length
-        << ", data length: " << m_dataLength << std::endl;
+        logError << "Packet::getString: out of bounds! Offset: " << offset << ", length: " << length << ", data length: " << m_dataLength;
         return "";
     }
 
@@ -77,7 +84,9 @@ std::string Packet::getString (size_t offset, size_t length) const {
 
 std::string Packet::getPacketName (unsigned short packetType) {
     if ( packetType >= Packet::packetNames.size()) {
-        return ( std::stringstream() << "invalid packet: " << packetType ).str();
+        std::stringstream ss;
+        ss << "invalid packet: " << packetType;
+        return ss.str();
     }
 
     return Packet::packetNames[packetType];

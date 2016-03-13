@@ -8,20 +8,28 @@
 #include "PlayerState.hpp"
 #include "Game.hpp"
 #include "Packet.hpp"
+#include "Statistics.hpp"
 
 class Player {
 
 public:
 
-    Player (boost::asio::ip::tcp::socket &tcpSocket);
+    Player (boost::asio::ip::tcp::socket &tcpSocket, boost::asio::ip::udp::socket &udpSocket);
 
     ~Player ();
 
     /**
-     * Returns the TCP getSocket connected to the player.
+     * Returns the TCP socket connected to the player.
      */
-    boost::asio::ip::tcp::socket &getSocket () {
+    boost::asio::ip::tcp::socket &getTcpSocket () {
         return m_tcpSocket;
+    }
+
+    /**
+     * Returns the UDP socket connected to the player.
+     */
+    boost::asio::ip::udp::socket &getUdpSocket () {
+        return m_udpSocket;
     }
 
     /**
@@ -39,14 +47,6 @@ public:
         m_name = name;
     }
 
-    PlayerState getState () const {
-        return m_state;
-    }
-
-    void setState (PlayerState state) {
-        m_state = state;
-    }
-
     const SharedGame & getGame () const {
         return m_game;
     }
@@ -59,13 +59,14 @@ public:
         m_game.reset();
     }
 
+    Statistics & getStatistics () {
+        return m_statistics;
+    }
+
+
     bool sendPacket (Packet::PacketType packetType);
 
     bool sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
-
-    bool sendPacket (Packet::PacketType packetType, unsigned short value);
-
-    bool sendPacket (Packet::PacketType packetType, unsigned int value);
 
     std::string toString () const;
 
@@ -78,18 +79,16 @@ private:
     static unsigned int m_nextId;
 
     boost::asio::ip::tcp::socket &m_tcpSocket;
+    boost::asio::ip::udp::socket &m_udpSocket;
 
     // the player name
     std::string m_name;
 
-    // the player's state
-    PlayerState m_state;
-
     // possible game the player is in or has announced
     SharedGame m_game;
 
-    // the possible peer the player has
-    std::shared_ptr<Player> m_peer;
+    // all statistics for this player
+    Statistics m_statistics;
 };
 
 typedef std::shared_ptr<Player> SharedPlayer;

@@ -1,4 +1,5 @@
 import struct
+import datetime
 
 
 class Packet:
@@ -14,15 +15,15 @@ class Packet:
     GAME_REMOVED = 9
     LEAVE_GAME = 10
     NO_GAME = 11
-
-    # sent by both
-    DATA = 16
-
-    # UDP packets
-    START_ACTION = 200
-    DUMMY = 201
-    MISSION = 202
-    UNIT_STATS = 203
+    JOIN_GAME = 12
+    GAME_JOINED = 13
+    INVALID_GAME = 14
+    ALREADY_HAS_GAME = 15
+    GAME_FULL = 16
+    GAME_ENDED = 17
+    DATA = 18
+    UDP_PING = 19
+    UDP_PONG = 20
 
     packetNames = {
         LOGIN: 'LOGIN',
@@ -36,7 +37,16 @@ class Packet:
         GAME_ADDED: 'GAME_ADDED',
         GAME_REMOVED: 'GAME_REMOVED',
         LEAVE_GAME: 'LEAVE_GAME',
-        NO_GAME: 'NO_GAME'
+        NO_GAME: 'NO_GAME',
+        JOIN_GAME: 'JOIN_GAME',
+        GAME_JOINED: 'GAME_JOINED',
+        INVALID_GAME: 'INVALID_GAME',
+        ALREADY_HAS_GAME: 'ALREADY_HAS_GAME',
+        GAME_FULL: 'GAME_FULL',
+        GAME_ENDED: 'GAME_ENDED',
+        DATA: 'DATA',
+        UDP_PING: 'UDP_PING',
+        UDP_PONG: 'UDP_PONG'
     }
 
     # precalculated data lengths
@@ -101,96 +111,47 @@ class LeaveGamePacket(Packet):
         self.message = struct.pack('>hh', Packet.LEAVE_GAME, 0)
 
 
-
-class OkPacket(Packet):
-    def __init__(self, tag=0):
-        self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.OK, tag)
-
-
-class ErrorPacket(Packet):
-    def __init__(self, tag=0):
-        self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.ERROR, tag)
-
-
-class RegisterPacket(Packet):
-    def __init__(self, tag, name, secret):
-        nameLength = len(name)
-        packetLength = struct.calcsize('>hhIh') + nameLength
-        self.message = struct.pack('>hhhIh%ds' % nameLength, packetLength, Packet.REGISTER, tag, secret, nameLength,
-                                   name)
-
-
-class RegisterOkPacket(Packet):
-    def __init__(self, tag, id):
-        length = struct.calcsize('>hhI')
-        self.message = struct.pack('>hhhI', length, Packet.REGISTER_OK, tag, id)
-
-
-class GetPlayerCountPacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength, Packet.GET_PLAYER_COUNT)
-
-
-class GetPlayersPacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength, Packet.GET_PLAYERS)
-
-
-class GetGamesPacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength, Packet.GET_GAMES)
-
-
 class JoinGamePacket(Packet):
-    def __init__(self, gameId):
-        # create the message
-        self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.JOIN, gameId)
-
-
-class PingPacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength, Packet.PING)
-
-
-class PongPacket(Packet):
-    def __init__(self):
-        # create the message
-        self.message = struct.pack('>hh', Packet.shortLength, Packet.PONG)
-
-
-class SubscribePacket(Packet):
-    def __init__(self, tag):
-        # create the message
-        self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.SUBSCRIBE, tag)
-
-
-class UnsubscribePacket(Packet):
-    def __init__(self, tag):
-        # create the message
-        self.message = struct.pack('>hhh', Packet.shortLength * 2, Packet.UNSUBSCRIBE, tag)
+    def __init__(self, id):
+        length = struct.calcsize('>I')
+        self.message = struct.pack('>hhI', Packet.JOIN_GAME, length, id)
 
 
 class DataPacket(Packet):
     def __init__(self, data):
         # create the message
         dataLength = len(data)
-        packetLength = struct.calcsize('>hhh') + dataLength
-        self.message = struct.pack('>hhh%ds' % dataLength, packetLength, Packet.DATA, dataLength, data)
+        self.message = struct.pack('>hh%ds' % dataLength, Packet.DATA, dataLength, data)
 
 
-class UdpDataPacket(Packet):
-    def __init__(self, playerId, gameId, data):
-        # create the message
-        dataLength = len(data)
-        packetLength = struct.calcsize('>hh') + dataLength
-        self.message = struct.pack('>hhh%ds' % dataLength, packetLength, playerId, gameId, data)
-
-
-class StartActionPacket(Packet):
+class UdpPingPacket(Packet):
     def __init__(self):
+        now = datetime.datetime.now()
+        milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
+        print "ms: ", milliseconds
         # create the message
-        self.message = struct.pack('>h', Packet.START_ACTION)
+        self.message = struct.pack('>hL', Packet.UDP_PING, milliseconds)
+
+
+
+
+# class PongPacket(Packet):
+#     def __init__(self):
+#         # create the message
+#         self.message = struct.pack('>hh', Packet.shortLength, Packet.PONG)
+#
+#
+#
+#
+# class UdpDataPacket(Packet):
+#     def __init__(self, playerId, gameId, data):
+#         # create the message
+#         dataLength = len(data)
+#         packetLength = struct.calcsize('>hh') + dataLength
+#         self.message = struct.pack('>hhh%ds' % dataLength, packetLength, playerId, gameId, data)
+#
+#
+# class StartActionPacket(Packet):
+#     def __init__(self):
+#         # create the message
+#         self.message = struct.pack('>h', Packet.START_ACTION)
