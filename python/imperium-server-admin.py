@@ -10,43 +10,8 @@ import thread
 server = None
 port = -1
 
-#udpServer = None
-
 udpSocket = None
 udpAddress = None
-
-# class UdpServer(asyncore.dispatcher):
-#
-#     def __init__(self, host, port, serverPort):
-#         asyncore.dispatcher.__init__(self)
-#         self.create_socket(socket.AF_INET, socket.SOCK_DGRAM)
-#         self.set_reuse_addr()
-#         print "--- %s %d %d" % (host, port, serverPort)
-#         self.bind(('', port))
-#
-#         self.serverAddress = (host, serverPort)
-#         print "--- server started"
-#
-#     def handle_connect(self):
-#         print "--- handle_connect"
-#
-#     def handle_read(self):
-#         data, addr = self.recvfrom(2048)
-#         print "--- handle_read: from: %s, data: %s" % ( str(addr), data )
-#
-#     def handle_write(self):
-#         pass
-#
-#     def sendPing(self):
-#         # send ping
-#         print "--- sending ping"
-#         self.sendto( packet.PingPacket().message, self.serverAddress )
-#
-#
-#     def run(self):
-#         print "--- starting main UDP loop"
-#         asyncore.loop()
-
 
 def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
@@ -208,26 +173,6 @@ def announceGame(sock):
     # send the request
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
-    # readNextPacket( sock )
-
-    # read status
-    # readTag, status = readStatusPacket(sock)
-    # if status == packet.Packet.OK and tag == readTag:
-    #     print 'Game announced ok'
-    #
-    #     # read the announced game data
-    #     try:
-    #         data = readPacket(sock, packet.Packet.GAME_ADDED)
-    #         (gameId, scenarioId, nameLength) = struct.unpack_from('>hhh', data, 0)
-    #         (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhh'))
-    #
-    #         print 'Game %d, tag: %d, scenario: %d, announcer: %s' % (gameId, tag, scenarioId, playerName)
-    #
-    #     except PacketException:
-    #         print 'Failed to read announced game data'
-    # else:
-    #     print 'Failed to announce game'
-
 
 def joinGame(sock):
     gameId = getInputInteger('Game to join id: ', 0, 1000)
@@ -235,51 +180,12 @@ def joinGame(sock):
     # send the request
     sock.send(packet.JoinGamePacket(gameId).message)
 
-    # # read the start packet
-    # try:
-    #     data = readPacket(sock, packet.Packet.STARTS)
-    #     (udpPort, gameId, playerId, nameLength) = struct.unpack_from('>hhhh', data, 0)
-    #     (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hhhh'))
-    #     print 'Game %d joined ok, we are: %d, opponent is: %s, data on UDP port: %d' % (
-    #         gameId, playerId, opponentName, udpPort)
-    #
-    #     # create the UDP socket
-    #     udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    #     udpAddress = (sock.getpeername()[0], udpPort)
-    #     # udpSocket.connect( udpAddress )
-    #     udpSocket.bind(('', 0))
-    #
-    # except PacketException:
-    #     print 'Failed to join game %d' % gameId
-
 
 def leaveGame(sock):
-    # print ''
-    # print 'Leave a new game we are in or hosting'
-    # gameId = getInputInteger('Game id: ', 0, 1000)
-
     print 'Leaving game'
 
     # send the request
     sock.send(packet.LeaveGamePacket().message)
-
-    # read status
-    # tag, status = readStatusPacket(sock)
-    # if status == packet.Packet.OK:
-    #     print 'Game left ok'
-    #
-    #     # read the left game data
-    #     try:
-    #         data = readPacket(sock, packet.Packet.GAME_REMOVED)
-    #         (gameId,) = struct.unpack('>h', data)
-    #
-    #         print 'Game %d left' % gameId
-    #
-    #     except PacketException:
-    #         print 'Failed to read announced game data'
-    # else:
-    #     print 'Failed to leave game'
-
 
 
 def pingServer(sock):

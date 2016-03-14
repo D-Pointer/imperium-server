@@ -128,7 +128,6 @@ class UdpPingPacket(Packet):
     def __init__(self):
         now = datetime.datetime.now()
         milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
-        print "ms: ", milliseconds
         # create the message
         self.message = struct.pack('>hL', Packet.UDP_PING, milliseconds)
 

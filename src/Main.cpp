@@ -60,6 +60,7 @@ int main (int argc, char *argv[]) {
     }
 
     logInfo << "main: using port: " << port;
+    std::cout << "Using port: " << port << std::endl;
 
     try {
         boost::asio::io_service ioService;

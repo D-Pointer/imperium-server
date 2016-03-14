@@ -33,11 +33,6 @@ PlayerHandler::~PlayerHandler () {
         // does the player have a game?
         SharedGame game = m_player->getGame();
         if ( game ) {
-            // set the game end time
-            game->endGame();
-
-            GameManager::instance().removeGame( game );
-
             // has the game started?
             if ( game->hasStarted()) {
                 // let the other player know it ended
@@ -52,11 +47,16 @@ PlayerHandler::~PlayerHandler () {
                     player2->sendPacket( Packet::GameEndedPacket );
                     player2->clearGame();
                 }
+
+                // set the game end time
+                game->endGame();
             }
             else {
                 // not started, so it was still looking for players, but not anymore
                 broadcastGameRemoved( game );
             }
+
+            GameManager::instance().removeGame( game );
         }
 
         m_player.reset();
@@ -127,10 +127,10 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
         SharedPacket packet = std::make_shared<Packet>((Packet::PacketType) m_packetType, m_data, m_dataLength );
 
         // statistics
-        Statistics &stats = m_player->getStatistics();
-        stats.m_lastReceivedTcp = time( 0 );
-        stats.m_packetsReceivedTcp++;
-        stats.m_bytesReceivedTcp += sizeof( unsigned short ) * 2 + m_dataLength;
+//        Statistics &stats = m_player->getStatistics();
+//        stats.m_lastReceivedTcp = time( 0 );
+//        stats.m_packetsReceivedTcp++;
+//        stats.m_bytesReceivedTcp += sizeof( unsigned short ) * 2 + m_dataLength;
 
         // check the packets that we can receive
         switch ( packet->getType()) {
@@ -258,9 +258,9 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
         return;
     }
 
-    // create the new game
+    // create the new game, we're player 1
     game = GameManager::instance().createGame( announcedId, m_player->getId());
-    m_player->setGame( game );
+    m_player->setGame( game, 0 );
 
     // all ok, send a response with the announced game id
     std::vector<boost::asio::const_buffer> buffers;
@@ -311,9 +311,9 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
         return;
     }
 
-    // game, meet player
+    // game, meet player, we're player 2
     game->setPlayerId2( m_player->getId());
-    m_player->setGame( game );
+    m_player->setGame( game, 1 );
 
     // create the UDP handler
     boost::system::error_code ec1, ec2;
@@ -387,6 +387,9 @@ void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
             player2->sendPacket( Packet::GameEndedPacket );
             player2->clearGame();
         }
+
+        // set the game end time
+        game->endGame();
     }
     else {
         // just our game, we've announced it
@@ -395,9 +398,6 @@ void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
         // only broadcast the remove if it is actively looking for players
         broadcastGameRemoved( game );
     }
-
-    // set the game end time
-    game->endGame();
 
     // fully remove the game
     GameManager::instance().removeGame( game );

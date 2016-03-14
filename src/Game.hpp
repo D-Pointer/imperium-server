@@ -6,6 +6,8 @@
 #include <string>
 #include <ctime>
 
+#include "Statistics.hpp"
+
 class Game {
 
 public:
@@ -31,6 +33,8 @@ public:
     time_t getStartTime () const;
     time_t getEndTime () const;
 
+    Statistics & getStatistics (unsigned int player);
+
     std::string toString () const;
 
 
@@ -52,6 +56,9 @@ private:
     time_t m_creationTime;
     time_t m_startTime;
     time_t m_endTime;
+
+    // all statistics for both players
+    Statistics m_statistics[2];
 };
 
 typedef std::shared_ptr<Game> SharedGame;

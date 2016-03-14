@@ -59,7 +59,7 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
 void Server::sessionTerminated (PlayerHandler * player) {
     logInfo << "Server::sessionTerminated: player: " << player->toString() << " terminated";
     m_playerHandlers.erase( player );
-    logDebug << "Server::sessionTerminated: players left: " << PlayerManager::instance().getPlayerCount();
+    logDebug << "Server::sessionTerminated: players handlers left: " << m_playerHandlers.size();
 
     delete player;
 }

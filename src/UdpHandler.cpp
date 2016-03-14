@@ -54,9 +54,7 @@ void UdpHandler::handleUdpReceive1 (const boost::system::error_code &error, size
                                                   boost::bind( &UdpHandler::handleUdpReceive1, shared_from_this(),
                                                                boost::asio::placeholders::error,
                                                                boost::asio::placeholders::bytes_transferred ));
-    logDebug << "UdpHandler::handleUdpReceive1: done";
 }
-
 
 
 void UdpHandler::handleUdpReceive2 (const boost::system::error_code &error, size_t size) {
@@ -76,7 +74,6 @@ void UdpHandler::handleUdpReceive2 (const boost::system::error_code &error, size
                                                   boost::bind( &UdpHandler::handleUdpReceive2, shared_from_this(),
                                                                boost::asio::placeholders::error,
                                                                boost::asio::placeholders::bytes_transferred ));
-    logDebug << "UdpHandler::handleUdpReceive2: done";
 }
 
 
@@ -87,7 +84,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
     }
 
     // statistics
-    Statistics &stats = sender == 1 ? m_player1->getStatistics() : m_player2->getStatistics();
+    Statistics &stats = sender == 1 ? m_player1->getGame()->getStatistics( 0 ) : m_player2->getGame()->getStatistics( 1 );
     stats.m_lastReceivedUdp = time( 0 );
     stats.m_packetsReceivedUdp++;
     stats.m_bytesReceivedUdp += size;

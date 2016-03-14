@@ -8,7 +8,6 @@
 #include "PlayerState.hpp"
 #include "Game.hpp"
 #include "Packet.hpp"
-#include "Statistics.hpp"
 
 class Player {
 
@@ -51,8 +50,9 @@ public:
         return m_game;
     }
 
-    void setGame (const SharedGame & game) {
+    void setGame (const SharedGame & game, unsigned int playerIndex) {
         m_game = game;
+        m_playerIndex = playerIndex;
     }
 
     void clearGame () {
@@ -60,9 +60,8 @@ public:
     }
 
     Statistics & getStatistics () {
-        return m_statistics;
+        return m_game->getStatistics( m_playerIndex );
     }
-
 
     bool sendPacket (Packet::PacketType packetType);
 
@@ -87,8 +86,8 @@ private:
     // possible game the player is in or has announced
     SharedGame m_game;
 
-    // all statistics for this player
-    Statistics m_statistics;
+    // which player are we in the game?
+    unsigned int m_playerIndex;
 };
 
 typedef std::shared_ptr<Player> SharedPlayer;

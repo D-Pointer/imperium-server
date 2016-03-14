@@ -7,13 +7,21 @@ class Statistics {
 
 public:
 
+    Statistics () {
+        m_lastReceivedUdp = 0;
+        m_lastSentUdp = 0;
+        m_packetsSentUdp = 0;
+        m_packetsReceivedUdp = 0;
+        m_bytesSentUdp = 0;
+        m_bytesReceivedUdp = 0;
+    }
     // TCP
-    time_t m_lastReceivedTcp;
-    time_t m_lastSentTcp;
-    unsigned int m_packetsSentTcp;
-    unsigned int m_packetsReceivedTcp;
-    uint64_t m_bytesSentTcp;
-    uint64_t m_bytesReceivedTcp;
+//    time_t m_lastReceivedTcp;
+//    time_t m_lastSentTcp;
+//    unsigned int m_packetsSentTcp;
+//    unsigned int m_packetsReceivedTcp;
+//    uint64_t m_bytesSentTcp;
+//    uint64_t m_bytesReceivedTcp;
 
     // UDP
     time_t m_lastReceivedUdp;

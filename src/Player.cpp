@@ -68,9 +68,10 @@ bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
         boost::asio::write( m_tcpSocket, buffers );
 
         // statistics
-        m_statistics.m_lastSentTcp = time(0);
-        m_statistics.m_packetsSentTcp++;
-        m_statistics.m_bytesSentTcp += length;
+//        Statistics &stats = m_game->getStatistics( m_playerIndex );
+//        stats.m_lastSentTcp = time(0);
+//        stats.m_packetsSentTcp++;
+//        stats.m_bytesSentTcp += length;
 
         //logDebug << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType); //", payload length: " << length;
     }

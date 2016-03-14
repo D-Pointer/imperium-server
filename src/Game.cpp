@@ -70,6 +70,11 @@ time_t Game::getEndTime () const {
     return m_endTime;
 }
 
+
+Statistics & Game::getStatistics (unsigned int player) {
+    return m_statistics[ player ];
+}
+
 std::string Game::toString () const {
     std::stringstream ss;
     ss << "[Game " << m_id << " player: " << m_playerId1 << " scenario: " << m_scenarioId << ']';
