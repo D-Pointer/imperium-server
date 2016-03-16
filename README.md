@@ -3,10 +3,38 @@ Network server for Imperium.
 
 ## Installation
 
+Installing the server requires a few libs and CMake.
 
 ### Dependencies
 
-* Boost
+* CMake >= 2.8
+* Boost >= 1.55 (http://www.boost.org/)
+* Log4Cpp 1.1.1 (http://log4cpp.sourceforge.net/)
+
+### Compiling
+
+````
+% cd imperium-server
+% mkdir build
+% cd build
+% cmake ..
+% make
+````
+
+The final binary is `imperium-server` in the `build` directory.
+
+---
+
+## Running
+
+To run the server start it with a path to a directory used to run it in and a TCP port.
+
+````
+% ./imperium-server /path/to/run/dir 11000
+````
+
+The path is where the server saves log files and various statistics.
+
 
 ## Protocol
 
