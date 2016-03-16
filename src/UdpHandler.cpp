@@ -44,8 +44,8 @@ void UdpHandler::handleUdpReceive1 (const boost::system::error_code &error, size
         return;
     }
 
-    logDebug << "UdpHandler::handleUdpReceive1: received " << size << " bytes of UDP data from player 1, "
-    << m_endpoint1.address().to_string() << ":" << m_endpoint1.port();
+//    logDebug << "UdpHandler::handleUdpReceive1: received " << size << " bytes of UDP data from player 1, "
+//    << m_endpoint1.address().to_string() << ":" << m_endpoint1.port();
 
     handlePacket( m_udpReceiveBuffer1, size, 1 );
 
@@ -64,8 +64,8 @@ void UdpHandler::handleUdpReceive2 (const boost::system::error_code &error, size
         return;
     }
 
-    logDebug << "UdpHandler::handleUdpReceive2: received " << size << " bytes of UDP data from player 2, "
-    << m_endpoint2.address().to_string() << ":" << m_endpoint2.port();
+//    logDebug << "UdpHandler::handleUdpReceive2: received " << size << " bytes of UDP data from player 2, "
+//    << m_endpoint2.address().to_string() << ":" << m_endpoint2.port();
 
     handlePacket( m_udpReceiveBuffer2, size, 2 );
 
@@ -115,7 +115,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             break;
 
         default:
-            logError << "UdpHandler::handlePacket: unknown packet from player " << sender;
+            logError << "UdpHandler::handlePacket: unknown packet from player " << sender << ", size: " << size << " bytes";
             return;
     }
 }

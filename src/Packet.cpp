@@ -1,3 +1,4 @@
+#include <cstring>
 #include <sstream>
 
 #include "Packet.hpp"
