@@ -1,6 +1,13 @@
 # imperium-server
 Network server for Imperium.
 
+## Installation
+
+
+### Dependencies
+
+* Boost
+
 ## Protocol
 
 ### Header

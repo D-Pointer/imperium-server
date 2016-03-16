@@ -27,9 +27,6 @@ PlayerHandler::~PlayerHandler () {
 
     // do we have a player?
     if ( m_player ) {
-        // clean up player
-        PlayerManager::instance().removePlayer( m_player );
-
         // does the player have a game?
         SharedGame game = m_player->getGame();
         if ( game ) {
@@ -59,6 +56,8 @@ PlayerHandler::~PlayerHandler () {
             GameManager::instance().removeGame( game );
         }
 
+        // clean up player
+        PlayerManager::instance().removePlayer( m_player );
         m_player.reset();
     }
 
