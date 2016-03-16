@@ -1,4 +1,5 @@
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 #include "GameManager.hpp"
 #include "Log.hpp"
