@@ -13,7 +13,7 @@ using boost::asio::ip::tcp;
 
 class Server {
 public:
-    Server (boost::asio::io_service &io_service, short port);
+    Server (boost::asio::io_service &io_service, const std::string & ip, short port);
 
     void handleAccept (PlayerHandler *playerHandler, const boost::system::error_code &error);
 

@@ -6,6 +6,7 @@ import struct
 import packet
 import datetime
 import thread
+import ssl
 
 server = None
 port = -1
@@ -245,22 +246,33 @@ def getInput(sock):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print "Usage: %s server port name" % sys.argv[0]
+    if len(sys.argv) != 4 and len(sys.argv) != 5:
+        print "Usage: %s server port name [ssl]" % sys.argv[0]
         exit(1)
 
     server = sys.argv[1]
     port = int(sys.argv[2])
     name = sys.argv[3]
 
+    if len(sys.argv) == 5:
+        useSsl = True
+    else:
+        useSsl = False
+
     print 'Connecting to server on %s:%d' % (server, port)
 
     # Connect to the server
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = None
+        if useSsl:
+            context = ssl.create_default_context()
+            s = context.wrap_socket( socket.socket(socket.AF_INET, socket.SOCK_STREAM), server_hostname=server )
+        else:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((server, port))
     except:
         print 'Error connecting to the server, aborting'
+        raise
         sys.exit(1)
 
     # log in

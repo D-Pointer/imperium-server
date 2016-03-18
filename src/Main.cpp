@@ -12,7 +12,7 @@
 #include "Log.hpp"
 
 void usage (const std::string & appname) {
-    std::cout << "usage: " << appname << " workingDir port" << std::endl;
+    std::cout << "usage: " << appname << " workingDir interfaceIP port" << std::endl;
     exit( EXIT_FAILURE );
 }
 
@@ -21,7 +21,7 @@ int main (int argc, char *argv[]) {
     std::cout << "Imperium Server " << MAJOR_VERSION << "." << MINOR_VERSION << "." << EXTRA_VERSION << std::endl;
     std::cout << "Build date: " __DATE__ << " " << __TIME__ << std::endl;
 
-    if ( argc != 3 ) {
+    if ( argc != 4 ) {
         std::cout << "Invalid arguments" << std::endl;
         usage( argv[0] );
     }
@@ -44,11 +44,13 @@ int main (int argc, char *argv[]) {
     logInfo << "version " << MAJOR_VERSION << "." << MINOR_VERSION << "." << EXTRA_VERSION;
     logInfo << "build date: " __DATE__ << " " << __TIME__;
 
+    std::string ip = argv[2];
+
     int port;
 
     // parse the port
     try {
-        port = boost::lexical_cast<int>( argv[2] );
+        port = boost::lexical_cast<int>( argv[3] );
 
         if ( port <= 0 || port > 65535 ) {
             throw boost::bad_lexical_cast();
@@ -59,13 +61,13 @@ int main (int argc, char *argv[]) {
         usage( argv[0] );
     }
 
-    logInfo << "main: using port: " << port;
-    std::cout << "Using port: " << port << std::endl;
+    logInfo << "main: using ip/port: " << ip << ":" << port;
+    std::cout << "Using IP/port: " << ip << ":" << port << std::endl;
 
     try {
         boost::asio::io_service ioService;
 
-        Server server( ioService, port );
+        Server server( ioService, ip, port );
         ioService.run();
     }
     catch (std::exception& ex) {
