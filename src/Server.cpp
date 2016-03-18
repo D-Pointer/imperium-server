@@ -14,8 +14,8 @@ using boost::asio::ip::tcp;
 unsigned short Server::m_nextUdpPort = 12000;
 
 Server::Server (boost::asio::io_service &io_service, short port)
-        : m_io_service( io_service ), m_acceptor( io_service, tcp::endpoint( tcp::v4(), port )) {
-
+        : m_io_service( io_service ), m_acceptor( io_service, tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), port )) {
+    
     // the UDP port that this player will use
     unsigned short udpPort = m_nextUdpPort++;
 

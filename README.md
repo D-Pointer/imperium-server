@@ -27,9 +27,11 @@ The final binary is `imperium-server` in the `build` directory.
 
 ## Running
 
-To run the server start it with a path to a directory used to run it in and a TCP port.
+To run the server start it with a path to a directory used to run it in and a TCP port. Due
+to a bug in Boost Filesystem the `LC_ALL` environment variable must be set to `C`:
 
 ````
+% export LC_ALL=C
 % ./imperium-server /path/to/run/dir 11000
 ````
 
