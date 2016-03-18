@@ -37,6 +37,10 @@ public:
         UdpData,
     };
 
+    static bool isValidPacket (unsigned short value) {
+        return value <= PacketType::UdpData;
+    }
+
     Packet (PacketType type, const unsigned char *data, size_t dataLength);
 
     virtual ~Packet ();

@@ -103,6 +103,13 @@ void PlayerHandler::handleHeader (const boost::system::error_code &error) {
     m_packetType = ntohs( m_packetType );
     m_dataLength = ntohs( m_dataLength );
 
+    // precautions
+    if ( ! Packet::isValidPacket( m_packetType ) ) {
+        logError << "PlayerHandler::handleHeader: invalid packet: " << m_packetType << ", closing connection";
+        terminated( this );
+        return;
+    }
+
     logDebug << "PlayerHandler::handleHeader: received header for packet: " << Packet::getPacketName( m_packetType ) << ", data length: " << m_dataLength;
 
     // read the data, if there is anything to read
