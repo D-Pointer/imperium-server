@@ -27,16 +27,22 @@ The final binary is `imperium-server` in the `build` directory.
 
 ## Running
 
-To run the server start it with a path to a directory used to run it in and a TCP port. Due
+To run the server start it with a path to a directory used to run it in, the IP address to bind to and a TCP port. Due
 to a bug in Boost Filesystem the `LC_ALL` environment variable must be set to `C`:
 
 ````
 % export LC_ALL=C
-% ./imperium-server /path/to/run/dir 11000
+% ./imperium-server /path/to/run/dir 0.0.0.0 11000
 ````
 
-The path is where the server saves log files and various statistics.
+The path is where the server saves log files and various statistics. If you want to secure the server
+a bit and use SSL/TLS for the TCP data you can put `stunnel` in front of it. In that case you want to
+bind to an internal IP address only and have `stunnel` forward traffic:
 
+````
+% export LC_ALL=C
+% ./imperium-server /path/to/run/dir 127.0.0.1 11000
+````
 
 ## Protocol
 
