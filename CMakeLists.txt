@@ -34,4 +34,4 @@ find_library(BOOST_SYSTEM NAMES libboost_system.a)
 find_library(BOOST_FILESYSTEM NAMES libboost_filesystem.a)
 find_library(LOG4CPP liblog4cpp.a)
 
-target_link_libraries(imperium_server ${BOOST_SYSTEM} ${BOOST_FILESYSTEM} ${LOG4CPP})
+target_link_libraries(imperium_server ${BOOST_SYSTEM} ${BOOST_FILESYSTEM} ${LOG4CPP} pthread)
