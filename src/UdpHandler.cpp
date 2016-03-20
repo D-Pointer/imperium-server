@@ -5,7 +5,7 @@
 #include "Log.hpp"
 
 UdpHandler::UdpHandler (const SharedPlayer &player1, boost::asio::ip::address address1, const SharedPlayer &player2, boost::asio::ip::address address2)
-        : m_player1( player1 ), m_player2( player2 ), m_address1( address1 ), m_address2( address2 ) {
+        : m_player1( player1 ), m_player2( player2 ), m_playerSentUdp1(false), m_playerSentUdp2(false), m_address1( address1 ), m_address2( address2 ) {
 
 }
 
@@ -89,6 +89,14 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
     stats.m_packetsReceivedUdp++;
     stats.m_bytesReceivedUdp += size;
 
+    // handle the first UDP packet
+    if ( sender == 1 ) {
+        m_playerSentUdp1 = true;
+    }
+    else {
+        m_playerSentUdp2 = true;
+    }
+
     unsigned short packetType;
     memcpy( &packetType, data.data(), sizeof( unsigned short ));
     packetType = ntohs( packetType );
@@ -107,9 +115,20 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
         case Packet::UdpData:
             logDebug << "UdpHandler::handlePacket: " << size << " bytes of UDP data from player " << sender;
             if ( sender == 1 ) {
+                // we can only send to player 2 if that player has sent us at least one packet so that the endpoint is valid
+                if ( ! m_playerSentUdp2 ) {
+                    logWarning << "UdpHandler::handlePacket: player 2 has not yet sent their first UDP packet, can not send";
+                    return;
+                }
+
                 handleData( data, size, m_player1->getUdpSocket(), m_endpoint2, stats );
             }
             else {
+                if ( ! m_playerSentUdp1 ) {
+                    logWarning << "UdpHandler::handlePacket: player 1 has not yet sent their first UDP packet, can not send";
+                    return;
+                }
+
                 handleData( data, size, m_player2->getUdpSocket(), m_endpoint1, stats );
             }
             break;

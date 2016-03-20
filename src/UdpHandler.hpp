@@ -39,6 +39,10 @@ private:
     SharedPlayer m_player1;
     SharedPlayer m_player2;
 
+    // have both players sent their initial udp data?
+    bool m_playerSentUdp1;
+    bool m_playerSentUdp2;
+
     boost::asio::ip::address m_address1;
     boost::asio::ip::address m_address2;
 

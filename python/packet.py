@@ -24,6 +24,7 @@ class Packet:
     DATA = 18
     UDP_PING = 19
     UDP_PONG = 20
+    UDP_DATA = 21
 
     packetNames = {
         LOGIN: 'LOGIN',
@@ -46,7 +47,8 @@ class Packet:
         GAME_ENDED: 'GAME_ENDED',
         DATA: 'DATA',
         UDP_PING: 'UDP_PING',
-        UDP_PONG: 'UDP_PONG'
+        UDP_PONG: 'UDP_PONG',
+        UDP_DATA: 'UDP_DATA',
     }
 
     # precalculated data lengths
@@ -130,6 +132,19 @@ class UdpPingPacket(Packet):
         milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
         # create the message
         self.message = struct.pack('>hL', Packet.UDP_PING, milliseconds)
+
+
+class UdpTextPacket(Packet):
+    def __init__(self, type, data):
+        # create the message
+        dataLength = len(data)
+        self.message = struct.pack('>hh%ds' % dataLength, Packet.UDP_DATA, type, data)
+
+
+class UdpDataPacket(Packet):
+    def __init__(self, type, value):
+        # create the message
+        self.message = struct.pack('>hhh', Packet.UDP_DATA, type, value)
 
 
 

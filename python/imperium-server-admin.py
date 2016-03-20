@@ -14,6 +14,11 @@ port = -1
 udpSocket = None
 udpAddress = None
 
+UDP_TYPE_TEXT = 0
+UDP_TYPE_TEST = 1
+
+udpSpeedTestStart = None
+
 def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
     while True:
@@ -27,6 +32,22 @@ def readUdpPackets(udpSocket):
             now = datetime.datetime.now()
             milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
             print "--- pong received, time: %d ms" % (milliseconds - oldTime)
+
+        elif packetType == packet.Packet.UDP_DATA:
+            (udpPacketType, ) = struct.unpack_from('>h', data, struct.calcsize('>h'))
+
+            print "--- data type %d received: %s" % (udpPacketType, data[struct.calcsize('>h') * 2:])
+            if udpPacketType == UDP_TYPE_TEST:
+                (value, ) = struct.unpack_from('>h', data, struct.calcsize('>hh') )
+                print "--- value: %d" % value
+                value += 1
+                if value == 100:
+                    now = datetime.datetime.now()
+                    usedMs = ((now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000) - udpSpeedTestStart
+                    print "--- done in %d ms" % usedMs
+                else:
+                    udpSocket.sendto(packet.UdpDataPacket( UDP_TYPE_TEST, value).message, udpAddress)
+
 
 
 class PacketException(Exception):
@@ -105,6 +126,9 @@ def handleGameJoined(data):
     udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     thread.start_new_thread( readUdpPackets, (udpSocket, ))
 
+    # send an initial "ping" to open up the connection so that the server knows our port
+    udpSocket.sendto( packet.UdpPingPacket().message, udpAddress )
+
 
 def handleGameJoinError(reason):
     print "### error joining game: %s" % reason
@@ -115,7 +139,7 @@ def handleGameEnded():
 
 
 def handleData(data):
-    print "### received data '%s'" % data
+    print "### received TCP data '%s'" % data
 
 
 def readNextPacket(sock):
@@ -196,7 +220,7 @@ def pingServer(sock):
 
 
 def sendTcpDataPacket(sock):
-    data = raw_input('Data to send: ')
+    data = raw_input('TCP data to send: ')
 
     if data is None:
         return
@@ -206,7 +230,7 @@ def sendTcpDataPacket(sock):
 
 
 def sendUdpDataPacket(sock):
-    data = raw_input('Data to send: ')
+    data = raw_input('UDP data to send: ')
 
     if data is None:
         return
@@ -214,7 +238,19 @@ def sendUdpDataPacket(sock):
     global udpAddress
 
     # send data
-    udpSocket.sendto(data, udpAddress)
+    udpSocket.sendto(packet.UdpTextPacket( UDP_TYPE_TEXT, data).message, udpAddress)
+
+
+def sendUdpTestData(sock):
+    startValue = 0
+
+    global udpAddress, udpSpeedTestStart
+
+    now = datetime.datetime.now()
+    udpSpeedTestStart = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
+
+    # send data
+    udpSocket.sendto(packet.UdpDataPacket( UDP_TYPE_TEST, startValue).message, udpAddress)
 
 
 def login(sock, name):
@@ -235,10 +271,12 @@ def getInput(sock):
         print '3: leave a game'
         print '4: ping'
         print '5: send TCP data'
+        print '6: send UDP data'
+        print '7: send UDP game data'
         # print '2: join a game'
         # print '4: list games'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, sendTcpDataPacket )
+        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, sendTcpDataPacket, sendUdpDataPacket, sendUdpTestData )
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler
