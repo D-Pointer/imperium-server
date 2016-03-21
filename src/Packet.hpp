@@ -34,11 +34,11 @@ public:
         DataPacket,
         UdpPingPacket, // UDP in
         UdpPongPacket, // UDP out
-        UdpData,
+        UdpDataPacket,
     };
 
     static bool isValidPacket (unsigned short value) {
-        return value <= PacketType::UdpData;
+        return value <= PacketType::UdpDataPacket;
     }
 
     Packet (PacketType type, const unsigned char *data, size_t dataLength);

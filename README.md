@@ -23,7 +23,7 @@ Installing the server requires a few libs and CMake.
 
 The final binary is `imperium-server` in the `build` directory.
 
----
+
 
 ## Running
 
@@ -35,14 +35,38 @@ to a bug in Boost Filesystem the `LC_ALL` environment variable must be set to `C
 % ./imperium-server /path/to/run/dir 0.0.0.0 11000
 ````
 
-The path is where the server saves log files and various statistics. If you want to secure the server
-a bit and use SSL/TLS for the TCP data you can put `stunnel` in front of it. In that case you want to
-bind to an internal IP address only and have `stunnel` forward traffic:
+The path is where the server saves log files and various statistics.
+
+### Running with `stunnel`
+
+If you want to secure the server a bit and use SSL/TLS for the TCP data you can put `stunnel` in front of it.
+In that case you want to bind to an internal IP address only and have `stunnel` forward traffic:
 
 ````
 % export LC_ALL=C
 % ./imperium-server /path/to/run/dir 127.0.0.1 11000
 ````
+
+A minimal `stunnel` config file that works is something like:
+
+````
+; certs
+cert=/etc/.../fullchain.pem
+key=/etc/.../privkey.pem
+
+; disable support for insecure SSLv2 protocol
+options = NO_SSLv2
+
+[imperium-server]
+accept  = 11000
+connect = 11001
+````
+
+In this case the server uses a different port than the one open towards the Internet as `stunnel`
+seems to reserve it. Certificates can be had from various place, but I've used
+[Let's Encrypt](https://letsencrypt.org/) to get a free certificate.
+
+---
 
 ## Protocol
 
@@ -52,10 +76,12 @@ Each packet contains two mandatory fields:
 * packet length (unsigned short)
 
 The packet length contains the length of the payload. If the packet type does not require any payload this will be 0.
+Many packets are simply informational in their nature, i.e. they contain no extra data apart
+from the packet type, such as `ServerFullPacket`.
 
----
+## Packets
 
-### Login
+### LoginPacket
 Sent by clients.
 
 * name length (unsigned short)
@@ -63,17 +89,18 @@ Sent by clients.
 
 Responses:
 
-* Error packet, server full
-* Error packet, invalid name. The name must be 1 to 50 characters long.
-* Error packet, name taken by another player.
-* Ok packet.
+* `ServerFullPacket`, server full
+* `InvalidNamePacket`, invalid name. The name must be 1 to 50 characters long.
+* `NameTakenPacket`, name taken by another player.
+* `LoginOkPacket` packet.
 
+### Login ok
 
-### Player Id
-Sent by the server as a response to a Login packet when the login was successful. Contains the server assigned player id.
+### Invalid name
 
-* player id (unsigned int)
+### Name taken
 
+### Server full
 
 ### Announce
 Sent by players when they announce a game that some other player can join.
@@ -82,62 +109,31 @@ Sent by players when they announce a game that some other player can join.
 
 Responses:
 
+* `AlreadyAnnouncedPacket` if the player has already announced a game. The old game must be
+left before a new one can be announced.
+* `AnnounceOkPacket` is sent back if the announce was ok. It contains the internal id of
+the announced game (not related to the game specific id).
+* `GameAddedPacket` is broadcasted to all connected players to inform them that there is now
+a new announced game. Even the original announcer will get it.
+
+### Announce ok
+
+### Already announced
+
+### Game added
+
+### Game removed
 
 
-
-### Info packet
-The Info packet tells the server who the player is and what name he/she will go by. This should be the first packet sent by any client. Contents:
-
-* client version (unsigned int). A coded version number where 1.2.3 becomes 102030. Can be used to validate that the client is suitably new.
-
-#### Reply
-* OkPacket
-* ErrorPacket
-
----
-
-### Announce packet
-The announce packet announces a game to other players. One of the other players can then choose to join that gane.
-
-* scenario id (unsigned short)
-* tag (unsigned short)
-
-The scenario id is the id of the scenario that the player announces that he/she will host. The tag is an id for the announcement. 
-
-#### Reply
-* OkPacket if the game was announced ok
-* ErrorPacket if the game could not be announced, i.e. the player already has announced or joined another game.
-
----
-
-### Subscribe packet
-The subscribe packet indicates that the client wants to receive updates to games, i.e. announced, left and started games.
-
-* tag (unsigned short)
-
-#### Reply
-* OkPacket
-
----
-
-### Unubscribe packet
-The unsubscribe packet indicates that the client no longer wants to receive updates to games.
-
-* tag (unsigned short)
-
-#### Reply
-* OkPacket
-
----
-
-### Ok packet
-The Ok packet is only sent by the server in response to some other packet. All packets that have a tag will always receive an Ok or Error packet that contains the tag. The Ok packet means that original packet sent by the client was successfully executed. 
-
----
-
-### Error packet
-This is similar to the Ok packet but means the action failed. It also contains a tag identifying the original packet to which the failure is related.
-
-
-## UDP data
-There is no custom UDP protocol. Everything sent to the server will simply be sent as-is to the other player. The only exception to this is the first packet sent by both player which will be discarded. The first packet is used by the server to get the address and port of the client's sockets. Until both players have sent one packet all other data is discarded. Once both players have sent one dummy packet (the contents is irrelevant) all further packets are just relayed.
+### Leave game
+### No game
+### Join game
+### Game joined
+### Invalid game
+### Already has game
+### Game full
+### Game ended
+### Data
+### Udp ping
+### Udp pong
+### Udp data

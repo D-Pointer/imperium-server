@@ -112,7 +112,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             }
             break;
 
-        case Packet::UdpData:
+        case Packet::UdpDataPacket:
             logDebug << "UdpHandler::handlePacket: " << size << " bytes of UDP data from player " << sender;
             if ( sender == 1 ) {
                 // we can only send to player 2 if that player has sent us at least one packet so that the endpoint is valid

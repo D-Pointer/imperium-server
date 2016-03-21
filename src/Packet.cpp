@@ -29,7 +29,7 @@ const std::vector<std::string> Packet::packetNames = {
         "DataPacket",
         "UdpPingPacket",
         "UdpPongPacket",
-        "UdpData",
+        "UdpDataPacket",
 };
 
 
