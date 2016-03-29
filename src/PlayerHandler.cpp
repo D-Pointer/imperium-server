@@ -1,3 +1,4 @@
+
 #include <sstream>
 
 #include <boost/lexical_cast.hpp>
@@ -5,6 +6,7 @@
 #include <boost/bind.hpp>
 
 #include "PlayerHandler.hpp"
+#include "UdpHandler.hpp"
 #include "GameManager.hpp"
 #include "PlayerManager.hpp"
 #include "Definitions.hpp"
@@ -23,7 +25,7 @@ PlayerHandler::~PlayerHandler () {
     m_tcpSocket.close();
     m_udpSocket.close();
 
-    logDebug << "PlayerHandler::~PlayerHandler";
+    logDebug << "PlayerHandler::~PlayerHandler [" << m_player->getId() << "]";
 
     // do we have a player?
     if ( m_player ) {
@@ -37,12 +39,17 @@ PlayerHandler::~PlayerHandler () {
                 if ( player1 && player1 != m_player ) {
                     player1->sendPacket( Packet::GameEndedPacket );
                     player1->clearGame();
+                    player1->setReadyToStart( false );
+
+                    logDebug << "PlayerHandler::~PlayerHandler [" << m_player->getId() << "]: clearing game for player 1";
                 }
 
                 SharedPlayer player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
                 if ( player2 && player2 != m_player ) {
                     player2->sendPacket( Packet::GameEndedPacket );
                     player2->clearGame();
+                    player2->setReadyToStart( false );
+                    logDebug << "PlayerHandler::~PlayerHandler [" << m_player->getId() << "]: clearing game for player 2";
                 }
 
                 // set the game end time
@@ -59,11 +66,6 @@ PlayerHandler::~PlayerHandler () {
         // clean up player
         PlayerManager::instance().removePlayer( m_player );
         m_player.reset();
-    }
-
-    if ( m_udpHandler ) {
-        m_udpHandler->terminate();
-        m_udpHandler.reset();
     }
 }
 
@@ -94,7 +96,7 @@ void PlayerHandler::readHeader () {
 
 void PlayerHandler::handleHeader (const boost::system::error_code &error) {
     if ( error ) {
-        logError << "PlayerHandler::handleHeader: error reading header: " << error.message();
+        logError << "PlayerHandler::handleHeader [" << m_player->getId() << "]: error reading header: " << error.message();
         terminated( this );
         return;
     }
@@ -104,13 +106,14 @@ void PlayerHandler::handleHeader (const boost::system::error_code &error) {
     m_dataLength = ntohs( m_dataLength );
 
     // precautions
-    if ( ! Packet::isValidPacket( m_packetType ) ) {
-        logError << "PlayerHandler::handleHeader: invalid packet: " << m_packetType << ", closing connection";
+    if ( !Packet::isValidPacket( m_packetType )) {
+        logError << "PlayerHandler::handleHeader [" << m_player->getId() << "]: invalid packet: " << m_packetType << ", closing connection";
         terminated( this );
         return;
     }
 
-    logDebug << "PlayerHandler::handleHeader: received header for packet: " << Packet::getPacketName( m_packetType ) << ", data length: " << m_dataLength;
+    logDebug << "PlayerHandler::handleHeader [" << m_player->getId() << "]: received header for packet: " << Packet::getPacketName( m_packetType ) <<
+    ", data length: " << m_dataLength;
 
     // read the data, if there is anything to read
     if ( m_dataLength > 0 ) {
@@ -160,8 +163,12 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
                 handleDataPacket( packet );
                 break;
 
+            case Packet::ReadyToStartPacket:
+                handleReadyToStartPacket( packet );
+                break;
+
             default:
-                logError << "PlayerHandler::handlePacket: unknown packet type: " << (int) m_packetType;
+                logError << "PlayerHandler::handlePacket [" << m_player->getId() << "]: unknown packet type: " << (int) m_packetType;
                 break;
         }
 
@@ -172,7 +179,7 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
         readHeader();
     }
     else {
-        logError << "PlayerHandler::handlePacket: error reading packet data: " << error.message();
+        logError << "PlayerHandler::handlePacket [" << m_player->getId() << "]: error reading packet data: " << error.message();
         terminated( this );
     }
 }
@@ -181,34 +188,49 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
 void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // too many players?
     if ( PlayerManager::instance().getPlayerCount() >= s_maxPlayers ) {
-        logWarning << "PlayerHandler::handleLoginPacket: server is full, failing login";
+        logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: server is full, failing login";
         m_player->sendPacket( Packet::ServerFullPacket );
         return;
     }
 
+    unsigned int offset = 0;
+
+    // get the protocol version
+    unsigned short protocolVersion = packet->getUnsignedShort( offset );
+    offset += sizeof( unsigned short );
+
+    // wrong protocol version?
+    if ( protocolVersion != s_protocolVersion ) {
+        logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: bad protocol: " << protocolVersion << ", we support: " <<
+        s_protocolVersion;
+        m_player->sendPacket( Packet::InvalidProtocolPacket );
+        return;
+    }
+
     // get the name length
-    unsigned short nameLength = packet->getUnsignedShort( 0 );
+    unsigned short nameLength = packet->getUnsignedShort( offset );
+    offset += sizeof( unsigned short );
 
     // invalid name?
     if ( nameLength == 0 || nameLength > 50 ) {
-        logWarning << "PlayerHandler::handleLoginPacket: bad name length: " << nameLength << ", failing login";
+        logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: bad name length: " << nameLength << ", failing login";
         m_player->sendPacket( Packet::InvalidNamePacket );
         return;
     }
 
     // name length is ok, get the name
-    std::string name = packet->getString( sizeof( nameLength ), nameLength );
+    std::string name = packet->getString( offset, nameLength );
 
     // name already taken?
     if ( PlayerManager::instance().isNameTaken( name )) {
-        logWarning << "PlayerHandler::handleLoginPacket: name '" << name << "' is already taken, failing login";
+        logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: name '" << name << "' is already taken, failing login";
         m_player->sendPacket( Packet::NameTakenPacket );
         return;
     }
 
     m_player->setName( name );
     //m_player->setState( PlayerState::LoggedIn );
-    logDebug << "PlayerHandler::handleLoginPacket: login from player: " << m_player->toString();
+    logDebug << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: login from player: " << m_player->toString();
 
     // only now add the player to the set of connected player
     PlayerManager::instance().addPlayer( m_player );
@@ -243,7 +265,8 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
         buffers.push_back( boost::asio::buffer( &name[0], name.length()));
 
         // send to the logged in player
-        logDebug << "PlayerHandler::handleLoginPacket: sending game: " << game->toString() << " to player: " << m_player->toString();
+        logDebug << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: sending game: " << game->toString() << " to player: " <<
+        m_player->toString();
         m_player->sendPacket( Packet::GameAddedPacket, buffers );
     }
 }
@@ -253,13 +276,14 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
     // get the announced game id
     unsigned short announcedId = packet->getUnsignedShort( 0 );
 
-    logDebug << "PlayerHandler::handleAnnounceGamePacket: received an announcement for game: " << announcedId;
+    logDebug << "PlayerHandler::handleAnnounceGamePacket [" << m_player->getId() << "]: received an announcement for game: " << announcedId;
 
     SharedGame game = m_player->getGame();
 
     // do we have an old game?
     if ( game ) {
-        logWarning << "PlayerHandler::handleAnnounceGamePacket: old game already announced: " << game->getScenariodId() << ", can not announce new";
+        logWarning << "PlayerHandler::handleAnnounceGamePacket [" << m_player->getId() << "]: old game already announced: " << game->getScenariodId() <<
+        ", can not announce new";
         m_player->sendPacket( Packet::AlreadyAnnouncedPacket );
         return;
     }
@@ -280,11 +304,12 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
 
 
 void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
-    logDebug << "PlayerHandler::handleJoinGamePacket: received a join game packet";
+    logDebug << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: received a join game packet";
 
     // do we have a game?
     if ( m_player->getGame()) {
-        logWarning << "PlayerHandler::handleJoinGamePacket: already have a game: " << m_player->getGame()->getScenariodId() << ", can not join";
+        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: already have a game: " << m_player->getGame()->getScenariodId() <<
+        ", can not join";
         m_player->sendPacket( Packet::AlreadyHasGamePacket );
         return;
     }
@@ -295,16 +320,17 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     // do we have such a game?
     SharedGame game = GameManager::instance().getGame( gameId );
     if ( !game ) {
-        logWarning << "PlayerHandler::handleJoinGamePacket: no game with id: " << gameId;
+        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: no game with id: " << gameId;
         m_player->sendPacket( Packet::InvalidGamePacket );
         return;
     }
 
-    logDebug << "PlayerHandler::handleJoinGamePacket: player: " << m_player->toString() << " wants to join game: " << game->toString();
+    logDebug << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: player: " << m_player->toString() << " wants to join game: " <<
+    game->toString();
 
     // has the game already started?
     if ( game->hasStarted()) {
-        logWarning << "PlayerHandler::handleJoinGamePacket: game: " << game->toString() << " has already started, can not join";
+        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: game: " << game->toString() << " has already started, can not join";
         m_player->sendPacket( Packet::GameFullPacket );
         return;
     }
@@ -312,7 +338,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     // find the first, owning player
     SharedPlayer player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
     if ( !player1 ) {
-        logWarning << "PlayerHandler::handleJoinGamePacket: owner player not found for game: " << game->toString();
+        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: owner player not found for game: " << game->toString();
         m_player->sendPacket( Packet::InvalidGamePacket );
         return;
     }
@@ -327,18 +353,21 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     boost::asio::ip::tcp::endpoint ep2 = m_player->getTcpSocket().remote_endpoint( ec2 );
 
     if ( ec1 ) {
-        logError << "PlayerHandler::handleJoinGamePacket: failed to get player 1 TCP endpoint" << ec1.message();
+        logError << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: failed to get player 1 TCP endpoint" << ec1.message();
         return;
     }
     if ( ec2 ) {
-        logError << "PlayerHandler::handleJoinGamePacket: failed to get player 2 TCP endpoint: " << ec2.message();
+        logError << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: failed to get player 2 TCP endpoint: " << ec2.message();
         return;
     }
 
-    logDebug << "PlayerHandler::handleJoinGamePacket: endpoint 1: " << ep1.address() << ", endpoint 2: " << ep2.address();
+    logDebug << "PlayerHandler::handleJoinGamePacket [" << m_player->getId() << "]: endpoint 1: " << ep1.address() << ", endpoint 2: " << ep2.address();
 
-    m_udpHandler = std::make_shared<UdpHandler>( player1, ep1.address(), m_player, ep2.address());
-    m_udpHandler->start();
+    // set up the UDP handler
+    SharedUdpHandler udpHandler = std::make_shared<UdpHandler>( player1->getUdpSocket(), m_player->getUdpSocket(), ep1.address(), ep2.address(),
+                                                 game->getStatistics(0), game->getStatistics(1) );
+    m_player->getGame()->setUdpHandler( udpHandler );
+    udpHandler->start();
 
     // send to both players that the game has been joined
     std::vector<boost::asio::const_buffer> buffers1;
@@ -354,6 +383,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
 
     std::vector<boost::asio::const_buffer> buffers2;
 
+    // CRASH
     unsigned short netPort2 = htons( player1->getUdpSocket().local_endpoint().port());
     buffers2.push_back( boost::asio::buffer( &netPort2, sizeof( unsigned short )));
 
@@ -369,29 +399,31 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
 
 
 void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
-    logDebug << "PlayerHandler::handleLeaveGamePacket: received a leave game packet";
+    logDebug << "PlayerHandler::handleLeaveGamePacket [" << m_player->getId() << "]: received a leave game packet";
 
     SharedGame game = m_player->getGame();
     if ( !game ) {
         // no game, can't leave
-        logWarning << "PlayerHandler::handleLeaveGamePacket: no game in progress, nothing to leave";
+        logWarning << "PlayerHandler::handleLeaveGamePacket [" << m_player->getId() << "]: no game in progress, nothing to leave";
         m_player->sendPacket( Packet::NoGamePacket );
         return;
     }
 
     // are we in a game?
     if ( game->hasStarted()) {
-        logDebug << "PlayerHandler::handleLeaveGamePacket: game in progress, informing other player";
+        logDebug << "PlayerHandler::handleLeaveGamePacket [" << m_player->getId() << "]: game in progress, informing other player";
         SharedPlayer player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
         if ( player1 ) {
             player1->sendPacket( Packet::GameEndedPacket );
             player1->clearGame();
+            player1->setReadyToStart( false );
         }
 
         SharedPlayer player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
         if ( player2 ) {
             player2->sendPacket( Packet::GameEndedPacket );
             player2->clearGame();
+            player2->setReadyToStart( false );
         }
 
         // set the game end time
@@ -413,27 +445,33 @@ void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
 void PlayerHandler::handleDataPacket (const SharedPacket &packet) {
     // is the peer set up?
     if ( !m_peer ) {
-
-        SharedPlayer tmpPlayer = PlayerManager::instance().getPlayer( m_player->getGame()->getPlayerId1());
-        if ( tmpPlayer && tmpPlayer != m_player ) {
-            m_peer = tmpPlayer;
+        if ( ! findPeerPlayer() ) {
+            logError << "PlayerHandler::handleDataPacket [" << m_player->getId() << "]: no peer, can not handle data packet";
+            return;
         }
-        else {
-            tmpPlayer = PlayerManager::instance().getPlayer( m_player->getGame()->getPlayerId2());
-            if ( tmpPlayer && tmpPlayer != m_player ) {
-                m_peer = tmpPlayer;
-            }
-        }
-    }
-
-    if ( !m_peer ) {
-        logError << "PlayerHandler::handleDataPacket: no peer player found";
-        return;
     }
 
     std::vector<boost::asio::const_buffer> buffers;
     buffers.push_back( boost::asio::buffer( packet->getData(), packet->getDataLength()));
     m_peer->sendPacket( Packet::DataPacket, buffers );
+}
+
+
+void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
+    if ( !m_peer ) {
+        if ( ! findPeerPlayer() ) {
+            logError << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: no peer, can not handle ready to start packet";
+            return;
+        }
+    }
+
+    logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: player is now ready to start";
+    m_player->setReadyToStart( true );
+
+    if ( m_peer->isReadyToStart()) {
+        logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: both players ready to start, sending start UDP packets";
+        m_player->getGame()->getUdpHandler()->sendStartPackets();
+    }
 }
 
 
@@ -471,3 +509,23 @@ void PlayerHandler::broadcastGameRemoved (const SharedGame &game) {
     PlayerManager::instance().broadcastPacket( Packet::GameRemovedPacket, buffers );
 }
 
+
+bool PlayerHandler::findPeerPlayer () {
+    SharedPlayer tmpPlayer = PlayerManager::instance().getPlayer( m_player->getGame()->getPlayerId1());
+    if ( tmpPlayer && tmpPlayer != m_player ) {
+        m_peer = tmpPlayer;
+    }
+    else {
+        tmpPlayer = PlayerManager::instance().getPlayer( m_player->getGame()->getPlayerId2());
+        if ( tmpPlayer && tmpPlayer != m_player ) {
+            m_peer = tmpPlayer;
+        }
+    }
+
+    if ( !m_peer ) {
+        logError << "PlayerHandler::findPeerPlayer [" << m_player->getId() << "]: no peer player found";
+        return false;
+    }
+
+    return true;
+}

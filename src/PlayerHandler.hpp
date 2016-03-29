@@ -9,7 +9,6 @@
 
 #include "Packet.hpp"
 #include "Player.hpp"
-#include "UdpHandler.hpp"
 
 /**
  *
@@ -31,11 +30,11 @@ public:
      **/
     void start ();
 
-    boost::asio::ip::tcp::socket & getTcpSocket () {
+    boost::asio::ip::tcp::socket &getTcpSocket () {
         return m_tcpSocket;
     }
 
-    boost::asio::ip::udp::socket & getUdpSocket () {
+    boost::asio::ip::udp::socket &getUdpSocket () {
         return m_udpSocket;
     }
 
@@ -63,9 +62,13 @@ private:
 
     void handleDataPacket (const SharedPacket &packet);
 
-    void broadcastGameAdded (const SharedGame & game, const SharedPlayer & announcer);
-    void broadcastGameRemoved (const SharedGame & game);
+    void handleReadyToStartPacket (const SharedPacket &packet);
 
+    void broadcastGameAdded (const SharedGame &game, const SharedPlayer &announcer);
+
+    void broadcastGameRemoved (const SharedGame &game);
+
+    bool findPeerPlayer ();
 
     boost::asio::ip::tcp::socket m_tcpSocket;
 
@@ -78,9 +81,6 @@ private:
     // the player we manage as well as the peer player
     SharedPlayer m_player;
     SharedPlayer m_peer;
-
-    // UDP handler
-    SharedUdpHandler m_udpHandler;
 };
 
 typedef std::shared_ptr<PlayerHandler> SharedPlayerHandler;

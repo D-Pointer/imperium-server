@@ -5,30 +5,38 @@ import datetime
 class Packet:
     LOGIN = 0  # to server
     LOGIN_OK = 1  # from server
-    INVALID_NAME = 2
-    NAME_TAKEN = 3
-    SERVER_FULL = 4
-    ANNOUNCE = 5  # to server
-    ANNOUNCE_OK = 6
-    ALREADY_ANNOUNCED = 7
-    GAME_ADDED = 8
-    GAME_REMOVED = 9
-    LEAVE_GAME = 10
-    NO_GAME = 11
-    JOIN_GAME = 12
-    GAME_JOINED = 13
-    INVALID_GAME = 14
-    ALREADY_HAS_GAME = 15
-    GAME_FULL = 16
-    GAME_ENDED = 17
-    DATA = 18
-    UDP_PING = 19
-    UDP_PONG = 20
-    UDP_DATA = 21
+    INVALID_PROTOCOL = 2
+    INVALID_NAME = 3
+    NAME_TAKEN = 4
+    SERVER_FULL = 5
+    ANNOUNCE = 6  # to server
+    ANNOUNCE_OK = 7
+    ALREADY_ANNOUNCED = 8
+    GAME_ADDED = 9
+    GAME_REMOVED = 10
+    LEAVE_GAME = 11
+    NO_GAME = 12
+    JOIN_GAME = 13
+    GAME_JOINED = 14
+    INVALID_GAME = 15
+    ALREADY_HAS_GAME = 16
+    GAME_FULL = 17
+    GAME_ENDED = 18
+    DATA = 19
+    READY_TO_START = 20
+
+    UDP_PING = 21
+    UDP_PONG = 22
+    UDP_DATA = 23
+    UDP_DATA_START_ACTION = 24
+
+    UDP_DATA_MISSION = 200
+    UDP_DATA_UNIT_STATS = 201
 
     packetNames = {
         LOGIN: 'LOGIN',
         LOGIN_OK: 'LOGIN_OK',
+        INVALID_PROTOCOL: 'INVALID_PROTOCOL',
         INVALID_NAME: 'INVALID_NAME',
         NAME_TAKEN: 'NAME_TAKEN',
         SERVER_FULL: 'SERVER_FULL',
@@ -46,9 +54,13 @@ class Packet:
         GAME_FULL: 'GAME_FULL',
         GAME_ENDED: 'GAME_ENDED',
         DATA: 'DATA',
+        READY_TO_START: 'READY_TO_START',
         UDP_PING: 'UDP_PING',
         UDP_PONG: 'UDP_PONG',
+        UDP_DATA_START_ACTION: 'UDP_DATA_START_ACTION',
         UDP_DATA: 'UDP_DATA',
+        UDP_DATA_MISSION: 'UDP_DATA_MISSION',
+        UDP_DATA_UNIT_STATS: 'UDP_DATA_UNIT_STATS',
     }
 
     # precalculated data lengths
@@ -94,11 +106,10 @@ def name(packetType):
 
 
 class LoginPacket(Packet):
-    def __init__(self, name):
+    def __init__(self, protocolVersion, name):
         nameLength = len(name)
-        packetLength = struct.calcsize('>h') + nameLength
-        self.message = struct.pack('>hhh%ds' % nameLength, Packet.LOGIN, packetLength, nameLength, name)
-        # self.message = struct.pack( '>hhhIII', struct.calcsize( '>hhIII' ), Packet.LOGIN, tag, id, secret, version )
+        packetLength = struct.calcsize('>hh') + nameLength
+        self.message = struct.pack('>hhhh%ds' % nameLength, Packet.LOGIN, packetLength, protocolVersion, nameLength, name)
 
 
 class AnnounceGamePacket(Packet):
@@ -124,6 +135,12 @@ class DataPacket(Packet):
         # create the message
         dataLength = len(data)
         self.message = struct.pack('>hh%ds' % dataLength, Packet.DATA, dataLength, data)
+
+
+class ReadyToStartPacket(Packet):
+    def __init__(self):
+        # create the message
+        self.message = struct.pack('>hh', Packet.READY_TO_START, 0)
 
 
 class UdpPingPacket(Packet):

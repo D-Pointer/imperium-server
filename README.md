@@ -81,7 +81,7 @@ from the packet type, such as `ServerFullPacket`.
 
 ## Packets
 
-### LoginPacket
+### Login
 Sent by clients.
 
 * name length (unsigned short)
@@ -95,12 +95,25 @@ Responses:
 * `LoginOkPacket` packet.
 
 ### Login ok
+Sent by the server as a response to a Login packet and indicates that the player was logged in ok and can now
+announce games or join existing games.
+
+### Invalid protocol
+Sent by the server as a response to a Login packet and indicates that the game and the server use different protocols and
+can not communicate.
 
 ### Invalid name
+Sent by the server as a response to a Login packet and indicates that the name given by the player is invalid. It may
+be too long (the limit is 50 characters), be null or it contains forbidden words. The player can log in again using a
+different name.
 
 ### Name taken
+Sent by the server as a response to a Login packet and indicates that the name has already been taken by another player.
+The player needs to choose another name and log in again.
 
 ### Server full
+Sent by the server as a response to a Login packet and indicates that the server is currently full and does nto accept any more
+players. The player can try to log in again later.
 
 ### Announce
 Sent by players when they announce a game that some other player can join.

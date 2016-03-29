@@ -5,7 +5,7 @@
 unsigned int Player::m_nextId = 0;
 
 Player::Player (boost::asio::ip::tcp::socket &tcpSocket, boost::asio::ip::udp::socket &udpSocket)
-        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_udpSocket(udpSocket), m_name("unknown") {
+        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_udpSocket(udpSocket), m_name("unknown"), m_readyToStart(false) {
 }
 
 
@@ -21,7 +21,7 @@ bool Player::sendPacket (Packet::PacketType packetType) {
 
 
 bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
-    logDebug << "Player::sendPacket: sending packet: " << Packet::getPacketName(packetType) << " to player: " << toString();
+    logDebug << "Player::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
 
     // send a suitable header
     sendHeader( packetType, boost::asio::buffer_size( buffers ));
@@ -32,7 +32,7 @@ bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost:
         return true;
     }
     catch (std::exception &ex) {
-        logError << "Player::sendPacket: error sending packet: " << ex.what();
+        logError << "Player::sendPacket: error sending packet [" << m_id << "]: " << ex.what();
         return false;
     }
 }
@@ -76,7 +76,7 @@ bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
         //logDebug << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType); //", payload length: " << length;
     }
     catch (std::exception &ex) {
-        logError << "Player::sendHeader: error sending header: " << ex.what();
+        logError << "Player::sendHeader: error sending header [" << m_id << "]: " << ex.what();
         return false;
     }
 

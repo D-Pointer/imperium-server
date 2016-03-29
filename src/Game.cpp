@@ -14,6 +14,7 @@ Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId)
 
 Game::~Game () {
     logDebug << "Game::~Game";
+    m_udpHandler.reset();
 }
 
 
@@ -74,6 +75,17 @@ time_t Game::getEndTime () const {
 Statistics & Game::getStatistics (unsigned int player) {
     return m_statistics[ player ];
 }
+
+
+void Game::setUdpHandler (const SharedUdpHandler & udpHandler) {
+    m_udpHandler = udpHandler;
+}
+
+
+const SharedUdpHandler & Game::getUdpHandler () const {
+    return m_udpHandler;
+}
+
 
 std::string Game::toString () const {
     std::stringstream ss;

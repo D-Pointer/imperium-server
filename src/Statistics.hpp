@@ -15,6 +15,7 @@ public:
         m_bytesSentUdp = 0;
         m_bytesReceivedUdp = 0;
     }
+
     // TCP
 //    time_t m_lastReceivedTcp;
 //    time_t m_lastSentTcp;

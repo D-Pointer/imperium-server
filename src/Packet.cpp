@@ -10,6 +10,7 @@
 const std::vector<std::string> Packet::packetNames = {
         "LoginPacket",
         "LoginOkPacket",
+        "InvalidProtocolPacket",
         "InvalidNamePacket",
         "NameTakenPacket",
         "ServerFullPacket",

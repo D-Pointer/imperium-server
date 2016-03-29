@@ -7,6 +7,7 @@
 #include <ctime>
 
 #include "Statistics.hpp"
+#include "UdpHandler.hpp"
 
 class Game {
 
@@ -35,6 +36,9 @@ public:
 
     Statistics & getStatistics (unsigned int player);
 
+    void setUdpHandler (const SharedUdpHandler & udpHandler);
+    const SharedUdpHandler & getUdpHandler () const;
+
     std::string toString () const;
 
 
@@ -59,6 +63,9 @@ private:
 
     // all statistics for both players
     Statistics m_statistics[2];
+
+    // UDP handler
+    SharedUdpHandler m_udpHandler;
 };
 
 typedef std::shared_ptr<Game> SharedGame;

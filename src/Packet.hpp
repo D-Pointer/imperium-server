@@ -15,6 +15,7 @@ public:
     enum PacketType {
         LoginPacket = 0, // in
         LoginOkPacket, // out
+        InvalidProtocolPacket,
         InvalidNamePacket, // error out
         NameTakenPacket, // error out
         ServerFullPacket, // error out
@@ -32,9 +33,13 @@ public:
         GameFullPacket, // error out
         GameEndedPacket, // out
         DataPacket,
+        ReadyToStartPacket,
+
+        // UDP packets
         UdpPingPacket, // UDP in
         UdpPongPacket, // UDP out
         UdpDataPacket,
+        UdpStartActionPacket,
     };
 
     static bool isValidPacket (unsigned short value) {

@@ -59,13 +59,17 @@ public:
         m_game.reset();
     }
 
-    Statistics & getStatistics () {
-        return m_game->getStatistics( m_playerIndex );
-    }
-
     bool sendPacket (Packet::PacketType packetType);
 
     bool sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+
+    bool isReadyToStart () const {
+        return m_readyToStart;
+    }
+
+    void setReadyToStart (bool ready) {
+        m_readyToStart = ready;
+    }
 
     std::string toString () const;
 
@@ -88,6 +92,9 @@ private:
 
     // which player are we in the game?
     unsigned int m_playerIndex;
+
+    // is the player ready to start the game
+    bool m_readyToStart;
 };
 
 typedef std::shared_ptr<Player> SharedPlayer;
