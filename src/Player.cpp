@@ -15,6 +15,8 @@ Player::~Player () {
 
 
 bool Player::sendPacket (Packet::PacketType packetType) {
+    logDebug << "Player::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
+
     // just send a header, we have no data
     return sendHeader( packetType, 0);
 }

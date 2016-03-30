@@ -229,7 +229,6 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     }
 
     m_player->setName( name );
-    //m_player->setState( PlayerState::LoggedIn );
     logDebug << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: login from player: " << m_player->toString();
 
     // only now add the player to the set of connected player

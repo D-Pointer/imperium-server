@@ -143,46 +143,25 @@ class ReadyToStartPacket(Packet):
         self.message = struct.pack('>hh', Packet.READY_TO_START, 0)
 
 
+# UDP packets
+
 class UdpPingPacket(Packet):
     def __init__(self):
         now = datetime.datetime.now()
         milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
         # create the message
-        self.message = struct.pack('>hL', Packet.UDP_PING, milliseconds)
+        self.message = struct.pack('>BL', 0x15, milliseconds)
 
 
 class UdpTextPacket(Packet):
     def __init__(self, type, data):
         # create the message
         dataLength = len(data)
-        self.message = struct.pack('>hh%ds' % dataLength, Packet.UDP_DATA, type, data)
+        self.message = struct.pack('>Bh%ds' % dataLength, 0x17, type, data)
 
 
 class UdpDataPacket(Packet):
     def __init__(self, type, value):
         # create the message
-        self.message = struct.pack('>hhh', Packet.UDP_DATA, type, value)
+        self.message = struct.pack('>Bhh', 0x17, type, value)
 
-
-
-
-# class PongPacket(Packet):
-#     def __init__(self):
-#         # create the message
-#         self.message = struct.pack('>hh', Packet.shortLength, Packet.PONG)
-#
-#
-#
-#
-# class UdpDataPacket(Packet):
-#     def __init__(self, playerId, gameId, data):
-#         # create the message
-#         dataLength = len(data)
-#         packetLength = struct.calcsize('>hh') + dataLength
-#         self.message = struct.pack('>hhh%ds' % dataLength, packetLength, playerId, gameId, data)
-#
-#
-# class StartActionPacket(Packet):
-#     def __init__(self):
-#         # create the message
-#         self.message = struct.pack('>h', Packet.START_ACTION)

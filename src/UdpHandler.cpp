@@ -50,11 +50,11 @@ void UdpHandler::sendStartPackets () {
     std::vector<boost::asio::const_buffer> buffers;
 
     // packet type
-    unsigned int netPacketType = htons( Packet::PacketType::UdpStartActionPacket );
+    unsigned char netPacketType = Packet::PacketType::UdpStartActionPacket;
     buffers.push_back( boost::asio::buffer( &netPacketType, sizeof( unsigned short )));
 
     // data length type
-    unsigned int netDataLength = htons( 0 );
+    unsigned short netDataLength = htons( 0 );
     buffers.push_back( boost::asio::buffer( &netDataLength, sizeof( unsigned short )));
 
     // send to both players
@@ -132,9 +132,9 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
         m_playerSentUdp2 = true;
     }
 
-    unsigned short packetType;
-    memcpy( &packetType, data.data(), sizeof( unsigned short ));
-    packetType = ntohs( packetType );
+    unsigned char packetType = data[0];
+    //memcpy( &packetType, data.data(), sizeof( unsigned short ));
+    //packetType = ntohs( packetType );
 
     switch ((Packet::PacketType) packetType ) {
         case Packet::UdpPingPacket:
@@ -177,9 +177,10 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
 
 void UdpHandler::handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats) {
     // for the response we change the packet type to a "pong"
-    unsigned short packetType = Packet::PacketType::UdpPongPacket;
-    packetType = htons( packetType );
-    memcpy( data.data(), &packetType, sizeof( unsigned short ));
+    unsigned char packetType = Packet::PacketType::UdpPongPacket;
+    //packetType = htons( packetType );
+    data[0] = packetType;
+    //memcpy( data.data(), &packetType, sizeof( unsigned short ));
 
     // send away
     socket.send_to( boost::asio::buffer( data, size ), receiver );
