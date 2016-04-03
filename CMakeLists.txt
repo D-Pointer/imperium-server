@@ -3,7 +3,7 @@ project(imperium_server)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories("/Users/chakie/Work/nemas/libs/osx/include")
+#include_directories("/Users/chakie/Work/nemas/libs/osx/include")
 #link_directories( "/Users/chakie/Work/ames/libs/osx/lib" )
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
         /Users/chakie/Work/nemas/libs/osx/lib)
@@ -26,7 +26,13 @@ set(SOURCE_FILES
         src/PlayerManager.cpp
         src/PlayerManager.hpp
         src/Game.cpp
-        src/Game.hpp src/Definitions.hpp src/Player.cpp src/Player.hpp src/UdpHandler.cpp src/UdpHandler.hpp src/Statistics.hpp)
+        src/Game.hpp
+        src/Definitions.hpp
+        src/Player.cpp
+        src/Player.hpp
+        src/UdpHandler.cpp
+        src/UdpHandler.hpp
+        src/Statistics.hpp)
 
 add_executable(imperium_server ${SOURCE_FILES})
 

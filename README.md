@@ -1,5 +1,5 @@
 # imperium-server
-Network server for Imperium.
+Network server for Imperium. It can also be used for any other game that has two players.
 
 ## Installation
 
@@ -21,9 +21,15 @@ Installing the server requires a few libs and CMake.
 % make
 ````
 
-The final binary is `imperium-server` in the `build` directory.
+The final binary is `imperium-server` in the `build` directory. You may need to add include paths for your dependencies if they are not installed in standard
+directories. Example:
 
+````
+% cmake -DCMAKE_CXX_FLAGS="-I/opt/boost/include" ..
+````
 
+## Concepts
+The idea behind the server.
 
 ## Running
 
@@ -130,15 +136,56 @@ the announced game (not related to the game specific id).
 a new announced game. Even the original announcer will get it.
 
 ### Announce ok
+Sent by the server as a respone to a game announcement packet and indicates that the game was announced
+ok. Contains the game id as assigned by the server.
+
+* game id (unsigned int). This is the internal id for the game and has nothing to do with the game id
+that was sent in the announcement packet. TODO: this should be changed to avoid confusion.
 
 ### Already announced
+Error packet sent by the server as a response to an announcement packet and indicates that the player has
+already announced a game and can not announce another. A player can have one announced game
+at any time.
 
 ### Game added
+Sent by the server to all players after a player has announced a game. This contains data about the newly announced
+game and allows other players to see the game and possibly join it. A player that announces a
+game will first get an announce ok packet and then a game added packet for his/her own game. An
+added game is available for joining until a player joins it or it is removed for some other reason.
+
+* internal game id (unsigned int). This is the internal id for the game.
+* game id (unsigned short). This is the game specific id that was given in the announcement. This is
+totally game specific and not interpreted by the server in any way. It could be a scenario id, a map id
+or similar.
+* name length (unsigned short) of the player that announced the game
+* name (name length of characters), not null terminated
+
 
 ### Game removed
+Sent by the server after a game has been removed. A game is removed if:
+
+* a player joins an announced game and it starts.
+* a player manually leaves a game (see `LeaveGamePacket`) which means the announcement is withdrawn.
+* if a player disconnects or crashes the server removes the game that player has announced.
+
+Noteworthy is that a game is removed when it starts. It is to make sure that players looking for games
+to join don't see a lot of already started games that they can not join anyway.
 
 
 ### Leave game
+Sent by players when they wish to leave or withdraw an announced game.
+
+Responses:
+
+* `NoGamePacket` error sent if the player is not in an active game or does not have an announced game.
+* `GameEndedPacket` sent if the player is in an active game with another player. Sent to both players.
+* `GameRemovedPacket` sent to all players if the game was announced by the player but not yet joined.
+
+The `GameRemovedPacket` is only sent for games actively announced and not yet joined. Games that have been
+started have been removed already for all other players through a `GameRemovedPacket` and only
+the two active players know about it.
+
+
 ### No game
 ### Join game
 ### Game joined

@@ -30,8 +30,9 @@ class Packet:
     UDP_DATA = 23
     UDP_DATA_START_ACTION = 24
 
-    UDP_DATA_MISSION = 200
-    UDP_DATA_UNIT_STATS = 201
+    # UDP sub packets
+    UDP_DATA_MISSION = 0
+    UDP_DATA_UNIT_STATS = 1
 
     packetNames = {
         LOGIN: 'LOGIN',
@@ -59,8 +60,6 @@ class Packet:
         UDP_PONG: 'UDP_PONG',
         UDP_DATA_START_ACTION: 'UDP_DATA_START_ACTION',
         UDP_DATA: 'UDP_DATA',
-        UDP_DATA_MISSION: 'UDP_DATA_MISSION',
-        UDP_DATA_UNIT_STATS: 'UDP_DATA_UNIT_STATS',
     }
 
     # precalculated data lengths

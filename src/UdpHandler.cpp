@@ -133,8 +133,6 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
     }
 
     unsigned char packetType = data[0];
-    //memcpy( &packetType, data.data(), sizeof( unsigned short ));
-    //packetType = ntohs( packetType );
 
     switch ((Packet::PacketType) packetType ) {
         case Packet::UdpPingPacket:

@@ -40,14 +40,37 @@ def readUdpPackets(udpSocket):
             print "--- start action"
 
         elif packetType == packet.Packet.UDP_DATA:
-            (dataLength, udpPacketType,) = struct.unpack_from('>hh', data, struct.calcsize('>B'))
-            print "--- UDP data type %d, bytes: %d" % (udpPacketType, dataLength)
+            (packetType, subPacketType, packetId,) = struct.unpack_from('>BBL', data, 0)
+            print "--- UDP data type %d, packet id: %d, total bytes: %d" % (subPacketType, packetId, len(data))
 
-            if udpPacketType == packet.Packet.UDP_DATA_MISSION:
-                print "--- mission data"
+            if subPacketType == packet.Packet.UDP_DATA_MISSION:
+                offset = struct.calcsize('>BBL')
+                (unitCount,) = struct.unpack_from('>B', data, offset)
+                offset += struct.calcsize('>B')
+                print "--- mission data, %d units" % unitCount
 
-            elif udpPacketType == packet.Packet.UDP_DATA_UNIT_STATS:
-                print "--- unit stats"
+                for count in range( unitCount ):
+                    (unitId, missionType, ) = struct.unpack_from('>hB', data, offset)
+                    offset += struct.calcsize('>hB')
+                    print "--- unit %d, mission %d" % (unitId, missionType )
+
+            elif subPacketType == packet.Packet.UDP_DATA_UNIT_STATS:
+                offset = struct.calcsize('>BBL')
+                (unitCount,) = struct.unpack_from('>B', data, offset)
+                offset += struct.calcsize('>B')
+                print "--- unit stats, %d units" % unitCount
+
+                for count in range( unitCount ):
+                    (unitId, men, mode, missionType, morale, fatigue, ammo, x, y, facing, ) = struct.unpack_from('>hBBBBBBhhh', data, offset)
+                    offset += struct.calcsize('>hBBBBBBhhh')
+
+                    # convert some data back
+                    x /= 10
+                    y /= 10
+                    facing /= 10
+                    
+                    print "--- unit %d, men: %d, mode: %d, mission %d, morale: %d, fatigue: %d, ammo: %d pos: %d.%d, facing: %d" \
+                          % (unitId, men, mode, missionType, morale, fatigue, ammo, x, y, facing)
 
 
 class PacketException(Exception):
