@@ -32,7 +32,7 @@ public:
     /**
      * Sends the given packet to all players.
      */
-    bool broadcastPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+    bool broadcastPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
 
 
 private:

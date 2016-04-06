@@ -75,8 +75,12 @@ seems to reserve it. Certificates can be had from various place, but I've used
 ---
 
 ## Protocol
+The used protocol is very simple. Most operations start with a request from the player and give a
+response back from the server. Various requests give different responses.
 
-### Header
+## TCP packats
+
+### TCP Header
 Each packet contains two mandatory fields:
 * packet type (`unsigned short`)
 * packet length (`unsigned short`)
@@ -84,8 +88,6 @@ Each packet contains two mandatory fields:
 The packet length contains the length of the payload. If the packet type does not require any payload this will be 0.
 Many packets are simply informational in their nature, i.e. they contain no extra data apart
 from the packet type, such as **ServerFullPacket**.
-
-## Packets
 
 ### Login
 Sent by clients.
@@ -194,6 +196,32 @@ the two active players know about it.
 ### Game full
 ### Game ended
 ### Data
+
+
+## UDP packets
+
+### UDP header
+Each packet contains only one mandatory field:
+* packet type (`unsigned char`)
+
+UDP packets do not contain any length as the TCP packets do. The packets either arrive complete or they do
+not arrive at all. The type is shorter too, just to save precious space.
+
 ### Udp ping
+Sent by players when they want to measure the ping time to the server. Each ping packet can contai any number of
+internal data, the server does not check it in any way. Likely it'll be an `unsigned int` that contains a timestamp
+of some sort. The payload is sent back in a **UdpPongPacket** unchanged and can then be used by the player to do
+the required timing measurements.
+
+Response:
+
+* **UdpPongPacket** which contains the same payload that the player sent.
+
 ### Udp pong
+Sent by the server as a response to a **UdpPingPacket**. Contains the same payload as the **UdpPingPacket**
+contained.
+
 ### Udp data
+Game specific data. The server does not interpret the contents in any way, each packet is simply sent to the
+other player immediately. This is the main data packet that games would use. Internally a **UdpDataPacket** would likely
+contain some game specific type to identify the type of data.

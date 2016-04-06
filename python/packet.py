@@ -25,10 +25,10 @@ class Packet:
     DATA = 19
     READY_TO_START = 20
 
-    UDP_PING = 21
-    UDP_PONG = 22
-    UDP_DATA = 23
-    UDP_DATA_START_ACTION = 24
+    UDP_PING = 0
+    UDP_PONG = 1
+    UDP_DATA = 2
+    UDP_DATA_START_ACTION = 3
 
     # UDP sub packets
     UDP_DATA_MISSION = 0
@@ -56,10 +56,6 @@ class Packet:
         GAME_ENDED: 'GAME_ENDED',
         DATA: 'DATA',
         READY_TO_START: 'READY_TO_START',
-        UDP_PING: 'UDP_PING',
-        UDP_PONG: 'UDP_PONG',
-        UDP_DATA_START_ACTION: 'UDP_DATA_START_ACTION',
-        UDP_DATA: 'UDP_DATA',
     }
 
     # precalculated data lengths

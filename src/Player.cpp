@@ -14,7 +14,7 @@ Player::~Player () {
 }
 
 
-bool Player::sendPacket (Packet::PacketType packetType) {
+bool Player::sendPacket (Packet::TcpPacketType packetType) {
     logDebug << "Player::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
 
     // just send a header, we have no data
@@ -22,7 +22,7 @@ bool Player::sendPacket (Packet::PacketType packetType) {
 }
 
 
-bool Player::sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
+bool Player::sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
     logDebug << "Player::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
 
     // send a suitable header
@@ -52,7 +52,7 @@ std::string Player::toString () const {
 }
 
 
-bool Player::sendHeader (Packet::PacketType packetType, unsigned short length) {
+bool Player::sendHeader (Packet::TcpPacketType packetType, unsigned short length) {
     // convert to network format
     unsigned short netLength = htons( length );
     unsigned short netPacketType = htons((unsigned short) packetType );

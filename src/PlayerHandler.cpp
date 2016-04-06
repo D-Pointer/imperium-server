@@ -133,7 +133,7 @@ void PlayerHandler::handleHeader (const boost::system::error_code &error) {
 void PlayerHandler::handlePacket (const boost::system::error_code &error) {
     if ( !error ) {
         // create a packet
-        SharedPacket packet = std::make_shared<Packet>((Packet::PacketType) m_packetType, m_data, m_dataLength );
+        SharedPacket packet = std::make_shared<Packet>((Packet::TcpPacketType) m_packetType, m_data, m_dataLength );
 
         // statistics
 //        Statistics &stats = m_player->getStatistics();

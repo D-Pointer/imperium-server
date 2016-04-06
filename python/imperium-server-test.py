@@ -68,7 +68,7 @@ def readUdpPackets(udpSocket):
                     x /= 10
                     y /= 10
                     facing /= 10
-                    
+
                     print "--- unit %d, men: %d, mode: %d, mission %d, morale: %d, fatigue: %d, ammo: %d pos: %d.%d, facing: %d" \
                           % (unitId, men, mode, missionType, morale, fatigue, ammo, x, y, facing)
 

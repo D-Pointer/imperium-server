@@ -12,7 +12,7 @@
 class Packet {
 public:
 
-    enum PacketType {
+    enum TcpPacketType {
         LoginPacket = 0, // in
         LoginOkPacket, // out
         InvalidProtocolPacket,
@@ -34,23 +34,24 @@ public:
         GameEndedPacket, // out
         DataPacket,
         ReadyToStartPacket,
+    };
 
-        // UDP packets
-        UdpPingPacket, // UDP in
+    enum UdpPacketType {
+        UdpPingPacket = 0, // UDP in
         UdpPongPacket, // UDP out
         UdpDataPacket,
         UdpStartActionPacket,
     };
 
     static bool isValidPacket (unsigned short value) {
-        return value <= PacketType::UdpDataPacket;
+        return value <= TcpPacketType::ReadyToStartPacket;
     }
 
-    Packet (PacketType type, const unsigned char *data, size_t dataLength);
+    Packet (TcpPacketType type, const unsigned char *data, size_t dataLength);
 
     virtual ~Packet ();
 
-    PacketType getType () const {
+    TcpPacketType getType () const {
         return m_type;
     }
 
@@ -75,7 +76,7 @@ public:
 private:
 
     // the packet type
-    PacketType m_type;
+    TcpPacketType m_type;
 
     // raw data
     const unsigned char *m_data;

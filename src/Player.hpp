@@ -59,9 +59,9 @@ public:
         m_game.reset();
     }
 
-    bool sendPacket (Packet::PacketType packetType);
+    bool sendPacket (Packet::TcpPacketType packetType);
 
-    bool sendPacket (Packet::PacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+    bool sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
 
     bool isReadyToStart () const {
         return m_readyToStart;
@@ -76,7 +76,7 @@ public:
 
 private:
 
-    bool sendHeader (Packet::PacketType packetType, unsigned short length);
+    bool sendHeader (Packet::TcpPacketType packetType, unsigned short length);
 
     unsigned int m_id;
     static unsigned int m_nextId;
