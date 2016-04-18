@@ -6,7 +6,7 @@
 #include <boost/bind.hpp>
 
 #include "PlayerHandler.hpp"
-#include "UdpHandler.hpp"
+#include "ResourceLoader.hpp"
 #include "GameManager.hpp"
 #include "PlayerManager.hpp"
 #include "Definitions.hpp"
@@ -165,6 +165,10 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
 
             case Packet::ReadyToStartPacket:
                 handleReadyToStartPacket( packet );
+                break;
+
+            case Packet::GetResourcePacket:
+                handleResourcePacket( packet );
                 break;
 
             default:
@@ -471,6 +475,46 @@ void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
         logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: both players ready to start, sending start UDP packets";
         m_player->getGame()->getUdpHandler()->sendStartPackets();
     }
+}
+
+
+void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
+    logDebug << "PlayerHandler::handleResourcePacket [" << m_player->getId() << "]: handling resource packet";
+    unsigned int offset = 0;
+
+    // get the resource name length
+    unsigned short resourceNameLength = packet->getUnsignedShort( offset );
+    offset += sizeof( unsigned short );
+
+    // invalid name?
+    if ( resourceNameLength == 0 || resourceNameLength > 1024 ) {
+        logWarning << "PlayerHandler::handleResourcePacket [" << m_player->getId() << "]: bad resource name length: " << resourceNameLength;
+        m_player->sendPacket( Packet::InvalidResourcePacket );
+        return;
+    }
+
+    // name length is ok, get the name
+    std::string resourceName = packet->getString( offset, resourceNameLength );
+    logDebug << "PlayerHandler::handleResourcePacket [" << m_player->getId() << "]: fetching resource: '" << resourceName << "'";
+
+    std::string resource = ResourceLoader::loadResource( resourceName );
+    if ( resource.length() == 0 ) {
+        logWarning << "PlayerHandler::handleResourcePacket [" << m_player->getId() << "]: no data found for resource: " << resourceName;
+        m_player->sendPacket( Packet::InvalidResourcePacket );
+        return;
+    }
+
+    std::vector<boost::asio::const_buffer> buffers;
+
+    // data length
+    unsigned short netResourceLength = htons( resource.length() );
+    buffers.push_back( boost::asio::buffer( &netResourceLength, sizeof( unsigned short )));
+
+    // raw data
+    buffers.push_back( boost::asio::buffer( &resource[0], resource.length()));
+
+    // send the packet
+    m_player->sendPacket( Packet::ResourcePacket, buffers );
 }
 
 

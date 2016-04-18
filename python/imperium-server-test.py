@@ -165,6 +165,16 @@ def handleData(data):
     print "### received TCP data '%s'" % data
 
 
+def handleResource(data):
+    (dataLength,) = struct.unpack_from('>h', data, 0)
+    (data,) = struct.unpack_from('%ds' % dataLength, data, struct.calcsize('>h'))
+    print "### resoure data:\n%s\n" % data
+
+
+def handleInvalidResource():
+     print "### invalid resource"
+
+
 def readNextPacket(sock):
     # try:
     while True:
@@ -210,6 +220,12 @@ def readNextPacket(sock):
 
         elif receivedType == packet.Packet.DATA:
             handleData(data)
+
+        elif receivedType == packet.Packet.RESOURCE_PACKET:
+            handleResource(data)
+
+        elif receivedType == packet.Packet.INVALID_RESOURCE_PACKET:
+            handleInvalidResource(data)
 
         else:
             print "### unknown packet type: %d" % receivedType
@@ -289,6 +305,16 @@ def sendUdpTestData(sock):
     udpSocket.sendto(packet.UdpDataPacket(UDP_TYPE_TEST, startValue).message, udpAddress)
 
 
+def getResource(sock):
+    data = raw_input('Name of resource: ')
+
+    if data is None:
+        return
+
+    # send data
+    sock.send(packet.GetResourcePacket(data).message)
+
+
 def login(sock, name):
     sock.send(packet.LoginPacket(PROTOCOL_VERSION, name).message)
 
@@ -311,12 +337,13 @@ def getInput(sock):
         print '6: send TCP data'
         print '7: send UDP data'
         print '8: send UDP game data'
+        print '9: get resource'
         # print '2: join a game'
         # print '4: list games'
 
         callbacks = (
         quit, announceGame, joinGame, leaveGame, readyToStart, pingServer, sendTcpDataPacket, sendUdpDataPacket,
-        sendUdpTestData)
+        sendUdpTestData, getResource)
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler

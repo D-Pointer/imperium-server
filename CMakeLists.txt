@@ -32,12 +32,13 @@ set(SOURCE_FILES
         src/Player.hpp
         src/UdpHandler.cpp
         src/UdpHandler.hpp
-        src/Statistics.hpp)
+        src/Statistics.hpp src/ResourceLoader.cpp src/ResourceLoader.hpp)
 
 add_executable(imperium_server ${SOURCE_FILES})
 
 find_library(BOOST_SYSTEM NAMES libboost_system.a)
 find_library(BOOST_FILESYSTEM NAMES libboost_filesystem.a)
+find_library(BOOST_PROGRAM_OPTIONS NAMES libboost_program_options.a)
 find_library(LOG4CPP liblog4cpp.a)
 
-target_link_libraries(imperium_server ${BOOST_SYSTEM} ${BOOST_FILESYSTEM} ${LOG4CPP} pthread)
+target_link_libraries(imperium_server ${BOOST_SYSTEM} ${BOOST_FILESYSTEM} ${BOOST_PROGRAM_OPTIONS} ${LOG4CPP} pthread)

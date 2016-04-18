@@ -33,15 +33,36 @@ The idea behind the server.
 
 ## Running
 
-To run the server start it with a path to a directory used to run it in, the IP address to bind to and a TCP port. Due
-to a bug in Boost Filesystem the `LC_ALL` environment variable must be set to `C`:
+To run the server it needs a few command line options. To see them and the possible default values use the option
+`-h` or `--help`. Due to a bug in Boost Filesystem the `LC_ALL` environment variable must be set to `C`:
 
 ````
-% export LC_ALL=C
-% ./imperium-server /path/to/run/dir 0.0.0.0 11000
+% export LC_ALL=C ./imperium-server --help
+Imperium Server
+Version: 1.0.0
+Build date: Apr 18 2016 10:02:47
+Options:
+  -h [ --help ]                     Help screen
+  -d [ --workingdir ] arg           The directory where all data for the server
+                                    is, used as a chroot jail.
+  -i [ --interface ] arg (=0.0.0.0) IP address of the interface to listen on.
+  -p [ --port ] arg (=11000)        Port to listen on.
+  -u [ --username ] arg             Name of the user to run as if given (drops
+                                    root privileges).
 ````
 
-The path is where the server saves log files and various statistics.
+The options are:
+
+* `-h` or `--help` shows the above help text.
+* `-d` or `--workingdir` is the directory where the server will run. It will chroot to this directory as a security
+measure to avoid getting access to anything from the system. This should be an existing directory. All logs files and
+created game data is saved in this directory and all possible resources are assumed to be in a subdir `resources` of this
+directory.
+* `-i` or `--interface` is the IP address of the interface where the server listens for incoming player connections.
+* `-p` or `--port` is the TCP port where the server listens for incoming player connections.
+* `-u` or `--username` is the name of the Unix user that the server will run as if given. It is not mandatory and if not
+given then no user change is performed. Use this to drop root privileges if started as root.
+
 
 ### Running with `stunnel`
 
@@ -196,6 +217,35 @@ the two active players know about it.
 ### Game full
 ### Game ended
 ### Data
+
+# Resource system
+Connected and logged in players can retrieve game specific resources from the game server. These resources are
+files that are read in and sent to the player when asked for. Each resource is identified by a string which is
+directly mapped to a filename of a file in a resource directory.
+
+### GetResourcePacket
+Sent by a player when they wish to get a particular resource.
+
+* resource name length (`unsigned short`).
+* resource name (resource name length of characters), not null terminated.
+
+
+Responses:
+
+* **ResourcePacket** containing the resource is sent if the resource was found.
+* **InvalidResourcePacket** is sent if the player asked for an invalid resource.
+
+
+### ResourcePacket
+Sent by the server as a response to a resource retrieval packet. Contains the raw data for the resource.
+
+* resource length (`unsigned short`).
+* resource data (resource length of characters).
+
+
+### InvalidResourcePacket
+Sent by the server as a response to a resource retrieval packet and indicates that the wanted resource
+is not valid. The reason is likely be that the resource was not found or that some error occurred.
 
 
 ## UDP packets

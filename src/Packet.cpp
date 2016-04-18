@@ -28,6 +28,10 @@ const std::vector<std::string> Packet::packetNames = {
         "GameFullPacket",
         "GameEndedPacket",
         "DataPacket",
+        "ReadyToStartPacket",
+        "GetResourcePacket",
+        "ResourcePacket",
+        "InvalidResourcePacket",
 };
 
 

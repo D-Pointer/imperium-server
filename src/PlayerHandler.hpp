@@ -64,6 +64,8 @@ private:
 
     void handleReadyToStartPacket (const SharedPacket &packet);
 
+    void handleResourcePacket (const SharedPacket &packet);
+
     void broadcastGameAdded (const SharedGame &game, const SharedPlayer &announcer);
 
     void broadcastGameRemoved (const SharedGame &game);

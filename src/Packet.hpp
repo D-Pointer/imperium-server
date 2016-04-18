@@ -34,6 +34,9 @@ public:
         GameEndedPacket, // out
         DataPacket,
         ReadyToStartPacket,
+        GetResourcePacket,
+        ResourcePacket,
+        InvalidResourcePacket,
     };
 
     enum UdpPacketType {
@@ -44,7 +47,7 @@ public:
     };
 
     static bool isValidPacket (unsigned short value) {
-        return value <= TcpPacketType::ReadyToStartPacket;
+        return value <= TcpPacketType::GetResourcePacket;
     }
 
     Packet (TcpPacketType type, const unsigned char *data, size_t dataLength);

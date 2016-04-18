@@ -3,6 +3,7 @@ import datetime
 
 
 class Packet:
+    # TCP packets
     LOGIN = 0  # to server
     LOGIN_OK = 1  # from server
     INVALID_PROTOCOL = 2
@@ -24,7 +25,12 @@ class Packet:
     GAME_ENDED = 18
     DATA = 19
     READY_TO_START = 20
+    GET_RESOURCE_PACKET = 21
+    RESOURCE_PACKET = 22
+    INVALID_RESOURCE_PACKET = 23
 
+
+    # UDP packets
     UDP_PING = 0
     UDP_PONG = 1
     UDP_DATA = 2
@@ -56,6 +62,9 @@ class Packet:
         GAME_ENDED: 'GAME_ENDED',
         DATA: 'DATA',
         READY_TO_START: 'READY_TO_START',
+        GET_RESOURCE_PACKET: 'GET_RESOURCE_PACKET',
+        RESOURCE_PACKET: 'RESOURCE_PACKET',
+        INVALID_RESOURCE_PACKET: 'INVALID_RESOURCE_PACKET'
     }
 
     # precalculated data lengths
@@ -136,6 +145,14 @@ class ReadyToStartPacket(Packet):
     def __init__(self):
         # create the message
         self.message = struct.pack('>hh', Packet.READY_TO_START, 0)
+
+
+class GetResourcePacket(Packet):
+    def __init__(self, resourceName):
+        # create the message
+        nameLength = len(resourceName)
+        length = struct.calcsize('>h') + nameLength
+        self.message = struct.pack('>hhh%ds' % nameLength, Packet.GET_RESOURCE_PACKET, length, nameLength, resourceName)
 
 
 # UDP packets
