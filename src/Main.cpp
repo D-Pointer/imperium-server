@@ -104,6 +104,14 @@ int main (int argc, char *argv[]) {
         std::cout << "Running as user: " << pwd.pw_name << ", user id: " << pwd.pw_uid << std::endl;
     }
 
+    // daemonize the server
+    if ( daemon( 1, 1 ) == -1 ) {
+        std::cout << "Failed to daemonize, aborting" << std::endl;
+        exit( EXIT_FAILURE );
+    }
+
+    std::cout << "Daemonized ok" << std::endl;
+
     if ( !Log::instance().initialize( "imperium-server.log", 10 * 1024 * 1024, 10 )) {
         // failed to init the log, what to do now?
         std::cout << "Failed to initialize logging, aborting" << std::endl;
