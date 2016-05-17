@@ -290,7 +290,7 @@ def sendUdpDataPacket(sock):
     global udpAddress
 
     # send data
-    udpSocket.sendto(packet.UdpTextPacket(UDP_TYPE_TEXT, data).message, udpAddress)
+    udpSocket.sendto(packet.UdpDataPacket(packet.Packet.UDP_DATA_MISSION, data).message, udpAddress)
 
 
 def sendUdpTestData(sock):
