@@ -6,14 +6,17 @@
 #include <boost/filesystem.hpp>
 
 /**
- * Loads resource files from disc from a
+ * Loads resource files from disc from a "./resources" directory
  */
 class ResourceLoader {
 
 public:
 
+    // the name of the resource directory
+    static std::string resourceDir;
+
     static std::string loadResource (const std::string & resourceName);
 };
 
 
-#endif //IMPERIUM_SERVER_RESOURCELOADER_HPP
+#endif // RESOURCE_LOADER_HPP

@@ -99,7 +99,7 @@ seems to reserve it. Certificates can be had from various place, but I've used
 The used protocol is very simple. Most operations start with a request from the player and give a
 response back from the server. Various requests give different responses.
 
-## TCP packats
+## TCP packets
 
 ### TCP Header
 Each packet contains two mandatory fields:

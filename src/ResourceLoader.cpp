@@ -3,8 +3,10 @@
 #include "ResourceLoader.hpp"
 #include "Log.hpp"
 
+std::string ResourceLoader::resourceDir = "resources";
+
 std::string ResourceLoader::loadResource (const std::string &resourceName) {
-    boost::filesystem::path resourceRoot( "resources" );
+    boost::filesystem::path resourceRoot( ResourceLoader::resourceDir );
 
     if ( !boost::filesystem::exists( resourceRoot )) {
         logWarning << "ResourceLoader::loadResource: resource directory not found, can not load resource";
