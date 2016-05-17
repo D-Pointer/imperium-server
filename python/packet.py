@@ -162,18 +162,18 @@ class UdpPingPacket(Packet):
         now = datetime.datetime.now()
         milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
         # create the message
-        self.message = struct.pack('>BL', 0x15, milliseconds)
+        self.message = struct.pack('>BL', 0x0, milliseconds)
 
 
 class UdpTextPacket(Packet):
     def __init__(self, type, data):
         # create the message
         dataLength = len(data)
-        self.message = struct.pack('>Bh%ds' % dataLength, 0x17, type, data)
+        self.message = struct.pack('>Bh%ds' % dataLength, 0x2, type, data)
 
 
 class UdpDataPacket(Packet):
     def __init__(self, type, value):
         # create the message
-        self.message = struct.pack('>Bhh', 0x17, type, value)
+        self.message = struct.pack('>Bhh', 0x3, type, value)
 
