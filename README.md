@@ -1,15 +1,34 @@
-# imperium-server
-Network server for Imperium. It can also be used for any other game that has two players.
+# Imperium Multiplayer Server
+Network server for Imperium.
+
+## Concepts
+
+This server was designed for a particular game: **Imperium**, but it can also be used for any other game that has two players.
+It is designed for a real time use case and does not do any form of asynchronous data storage. It provides minimal statistics for
+game sessions that are started. Currently it has no remote management facilities. it supports TCP for setting up games as well and data
+transmission and also UDP for more time critical data.
+
+### Limitations
+There are a few obvious limitations in the game:
+
+* it only works for games with two players that follow a particular "announce & join" scheme.
+* the server does not scale too well, mostly because I do not anticipate many simultaneous sessions of Imperium. In the future it'll
+likely see some work on multithreading and load balancing.
+* it does not work for asynchronous games where both players are not online at the same time such as turn based games.
+
 
 ## Installation
 
 Installing the server requires a few libs and CMake.
 
+
 ### Dependencies
 
+* Linux
 * CMake >= 2.8
 * Boost >= 1.55 (http://www.boost.org/)
 * Log4Cpp 1.1.1 (http://log4cpp.sourceforge.net/)
+
 
 ### Compiling
 
@@ -28,7 +47,6 @@ directories. Example:
 % cmake -DCMAKE_CXX_FLAGS="-I/opt/boost/include" ..
 ````
 
-## Concepts
 The idea behind the server.
 
 ## Running
@@ -210,13 +228,29 @@ the two active players know about it.
 
 
 ### No game
+TBD
+
 ### Join game
+TBD
+
 ### Game joined
+TBD
+
 ### Invalid game
+TBD
+
 ### Already has game
+TBD
+
 ### Game full
+TBD
+
 ### Game ended
+TBD
+
 ### Data
+TBD
+
 
 # Resource system
 Connected and logged in players can retrieve game specific resources from the game server. These resources are
