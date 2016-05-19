@@ -81,6 +81,8 @@ directory.
 * `-u` or `--username` is the name of the Unix user that the server will run as if given. It is not mandatory and if not
 given then no user change is performed. Use this to drop root privileges if started as root.
 
+When starting the server will daemonize, ie. run in the background. TBD: this will be made optional at some point.
+
 
 ### Running with `stunnel`
 
@@ -127,6 +129,10 @@ Each packet contains two mandatory fields:
 The packet length contains the length of the payload. If the packet type does not require any payload this will be 0.
 Many packets are simply informational in their nature, i.e. they contain no extra data apart
 from the packet type, such as **ServerFullPacket**.
+
+After this mandatory header comes the packet specific data. The packet specific docs below do not mention this header
+but it is always there.
+
 
 ### Login
 Sent by clients.
