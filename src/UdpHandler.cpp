@@ -167,7 +167,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             break;
 
         default:
-            logError << "UdpHandler::handlePacket: unknown packet from player " << sender << ", size: " << size << " bytes";
+	  logError << "UdpHandler::handlePacket: unknown packet " << (int)packetType << " from player " << sender << ", size: " << size << " bytes";
             return;
     }
 }

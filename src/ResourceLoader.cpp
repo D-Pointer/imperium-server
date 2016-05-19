@@ -1,4 +1,5 @@
 #include <boost/algorithm/string/trim.hpp>
+#include <fstream>
 
 #include "ResourceLoader.hpp"
 #include "Log.hpp"
