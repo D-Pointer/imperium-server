@@ -26,6 +26,7 @@ struct Arguments {
     std::string interface;
     unsigned short port;
     std::string username;
+    bool daemonize;
 };
 
 
@@ -34,11 +35,12 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
     try {
         desc.add_options()
                 ( "help,h", "Help screen" )
-                ( "workingdir,d", boost::program_options::value<std::string>()->required(),
+                ( "workingdir,w", boost::program_options::value<std::string>()->required(),
                   "The directory where all data for the server is, used as a chroot jail." )
                 ( "interface,i", boost::program_options::value<std::string>()->default_value( "0.0.0.0"), "IP address of the interface to listen on." )
                 ( "port,p", boost::program_options::value<unsigned short>()->default_value( 11000 ), "Port to listen on." )
-                ( "username,u", boost::program_options::value<std::string>()->default_value(""), "Name of the user to run as if given (drops root privileges)." );
+                ( "username,u", boost::program_options::value<std::string>()->default_value(""), "Name of the user to run as if given (drops root privileges)." )
+                ( "daemonize,d", boost::program_options::value<bool>()->default_value(false), "Daemonize the server and run in the background." );
 
         boost::program_options::variables_map variablesMap;
         boost::program_options::store( boost::program_options::parse_command_line( argc, argv, desc ), variablesMap );
@@ -51,9 +53,10 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
         boost::program_options::notify( variablesMap );
 
         return Arguments { variablesMap["workingdir"].as<std::string>(),
-                           variablesMap["interface"].as<std::string>(),
-                           variablesMap["port"].as<unsigned short>(),
-                variablesMap["username"].as<std::string>() };
+	    variablesMap["interface"].as<std::string>(),
+	    variablesMap["port"].as<unsigned short>(),
+	    variablesMap["username"].as<std::string>(),
+	    variablesMap["daemonize"].as<bool>()};
     }
     catch (std::exception &ex) {
         std::cerr << "Failed to handle command line arguments: " << ex.what() << std::endl;
@@ -105,12 +108,14 @@ int main (int argc, char *argv[]) {
     }
 
     // daemonize the server
-    if ( daemon( 1, 1 ) == -1 ) {
-        std::cout << "Failed to daemonize, aborting" << std::endl;
-        exit( EXIT_FAILURE );
-    }
+    if ( arguments.daemonize ) {
+        if ( daemon( 1, 1 ) == -1 ) {
+	  std::cout << "Failed to daemonize, aborting" << std::endl;
+	  exit( EXIT_FAILURE );
+	}
 
-    std::cout << "Daemonized ok" << std::endl;
+	std::cout << "Daemonized ok" << std::endl;
+    }
 
     if ( !Log::instance().initialize( "imperium-server.log", 10 * 1024 * 1024, 10 )) {
         // failed to init the log, what to do now?
