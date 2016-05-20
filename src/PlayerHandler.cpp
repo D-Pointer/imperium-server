@@ -471,7 +471,20 @@ void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
     logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: player is now ready to start";
     m_player->setReadyToStart( true );
 
-    if ( m_peer->isReadyToStart()) {
+    // the below did crash with:
+    /*
+ #0  0x0000000000507d64 in std::__shared_ptr<UdpHandler, (__gnu_cxx::_Lock_policy)2>::operator-> (this=0x80) at /usr/include/c++/4.8/bits/shared_ptr_base.h:915
+#1  0x0000000000504932 in PlayerHandler::handleReadyToStartPacket (this=0x1b31610, packet=std::shared_ptr (count 1, weak 0) 0x1b32598) at /home/imperium/imperium-server/src/PlayerHandler.cpp:476
+#2  0x0000000000501f6d in PlayerHandler::handlePacket (this=0x1b31610, error=...) at /home/imperium/imperium-server/src/PlayerHandler.cpp:167
+#3  0x0000000000501de9 in PlayerHandler::handleHeader (this=0x1b31610, error=...) at /home/imperium/imperium-server/src/PlayerHandler.cpp:128
+#4  0x000000000050d1ee in boost::_mfi::mf1<void, PlayerHandler, boost::system::error_code const&>::operator() (this=0x7ffc9908a888, p=0x1b31610, a1=...) at /usr/include/boost/bind/mem_fn_template.hpp:165
+#5  0x000000000050bcd7 in boost::_bi::list2<boost::_bi::value<PlayerHandler*>, boost::arg<1> (*)()>::operator()<boost::_mfi::mf1<void, PlayerHandler, boost::system::error_code const&>, boost::_bi::list2<boost::system::error_code const&, 
+
+when a player crashed after sending ready to start and another player just sent ready to start
+    */
+
+
+    if ( m_peer->isReadyToStart() && m_player && m_player->getGame() && m_player->getGame()->getUdpHandler() ) {
         logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_player->getId() << "]: both players ready to start, sending start UDP packets";
         m_player->getGame()->getUdpHandler()->sendStartPackets();
     }
