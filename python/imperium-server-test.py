@@ -171,7 +171,7 @@ def handleResource(data):
     print "### resoure data:\n%s\n" % data
 
 
-def handleInvalidResource():
+def handleInvalidResource(data):
      print "### invalid resource"
 
 

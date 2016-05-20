@@ -61,18 +61,20 @@ Version: 1.0.0
 Build date: Apr 18 2016 10:02:47
 Options:
   -h [ --help ]                     Help screen
-  -d [ --workingdir ] arg           The directory where all data for the server
+  -w [ --workingdir ] arg           The directory where all data for the server
                                     is, used as a chroot jail.
   -i [ --interface ] arg (=0.0.0.0) IP address of the interface to listen on.
   -p [ --port ] arg (=11000)        Port to listen on.
   -u [ --username ] arg             Name of the user to run as if given (drops
                                     root privileges).
+  -d [ --daemonize ] arg (=0)       Daemonize the server and run in the
+                                    background.
 ````
 
 The options are:
 
 * `-h` or `--help` shows the above help text.
-* `-d` or `--workingdir` is the directory where the server will run. It will chroot to this directory as a security
+* `-w` or `--workingdir` is the directory where the server will run. It will chroot to this directory as a security
 measure to avoid getting access to anything from the system. This should be an existing directory. All logs files and
 created game data is saved in this directory and all possible resources are assumed to be in a subdir `resources` of this
 directory.
@@ -80,8 +82,8 @@ directory.
 * `-p` or `--port` is the TCP port where the server listens for incoming player connections.
 * `-u` or `--username` is the name of the Unix user that the server will run as if given. It is not mandatory and if not
 given then no user change is performed. Use this to drop root privileges if started as root.
-
-When starting the server will daemonize, ie. run in the background. TBD: this will be made optional at some point.
+* `-d` or `--daemonize` will daemonize the server, ie. run it in the background. Values such as `yes`, `no` `1`, `0`, `true` and `false`
+can be used.
 
 
 ### Running with `stunnel`
