@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "Server.hpp"
-#include "PlayerManager.hpp"
+#include "GlobalStatistics.hpp"
 #include "Log.hpp"
 
 using boost::asio::ip::tcp;
@@ -21,8 +21,8 @@ Server::Server (boost::asio::io_service &io_service, const std::string & ip, sho
 
     PlayerHandler *session = new PlayerHandler( m_io_service, udpPort );
     session->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
-    // reuse addresses
 
+    // reuse addresses
     m_acceptor.set_option( boost::asio::ip::tcp::acceptor::reuse_address( true ));
 
     m_acceptor.async_accept( session->getTcpSocket(),
@@ -48,6 +48,10 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
         playerHandler->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
         m_acceptor.async_accept( playerHandler->getTcpSocket(),
                                  boost::bind( &Server::handleAccept, this, playerHandler, boost::asio::placeholders::error ));
+
+        // one more player
+        GlobalStatistics::instance().m_totalConnectedPlayers++;
+        GlobalStatistics::instance().m_lastConnectedPlayer = time( 0 );
     }
     else {
         logError << "Server::handleAccept: got error: " << error.message() << ", deleting handler";

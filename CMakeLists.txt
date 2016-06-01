@@ -32,7 +32,14 @@ set(SOURCE_FILES
         src/Player.hpp
         src/UdpHandler.cpp
         src/UdpHandler.hpp
-        src/Statistics.hpp src/ResourceLoader.cpp src/ResourceLoader.hpp)
+        src/Statistics.hpp
+        src/ResourceLoader.cpp
+        src/ResourceLoader.hpp
+        src/ManagementServer.hpp
+        src/ManagementServer.cpp
+        src/ManagementClient.hpp
+        src/ManagementClient.cpp
+        src/GlobalStatistics.hpp)
 
 add_executable(imperium-server ${SOURCE_FILES})
 

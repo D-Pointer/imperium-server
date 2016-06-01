@@ -11,15 +11,8 @@
 #include "Server.hpp"
 #include "Log.hpp"
 #include "ResourceLoader.hpp"
-
-//void usage (const std::string &appname) {
-//    std::cout << "Usage: " << appname << " workingDir interfaceIP port userName" << std::endl
-//    << "    workingDir  - the directory where all data for the server is, used as a chroot jail." << std::endl
-//    << "    interfaceIP - IP address of the interface to listen on." << std::endl
-//    << "    port        - port to listen on" << std::endl
-//    << "    userName    - name of the user to run as (drops root privileges)." << std::endl;
-//    exit( EXIT_FAILURE );
-//}
+#include "ManagementServer.hpp"
+#include "GlobalStatistics.hpp"
 
 struct Arguments {
     std::string workingDir;
@@ -27,6 +20,8 @@ struct Arguments {
     unsigned short port;
     std::string username;
     bool daemonize;
+    std::string managementInterface;
+    unsigned short managementPort;
 };
 
 
@@ -37,10 +32,15 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
                 ( "help,h", "Help screen" )
                 ( "workingdir,w", boost::program_options::value<std::string>()->required(),
                   "The directory where all data for the server is, used as a chroot jail." )
-                ( "interface,i", boost::program_options::value<std::string>()->default_value( "0.0.0.0"), "IP address of the interface to listen on." )
-                ( "port,p", boost::program_options::value<unsigned short>()->default_value( 11000 ), "Port to listen on." )
-                ( "username,u", boost::program_options::value<std::string>()->default_value(""), "Name of the user to run as if given (drops root privileges)." )
-                ( "daemonize,d", boost::program_options::value<bool>()->default_value(false), "Daemonize the server and run in the background." );
+                ( "interface,i", boost::program_options::value<std::string>()->default_value( "127.0.0.1" ), "IP address of the interface to listen on." )
+                ( "port,p", boost::program_options::value<unsigned short>()->default_value( 11001 ), "Port to listen on." )
+                ( "username,u", boost::program_options::value<std::string>()->default_value( "" ),
+                  "Name of the user to run as if given (drops root privileges)." )
+                ( "daemonize,d", boost::program_options::value<bool>()->default_value( false ), "Daemonize the server and run in the background." )
+                ( "managementinterface", boost::program_options::value<std::string>()->default_value( "127.0.0.1" ),
+                  "IP address of the management interface to listen on." )
+                ( "managementport", boost::program_options::value<unsigned short>()->default_value( 11002 ), "Management port to listen on." );
+
 
         boost::program_options::variables_map variablesMap;
         boost::program_options::store( boost::program_options::parse_command_line( argc, argv, desc ), variablesMap );
@@ -53,10 +53,12 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
         boost::program_options::notify( variablesMap );
 
         return Arguments { variablesMap["workingdir"].as<std::string>(),
-	    variablesMap["interface"].as<std::string>(),
-	    variablesMap["port"].as<unsigned short>(),
-	    variablesMap["username"].as<std::string>(),
-	    variablesMap["daemonize"].as<bool>()};
+                           variablesMap["interface"].as<std::string>(),
+                           variablesMap["port"].as<unsigned short>(),
+                variablesMap["username"].as<std::string>(),
+                variablesMap["daemonize"].as<bool>(),
+                variablesMap["managementinterface"].as<std::string>(),
+                variablesMap["managementport"].as < unsigned short>() };
     }
     catch (std::exception &ex) {
         std::cerr << "Failed to handle command line arguments: " << ex.what() << std::endl;
@@ -110,11 +112,11 @@ int main (int argc, char *argv[]) {
     // daemonize the server
     if ( arguments.daemonize ) {
         if ( daemon( 1, 1 ) == -1 ) {
-	  std::cout << "Failed to daemonize, aborting" << std::endl;
-	  exit( EXIT_FAILURE );
-	}
+            std::cout << "Failed to daemonize, aborting" << std::endl;
+            exit( EXIT_FAILURE );
+        }
 
-	std::cout << "Daemonized ok" << std::endl;
+        std::cout << "Daemonized ok" << std::endl;
     }
 
     if ( !Log::instance().initialize( "imperium-server.log", 10 * 1024 * 1024, 10 )) {
@@ -129,15 +131,22 @@ int main (int argc, char *argv[]) {
 
     logInfo << "--------------------------------------------------------------------------------------------------------------------";
     logInfo << "version " << MAJOR_VERSION << "." << MINOR_VERSION << "." << EXTRA_VERSION;
-    logInfo << "build date: " __DATE__ << " " << __TIME__;
+    logInfo << "build date: " << GlobalStatistics::instance().m_buildDate << " " << GlobalStatistics::instance().m_buildTime;
 
     logInfo << "main: using ip/port: " << arguments.interface << ":" << arguments.port;
+    logInfo << "main: using management ip/port: " << arguments.managementInterface << ":" << arguments.managementPort;
     std::cout << "IP/port: " << arguments.interface << ":" << arguments.port << std::endl;
+    std::cout << "Management IP/port: " << arguments.managementInterface << ":" << arguments.managementPort << std::endl;
 
     try {
         boost::asio::io_service ioService;
 
+        // main server
         Server server( ioService, arguments.interface, arguments.port );
+
+        // management server
+        ManagementServer managementServer( ioService, arguments.managementInterface, arguments.managementPort );
+
         ioService.run();
     }
     catch (std::exception &ex) {

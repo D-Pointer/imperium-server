@@ -60,15 +60,19 @@ Imperium Server
 Version: 1.0.0
 Build date: Apr 18 2016 10:02:47
 Options:
-  -h [ --help ]                     Help screen
-  -w [ --workingdir ] arg           The directory where all data for the server
-                                    is, used as a chroot jail.
-  -i [ --interface ] arg (=0.0.0.0) IP address of the interface to listen on.
-  -p [ --port ] arg (=11000)        Port to listen on.
-  -u [ --username ] arg             Name of the user to run as if given (drops
-                                    root privileges).
-  -d [ --daemonize ] arg (=0)       Daemonize the server and run in the
-                                    background.
+  -h [ --help ]                        Help screen
+  -w [ --workingdir ] arg              The directory where all data for the server
+                                       is, used as a chroot jail.
+  -i [ --interface ] arg (=0.0.0.0)    IP address of the interface to listen on.
+  -p [ --port ] arg (=11000)           Port to listen on.
+  -u [ --username ] arg                Name of the user to run as if given (drops
+                                       root privileges).
+  -d [ --daemonize ] arg (=0)          Daemonize the server and run in the
+                                       background.
+  --managementinterface arg (=0.0.0.0) IP address of the management interface
+                                       to listen on.
+  --managementport arg (=11000)        Management port to listen on.
+
 ````
 
 The options are:
@@ -84,6 +88,8 @@ directory.
 given then no user change is performed. Use this to drop root privileges if started as root.
 * `-d` or `--daemonize` will daemonize the server, ie. run it in the background. Values such as `yes`, `no` `1`, `0`, `true` and `false`
 can be used.
+* `--managementinterface` is the IP address of the interface where the server listens for incoming management connections.
+* `--managementport` is the TCP port where the server listens for incoming management connections.
 
 
 ### Running with `stunnel`
@@ -114,6 +120,12 @@ connect = 11001
 In this case the server uses a different port than the one open towards the Internet as `stunnel`
 seems to reserve it. Certificates can be had from various place, but I've used
 [Let's Encrypt](https://letsencrypt.org/) to get a free certificate.
+
+---
+
+## Management
+The server supports some minor operations on the management interface. Mainly It is possible to get some statistics and runtime data via a simple
+line based text protocol.
 
 ---
 
