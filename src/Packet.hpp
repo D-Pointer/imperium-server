@@ -16,6 +16,7 @@ public:
         LoginPacket = 0, // in
         LoginOkPacket, // out
         InvalidProtocolPacket,
+        AlreadyLoggedInPacket, // error out
         InvalidNamePacket, // error out
         NameTakenPacket, // error out
         ServerFullPacket, // error out

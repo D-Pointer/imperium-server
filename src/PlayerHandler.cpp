@@ -225,6 +225,13 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
         return;
     }
 
+    // already logged in?
+    if ( m_player->getName().size() > 0 ) {
+        logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: has already logged in as: " << m_player->getName() << ", failing login";
+        m_player->sendPacket( Packet::AlreadyLoggedInPacket );
+        return;
+    }
+
     // get the name length
     unsigned short nameLength = packet->getUnsignedShort( offset );
     offset += sizeof( unsigned short );

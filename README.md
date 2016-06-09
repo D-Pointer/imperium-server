@@ -157,6 +157,7 @@ Sent by clients.
 Responses:
 
 * **ServerFullPacket**, server full
+* **AlreadyLoggedInPacket**, if the player has already logged in with this connection.
 * **InvalidNamePacket**, invalid name. The name must be 1 to 50 characters long.
 * **NameTakenPacket**, name taken by another player.
 * **LoginOkPacket** packet.
@@ -168,6 +169,11 @@ announce games or join existing games.
 ### Invalid protocol
 Sent by the server as a response to a **Login** packet and indicates that the game and the server use different protocols and
 can not communicate.
+
+### Already logged in
+Sent by the server as a response to a **Login** packet and indicates that the player has already logged in successfully.
+A player can only log in once per connection. This is not a fatal error and the player can continue normally
+after this error.
 
 ### Invalid name
 Sent by the server as a response to a **Login** packet and indicates that the name given by the player is invalid. It may
