@@ -44,6 +44,7 @@ public:
 
     void setName (const std::string & name) {
         m_name = name;
+        m_loggedIn = true;
     }
 
     const SharedGame & getGame () const {
@@ -62,6 +63,10 @@ public:
     bool sendPacket (Packet::TcpPacketType packetType);
 
     bool sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+
+    bool isLoggedIn () const {
+        return m_loggedIn;
+    }
 
     bool isReadyToStart () const {
         return m_readyToStart;
@@ -92,6 +97,9 @@ private:
 
     // which player are we in the game?
     unsigned int m_playerIndex;
+
+    // has the player logged in?
+    bool m_loggedIn;
 
     // is the player ready to start the game
     bool m_readyToStart;

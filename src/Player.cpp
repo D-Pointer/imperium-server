@@ -5,7 +5,7 @@
 unsigned int Player::m_nextId = 0;
 
 Player::Player (boost::asio::ip::tcp::socket &tcpSocket, boost::asio::ip::udp::socket &udpSocket)
-        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_udpSocket(udpSocket), m_name("unknown"), m_readyToStart(false) {
+        : m_id( Player::m_nextId++ ), m_tcpSocket( tcpSocket ), m_udpSocket(udpSocket), m_name("unknown"), m_loggedIn(false), m_readyToStart(false) {
 }
 
 

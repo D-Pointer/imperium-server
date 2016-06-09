@@ -226,7 +226,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     }
 
     // already logged in?
-    if ( m_player->getName().size() > 0 ) {
+    if ( m_player->isLoggedIn() ) {
         logWarning << "PlayerHandler::handleLoginPacket [" << m_player->getId() << "]: has already logged in as: " << m_player->getName() << ", failing login";
         m_player->sendPacket( Packet::AlreadyLoggedInPacket );
         return;
