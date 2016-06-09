@@ -191,7 +191,7 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
             break;
 
         default:
-            logError << "PlayerHandler::handlePacket [" << m_player->getId() << "]: unknown packet type: " << (int) m_packetType;
+            logError << "PlayerHandler::handlePacket [" << m_player->getId() << "]: unknown packet type: " << (int) packet->getType();
             break;
     }
 

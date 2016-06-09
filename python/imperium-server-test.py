@@ -185,6 +185,8 @@ def readNextPacket(sock):
 
         elif receivedType == packet.Packet.INVALID_NAME:
             handleLoginError("invalid name")
+        elif receivedType == packet.Packet.ALREADY_LOGGED_IN:
+            handleLoginError("already logged in")
         elif receivedType == packet.Packet.SERVER_FULL:
             handleLoginError("server full")
         elif receivedType == packet.Packet.NAME_TAKEN:
