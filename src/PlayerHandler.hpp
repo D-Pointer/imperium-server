@@ -8,15 +8,15 @@
 #include <boost/array.hpp>
 
 #include "Packet.hpp"
-#include "Player.hpp"
+#include "Game.hpp"
 
 /**
  *
  **/
-class PlayerHandler {
+class PlayerHandler : public std::enable_shared_from_this<PlayerHandler> {
 public:
 
-    PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort);
+    PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort, unsigned int playerId);
 
     virtual ~PlayerHandler ();
 
@@ -30,6 +30,21 @@ public:
      **/
     void start ();
 
+    /**
+     * Returns the player unique id.
+     */
+    unsigned int getId () const {
+        return m_id;
+    }
+
+    const std::string & getName () const {
+        return m_name;
+    }
+
+    bool sendPacket (Packet::TcpPacketType packetType);
+
+    bool sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
+
     boost::asio::ip::tcp::socket &getTcpSocket () {
         return m_tcpSocket;
     }
@@ -38,10 +53,25 @@ public:
         return m_udpSocket;
     }
 
+    void clearGame () {
+        m_game.reset();
+        m_readyToStart = false;
+    }
+
+    bool isLoggedIn () const {
+        return m_loggedIn;
+    }
+
+    bool isReadyToStart () const {
+        return m_readyToStart;
+    }
+
     std::string toString () const;
 
 
 private:
+
+    bool sendHeader (Packet::TcpPacketType packetType, unsigned short length);
 
     void readHeader ();
 
@@ -66,23 +96,32 @@ private:
 
     void handleResourcePacket (const SharedPacket &packet);
 
-    void broadcastGameAdded (const SharedGame &game, const SharedPlayer &announcer);
+    void broadcastGameAdded (const SharedGame &game);
 
     void broadcastGameRemoved (const SharedGame &game);
-
-    bool findPeerPlayer ();
 
     boost::asio::ip::tcp::socket m_tcpSocket;
 
     boost::asio::ip::udp::socket m_udpSocket;
 
+    // our player id
+    unsigned int m_id;
+
     unsigned short m_packetType;
     unsigned short m_dataLength;
     unsigned char *m_data;
 
-    // the player we manage as well as the peer player
-    SharedPlayer m_player;
-    SharedPlayer m_peer;
+    // the player name
+    std::string m_name;
+
+    // has the player logged in?
+    bool m_loggedIn;
+
+    // is the player ready to start the game
+    bool m_readyToStart;
+
+    // possible game the player is in or has announced
+    SharedGame m_game;
 };
 
 typedef std::shared_ptr<PlayerHandler> SharedPlayerHandler;

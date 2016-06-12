@@ -3,7 +3,6 @@
 
 #include "GameManager.hpp"
 #include "Log.hpp"
-#include "Player.hpp"
 #include "PlayerManager.hpp"
 
 GameManager &GameManager::instance () {
@@ -100,8 +99,8 @@ void GameManager::removeGame (const SharedGame &game) {
     boost::filesystem::ofstream out( archivePath, std::ios_base::out );
 
     // players
-    SharedPlayer player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
-    SharedPlayer player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
+    PlayerHandler * player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
+    PlayerHandler * player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
 
     out << "scenario " << game->getScenariodId() << std::endl
 

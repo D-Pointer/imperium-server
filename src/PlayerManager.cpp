@@ -1,4 +1,5 @@
 #include <iostream>
+#include <mutex>
 
 #include "PlayerManager.hpp"
 #include "Log.hpp"
@@ -13,7 +14,7 @@ bool PlayerManager::isNameTaken (const std::string &name) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     for ( auto player : m_players ) {
-        if ( player->getName() == name ) {
+        if ( player.second->getName() == name ) {
             // name has been taken
             return true;
         }
@@ -24,18 +25,18 @@ bool PlayerManager::isNameTaken (const std::string &name) {
 }
 
 
-void PlayerManager::addPlayer (const SharedPlayer &player) {
+void PlayerManager::addPlayer (PlayerHandler * player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
-    m_players.insert( player );
+    m_players[ player->getId() ] = player;
     logDebug << "PlayerManager::addPlayer: added player: " << player->toString() << ", players now: " << m_players.size();
 }
 
 
-void PlayerManager::removePlayer (const SharedPlayer &player) {
+void PlayerManager::removePlayer (PlayerHandler *player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
-    m_players.erase( player );
+    m_players.erase( player->getId() );
     logDebug << "PlayerManager::removePlayer: removed player: " << player->toString() << ", players now: " << m_players.size();
 }
 
@@ -47,16 +48,18 @@ size_t PlayerManager::getPlayerCount ()  {
 }
 
 
-SharedPlayer PlayerManager::getPlayer (unsigned int playerId)  {
+PlayerHandler * PlayerManager::getPlayer (unsigned int playerId)  {
     std::lock_guard<std::mutex> lock( m_mutex );
+    PlayerHandler * player;
 
-    for ( auto player : m_players ) {
+    for ( auto playerData : m_players ) {
+        player = playerData.second;
         if ( player->getId() == playerId ) {
             return player;
         }
     }
 
-    return SharedPlayer();
+    return 0;
 }
 
 
@@ -65,10 +68,9 @@ bool PlayerManager::broadcastPacket (Packet::TcpPacketType packetType, const std
 
     logDebug << "PlayerManager::broadcastPacket: broadcasting packet: " << Packet::getPacketName(packetType) << " to " << m_players.size() << " players";
 
-    std::for_each( std::begin( m_players ), std::end( m_players ),
-                   [ = ] (SharedPlayer player) {
-                       player->sendPacket( packetType, buffers );
-                   } );
+    for ( auto player : m_players ) {
+        player.second->sendPacket( packetType, buffers );
+    }
 
     // broadcasted ok
     return true;

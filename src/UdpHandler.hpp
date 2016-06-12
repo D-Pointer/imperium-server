@@ -23,6 +23,8 @@ public:
 
     void start ();
 
+    void stop ();
+
     void sendStartPackets ();
 
 

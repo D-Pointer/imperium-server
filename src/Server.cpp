@@ -7,11 +7,13 @@
 #include "Server.hpp"
 #include "GlobalStatistics.hpp"
 #include "Log.hpp"
+#include "PlayerManager.hpp"
 
 using boost::asio::ip::tcp;
 
 
 unsigned short Server::m_nextUdpPort = 12000;
+unsigned int Server::m_nextPlayerId = 1;
 
 Server::Server (boost::asio::io_service &io_service, const std::string & ip, short port)
         : m_io_service( io_service ), m_acceptor( io_service, tcp::endpoint(boost::asio::ip::address::from_string(ip), port )) {
@@ -19,7 +21,7 @@ Server::Server (boost::asio::io_service &io_service, const std::string & ip, sho
     // the UDP port that this player will use
     unsigned short udpPort = m_nextUdpPort++;
 
-    PlayerHandler *session = new PlayerHandler( m_io_service, udpPort );
+    PlayerHandler *session = new PlayerHandler( m_io_service, udpPort, Server::m_nextPlayerId++ );
     session->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
 
     // reuse addresses
@@ -37,14 +39,16 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
         // start and save for later
         playerHandler->start();
 
-        m_playerHandlers.insert( playerHandler );
-        logDebug << "Server::handleAccept: player handlers now: " << m_playerHandlers.size();
+        PlayerManager::instance().addPlayer( playerHandler );
+
+        logDebug << "Server::handleAccept: player handlers now: " << PlayerManager::instance().getPlayerCount();
+
 
         // the UDP port that this player will use
         unsigned short udpPort = m_nextUdpPort++;
 
         // start a new session that we listen on
-        playerHandler = new PlayerHandler( m_io_service, udpPort );
+        playerHandler = new PlayerHandler( m_io_service, udpPort, Server::m_nextPlayerId++ );
         playerHandler->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
         m_acceptor.async_accept( playerHandler->getTcpSocket(),
                                  boost::bind( &Server::handleAccept, this, playerHandler, boost::asio::placeholders::error ));
@@ -60,10 +64,11 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
 }
 
 
-void Server::sessionTerminated (PlayerHandler * player) {
-    logInfo << "Server::sessionTerminated: player: " << player->toString() << " terminated";
-    m_playerHandlers.erase( player );
-    logDebug << "Server::sessionTerminated: players handlers left: " << m_playerHandlers.size();
+void Server::sessionTerminated (PlayerHandler * playerHandler) {
+    logInfo << "Server::sessionTerminated: player: " << playerHandler->toString() << " terminated";
 
-    delete player;
+    PlayerManager::instance().removePlayer( playerHandler );
+    logDebug << "Server::sessionTerminated: players handlers left: " << PlayerManager::instance().getPlayerCount();
+
+    delete playerHandler;
 }

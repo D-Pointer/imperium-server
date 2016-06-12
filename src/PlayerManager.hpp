@@ -1,10 +1,9 @@
 #ifndef PLAYER_MANAGER_HPP
 #define PLAYER_MANAGER_HPP
 
-#include <mutex>
-#include <set>
+#include <map>
 
-#include "Player.hpp"
+#include "PlayerHandler.hpp"
 #include "Packet.hpp"
 
 /**
@@ -18,14 +17,14 @@ public:
 
     bool isNameTaken (const std::string &name);
 
-    void addPlayer (const SharedPlayer &player);
+    void addPlayer (PlayerHandler *player);
 
-    void removePlayer (const SharedPlayer &player);
+    void removePlayer (PlayerHandler * player);
 
     /**
      * Returns the player with the given id or a null shared reference if not found.
      */
-    SharedPlayer getPlayer (unsigned int playerId);
+    PlayerHandler * getPlayer (unsigned int playerId);
 
     size_t getPlayerCount ();
 
@@ -46,8 +45,9 @@ private:
     std::mutex m_mutex;
 
     // all active players
-    std::set<SharedPlayer> m_players;
+    std::map<unsigned int, PlayerHandler *> m_players;
 };
 
 
-#endif //IMPERIUM_SERVER_GAMEMANAGER_HPP
+#endif
+

@@ -34,6 +34,14 @@ void UdpHandler::start () {
 }
 
 
+void UdpHandler::stop () {
+    logDebug << "UdpHandler::stop: cancelling receives";
+    boost::system::error_code error;
+    m_socket1.cancel( error );
+    m_socket2.cancel( error );
+}
+
+
 void UdpHandler::sendStartPackets () {
     // have both players sent a first UDP packet?
     if ( !m_playerSentUdp1 ) {

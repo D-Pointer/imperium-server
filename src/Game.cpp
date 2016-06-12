@@ -43,6 +43,19 @@ unsigned int Game::getPlayerId2 () const {
 }
 
 
+unsigned int Game::getPeerId (unsigned int playerId) const {
+    if ( playerId == m_playerId1 ) {
+        return m_playerId2;
+    }
+    else if ( playerId == m_playerId2 ) {
+        return m_playerId1;
+    }
+
+    logError << "Game::getPeerId2: trying to get peer id for a game that has not started: " << toString();
+    return 0;
+}
+
+
 void Game::setPlayerId2 (unsigned int playerId2) {
     m_playerId2 = playerId2;
     m_started = true;
@@ -53,6 +66,11 @@ void Game::setPlayerId2 (unsigned int playerId2) {
 void Game::endGame () {
     if ( m_endTime == 0 ) {
         m_endTime = time( 0 );
+    }
+
+    if ( m_udpHandler ) {
+        m_udpHandler->stop();
+        m_udpHandler.reset();
     }
 }
 

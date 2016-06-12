@@ -150,6 +150,7 @@ def handleGameJoined(data):
     thread.start_new_thread(readUdpPackets, (udpSocket,))
 
     # send an initial "ping" to open up the connection so that the server knows our port
+    print "### sending UDP ping"
     udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
 
 

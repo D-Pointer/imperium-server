@@ -26,6 +26,15 @@ public:
     unsigned int getPlayerId1 () const;
     unsigned int getPlayerId2 () const;
 
+    /**
+     * Returns the id of the peer player for the given @p playerId. This only works if the game has started.
+     *
+     * @param playerId the player whose peer is wanted.
+     *
+     * @return the peer id or 0 if the player is not in the game or the game has not started.
+     */
+    unsigned int getPeerId (unsigned int playerId) const;
+
     void setPlayerId2 (unsigned int playerId2);
 
     void endGame ();
