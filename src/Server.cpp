@@ -47,6 +47,11 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
         // the UDP port that this player will use
         unsigned short udpPort = m_nextUdpPort++;
 
+        // sanity check so that we don't wrap to port 0
+        if ( m_nextUdpPort > 65530 ) {
+            m_nextUdpPort = 12000;
+        }
+
         // start a new session that we listen on
         playerHandler = new PlayerHandler( m_io_service, udpPort, Server::m_nextPlayerId++ );
         playerHandler->terminated.connect( boost::bind( &Server::sessionTerminated, this, _1 ) );
