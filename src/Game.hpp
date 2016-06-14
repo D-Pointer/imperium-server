@@ -21,7 +21,7 @@ public:
 
     unsigned int getGameId () const;
 
-    unsigned short getScenariodId () const;
+    unsigned short getScenarioId () const;
 
     unsigned int getPlayerId1 () const;
     unsigned int getPlayerId2 () const;

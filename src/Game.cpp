@@ -28,7 +28,7 @@ unsigned int Game::getGameId () const {
 }
 
 
-unsigned short Game::getScenariodId () const {
+unsigned short Game::getScenarioId () const {
     return m_scenarioId;
 }
 
@@ -58,8 +58,6 @@ unsigned int Game::getPeerId (unsigned int playerId) const {
 
 void Game::setPlayerId2 (unsigned int playerId2) {
     m_playerId2 = playerId2;
-    m_started = true;
-    m_startTime = time(0);
 }
 
 
@@ -97,6 +95,8 @@ Statistics & Game::getStatistics (unsigned int player) {
 
 void Game::setUdpHandler (const SharedUdpHandler & udpHandler) {
     m_udpHandler = udpHandler;
+    m_started = true;
+    m_startTime = time(0);
 }
 
 

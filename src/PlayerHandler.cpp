@@ -313,7 +313,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
         buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned int )));
 
         // the id of the scenario
-        unsigned short netScenarioId = htons( game->getScenariodId());
+        unsigned short netScenarioId = htons( game->getScenarioId());
         buffers.push_back( boost::asio::buffer( &netScenarioId, sizeof( unsigned short )));
 
         // get the player owning the game
@@ -345,7 +345,7 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
 
     // do we have an old game?
     if ( m_game ) {
-        logWarning << "PlayerHandler::handleAnnounceGamePacket [" << m_id << "]: old game already announced: " << m_game->getScenariodId() <<
+        logWarning << "PlayerHandler::handleAnnounceGamePacket [" << m_id << "]: old game already announced: " << m_game->getScenarioId() <<
         ", can not announce new";
         sendPacket( Packet::AlreadyAnnouncedPacket );
         return;
@@ -370,8 +370,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
 
     // do we have a game?
     if ( m_game ) {
-        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_id << "]: already have a game: " << m_game->getScenariodId() <<
-        ", can not join";
+        logWarning << "PlayerHandler::handleJoinGamePacket [" << m_id << "]: already have a game: " << m_game->getScenarioId() << ", can not join";
         sendPacket( Packet::AlreadyHasGamePacket );
         return;
     }
@@ -521,19 +520,7 @@ void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
     logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: player is now ready to start";
     m_readyToStart = true;
 
-    // the below did crash with:
-    /*
-#0  0x0000000000507d64 in std::__shared_ptr<UdpHandler, (__gnu_cxx::_Lock_policy)2>::operator-> (this=0x80) at /usr/include/c++/4.8/bits/shared_ptr_base.h:915
-#1  0x0000000000504932 in PlayerHandler::handleReadyToStartPacket (this=0x1b31610, packet=std::shared_ptr (count 1, weak 0) 0x1b32598) at /home/imperium/imperium-server/src/PlayerHandler.cpp:476
-#2  0x0000000000501f6d in PlayerHandler::handlePacket (this=0x1b31610, error=...) at /home/imperium/imperium-server/src/PlayerHandler.cpp:167
-#3  0x0000000000501de9 in PlayerHandler::handleHeader (this=0x1b31610, error=...) at /home/imperium/imperium-server/src/PlayerHandler.cpp:128
-#4  0x000000000050d1ee in boost::_mfi::mf1<void, PlayerHandler, boost::system::error_code const&>::operator() (this=0x7ffc9908a888, p=0x1b31610, a1=...) at /usr/include/boost/bind/mem_fn_template.hpp:165
-#5  0x000000000050bcd7 in boost::_bi::list2<boost::_bi::value<PlayerHandler*>, boost::arg<1> (*)()>::operator()<boost::_mfi::mf1<void, PlayerHandler, boost::system::error_code const&>, boost::_bi::list2<boost::system::error_code const&, 
-
-when a player crashed after sending ready to start and another player just sent ready to start.
-    */
-
-    logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: " << peer->isReadyToStart() << " " << m_game << " " << " " << m_game->getUdpHandler();
+    logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: " << peer->isReadyToStart() << " " << m_game;
 
     // check a lot in case there was a player disconnect
     if ( peer->isReadyToStart() && m_game && m_game->getUdpHandler()) {
@@ -591,7 +578,7 @@ void PlayerHandler::broadcastGameAdded (const SharedGame &game) {
     buffers.push_back( boost::asio::buffer( &netGameId, sizeof( unsigned int )));
 
     // the id of the scenario
-    unsigned short netScenarioId = htons( game->getScenariodId());
+    unsigned short netScenarioId = htons( game->getScenarioId());
     buffers.push_back( boost::asio::buffer( &netScenarioId, sizeof( unsigned short )));
 
     // name length

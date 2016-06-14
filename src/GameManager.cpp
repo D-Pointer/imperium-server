@@ -102,7 +102,7 @@ void GameManager::removeGame (const SharedGame &game) {
     PlayerHandler * player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
     PlayerHandler * player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
 
-    out << "scenario " << game->getScenariodId() << std::endl
+    out << "scenario " << game->getScenarioId() << std::endl
 
     // times
     << "created " << game->getCreationTime() << std::endl
