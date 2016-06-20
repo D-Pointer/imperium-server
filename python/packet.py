@@ -30,6 +30,8 @@ class Packet:
     RESOURCE_PACKET = 23
     INVALID_RESOURCE_PACKET = 24
 
+    # TCP sub packets
+    SETUP_UNITS = 0
 
     # UDP packets
     UDP_PING = 0
@@ -155,6 +157,12 @@ class GetResourcePacket(Packet):
         nameLength = len(resourceName)
         length = struct.calcsize('>h') + nameLength
         self.message = struct.pack('>hhh%ds' % nameLength, Packet.GET_RESOURCE_PACKET, length, nameLength, resourceName)
+
+
+class SendUnitsPacket(Packet):
+    def __init__(self):
+        # create the message
+        self.message = struct.pack('>hhBB', Packet.DATA, struct.calcsize('>BB'), Packet.SETUP_UNITS & 0xff, 0x0 )
 
 
 # UDP packets

@@ -45,6 +45,12 @@ public:
 
     Statistics & getStatistics (unsigned int player);
 
+    /**
+     * Sets the UDP handler that will handle all UDP traffic between the players. Setting this also marks the game
+     * as started and records the start time.
+     *
+     * @param udpHandler the UDP handler for handling all UDP traffic.
+     */
     void setUdpHandler (const SharedUdpHandler & udpHandler);
     const SharedUdpHandler & getUdpHandler () const;
 

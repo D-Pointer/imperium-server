@@ -162,8 +162,35 @@ def handleGameEnded():
     print "### game has ended"
 
 
-def handleData(data):
-    print "### received TCP data '%s'" % data
+def handleData(data, sock):
+    print "### received TCP data, %d bytes" % len(data)
+    offset = 0
+    (subPacketType, ) = struct.unpack_from('>B', data, 0)
+    offset += struct.calcsize('>B')
+
+    if subPacketType == packet.Packet.SETUP_UNITS:
+        (unitCount, ) = struct.unpack_from('>B', data, offset)
+        offset += struct.calcsize('>B')
+        print "### setup data for %d units" % unitCount
+
+        # read data for all units
+        for count in range( unitCount ):
+            (unitId, x, y, rotation, type, men, mode, mission, morale, fatigue, experience, ammo, weapon, nameLength) = struct.unpack_from('>hhhhBBBBBBBBBB', data, offset)
+            offset += struct.calcsize('>hhhhBBBBBBBBBB')
+            (unitName,) = struct.unpack_from('%ds' % nameLength, data, offset)
+            offset += nameLength
+            print "### unit %d, %s pos: %d,%d, facing: %d, men: %d" % (unitId, unitName, x / 10, y / 10, rotation / 10, men)
+            print "###     mode: %d, mission: %d, mor/fat/exp: %d/%d/%d, weapon/ammo: %d/%d" % (mode, mission, morale, fatigue, experience, weapon, ammo)
+
+        # send back our units and ready to start packet
+        print "### sending own units packet"
+        sock.send(packet.SendUnitsPacket().message)
+
+        print "### sending ready to start packet"
+        sock.send(packet.ReadyToStartPacket().message)
+
+    else:
+        print "### unknown TCP sub packet type: %d" % subPacketType
 
 
 def handleResource(data):
@@ -222,7 +249,7 @@ def readNextPacket(sock):
             handleGameEnded()
 
         elif receivedType == packet.Packet.DATA:
-            handleData(data)
+            handleData(data, sock)
 
         elif receivedType == packet.Packet.RESOURCE_PACKET:
             handleResource(data)
@@ -261,11 +288,11 @@ def leaveGame(sock):
     sock.send(packet.LeaveGamePacket().message)
 
 
-def readyToStart(sock):
-    print 'Sending ready to start game'
-
-    # send the request
-    sock.send(packet.ReadyToStartPacket().message)
+# def readyToStart(sock):
+#     print 'Sending ready to start game'
+#
+#     # send the request
+#     sock.send(packet.ReadyToStartPacket().message)
 
 
 def pingServer(sock):
@@ -335,18 +362,17 @@ def getInput(sock):
         print '1: announce a new game'
         print '2: join a game'
         print '3: leave a game'
-        print '4: ready to start'
-        print '5: ping'
-        print '6: send TCP data'
-        print '7: send UDP data'
-        print '8: send UDP game data'
-        print '9: get resource'
+        #print '4: ready to start'
+        print '4: ping'
+        print '5: send TCP data'
+        print '6: send UDP data'
+        print '7: send UDP game data'
+        print '8: get resource'
         # print '2: join a game'
         # print '4: list games'
 
         callbacks = (
-        quit, announceGame, joinGame, leaveGame, readyToStart, pingServer, sendTcpDataPacket, sendUdpDataPacket,
-        sendUdpTestData, getResource)
+        quit, announceGame, joinGame, leaveGame, pingServer, sendTcpDataPacket, sendUdpDataPacket, sendUdpTestData, getResource)
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler

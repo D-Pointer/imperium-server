@@ -7,7 +7,7 @@
 #include "Packet.hpp"
 
 /**
- * TODO: make the players a map.
+ *
  */
 class PlayerManager {
 
