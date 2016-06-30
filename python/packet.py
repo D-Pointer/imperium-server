@@ -42,6 +42,7 @@ class Packet:
     # UDP sub packets
     UDP_DATA_MISSION = 0
     UDP_DATA_UNIT_STATS = 1
+    UDP_DATA_FIRE = 2
 
     packetNames = {
         LOGIN: 'LOGIN',
@@ -160,9 +161,17 @@ class GetResourcePacket(Packet):
 
 
 class SendUnitsPacket(Packet):
-    def __init__(self):
+    def __init__(self, units):
+        # get a list of all the unit datas and create a single string from it
+        unitData = reduce( lambda d1, d2: d1 + d2, map( lambda u: u.getData(), units ) )
+
+        # combined length of all the datas
+        dataLength = len( unitData )
+
+        print "data length: %d" % dataLength
+
         # create the message
-        self.message = struct.pack('>hhBB', Packet.DATA, struct.calcsize('>BB'), Packet.SETUP_UNITS & 0xff, 0x0 )
+        self.message = struct.pack('>hhBB%ds' % dataLength, Packet.DATA, struct.calcsize('>BB') + dataLength, Packet.SETUP_UNITS & 0xff, len(units) & 0xff, unitData )
 
 
 # UDP packets
@@ -175,15 +184,19 @@ class UdpPingPacket(Packet):
         self.message = struct.pack('>BL', 0x0, milliseconds)
 
 
-class UdpTextPacket(Packet):
-    def __init__(self, type, data):
-        # create the message
-        dataLength = len(data)
-        self.message = struct.pack('>Bh%ds' % dataLength, 0x2, type, data)
-
-
 class UdpDataPacket(Packet):
     def __init__(self, type, value):
         # create the message
         self.message = struct.pack('>Bhh', 0x3, type, value)
+
+
+class UdpMissionPacket(Packet):
+    def __init__(self, units, packetId):
+        missionData = reduce( lambda d1, d2: d1 + d2, map( lambda unit: struct.pack('>hB', unit.id, unit.mission), units))
+
+        # combined length of all the datas
+        dataLength = len( missionData )
+
+        # create the message
+        self.message = struct.pack('>BBIB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_MISSION & 0xff, packetId, len(units), missionData)
 

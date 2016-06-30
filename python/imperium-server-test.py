@@ -3,13 +3,22 @@
 import sys
 import socket
 import struct
-import packet
 import datetime
 import thread
 import ssl
 
+import packet
+from unit import Unit
+from simulator import Simulator
+
 server = None
 port = -1
+playerId = -1
+
+# player army
+units = []
+
+simulator = None
 
 udpSocket = None
 udpAddress = None
@@ -20,6 +29,7 @@ UDP_TYPE_TEXT = 0
 UDP_TYPE_TEST = 1
 
 udpSpeedTestStart = None
+
 
 
 def readUdpPackets(udpSocket):
@@ -37,14 +47,17 @@ def readUdpPackets(udpSocket):
             print "--- pong received, time: %d ms" % (milliseconds - oldTime)
 
         elif packetType == packet.Packet.UDP_DATA_START_ACTION:
-            print "--- start action"
+            print "--- start action, starting simulator"
+            # create the simulator and start it
+            simulator = Simulator( units, udpSocket, udpAddress )
+            simulator.start()
 
         elif packetType == packet.Packet.UDP_DATA:
             (packetType, subPacketType, packetId,) = struct.unpack_from('>BBL', data, 0)
+            offset = struct.calcsize('>BBL')
             print "--- UDP data type %d, packet id: %d, total bytes: %d" % (subPacketType, packetId, len(data))
 
             if subPacketType == packet.Packet.UDP_DATA_MISSION:
-                offset = struct.calcsize('>BBL')
                 (unitCount,) = struct.unpack_from('>B', data, offset)
                 offset += struct.calcsize('>B')
                 print "--- mission data, %d units" % unitCount
@@ -55,7 +68,6 @@ def readUdpPackets(udpSocket):
                     print "--- unit %d, mission %d" % (unitId, missionType )
 
             elif subPacketType == packet.Packet.UDP_DATA_UNIT_STATS:
-                offset = struct.calcsize('>BBL')
                 (unitCount,) = struct.unpack_from('>B', data, offset)
                 offset += struct.calcsize('>B')
                 print "--- unit stats, %d units" % unitCount
@@ -69,8 +81,22 @@ def readUdpPackets(udpSocket):
                     y /= 10
                     facing /= 10
 
-                    print "--- unit %d, men: %d, mode: %d, mission %d, morale: %d, fatigue: %d, ammo: %d pos: %d.%d, facing: %d" \
+                    print "--- unit %d, men: %d, mode: %d, mission %d, morale: %d, fatigue: %d, ammo: %d pos: %d,%d, facing: %d" \
                           % (unitId, men, mode, missionType, morale, fatigue, ammo, x, y, facing)
+
+            elif subPacketType == packet.Packet.UDP_DATA_FIRE:
+                (attackerId, x, y, targetCount, ) = struct.unpack_from('>hhhB', data, offset)
+                offset += struct.calcsize('>hhhB')
+                x /= 10
+                y /= 10
+                print "--- fire, %d fires at %d,%d, hitting %d units" % (attackerId, x, y, targetCount )
+
+                for count in range( unitCount ):
+                    (targetId, casualties, type, targetMoraleChange, attackerMoraleChange, ) = struct.unpack_from('>hBBhh', data, offset)
+                    offset += struct.calcsize('>hBBhh')
+                    targetMoraleChange /= 10.0
+                    attackerMoraleChange /= 10.0
+                    print "    target %d lost %d men, type: %d, attacker morale: %.1f, target morale: %.1f" % (targetId, casualties, type, attackerMoraleChange, targetMoraleChange)
 
 
 class PacketException(Exception):
@@ -153,6 +179,13 @@ def handleGameJoined(data):
     print "### sending UDP ping"
     udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
 
+    # set up our army
+    global units
+    units = []
+    for baseId in range( 10 ):
+        units.append( Unit( playerId, baseId ))
+    print "created %d units" % len( units )
+
 
 def handleGameJoinError(reason):
     print "### error joining game: %s" % reason
@@ -184,7 +217,7 @@ def handleData(data, sock):
 
         # send back our units and ready to start packet
         print "### sending own units packet"
-        sock.send(packet.SendUnitsPacket().message)
+        sock.send(packet.SendUnitsPacket( units ).message)
 
         print "### sending ready to start packet"
         sock.send(packet.ReadyToStartPacket().message)
@@ -273,12 +306,18 @@ def announceGame(sock):
     # send the request
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
+    # we're player 1
+    playerId = 0
+
 
 def joinGame(sock):
     gameId = getInputInteger('Game to join id: ', 0, 1000)
 
     # send the request
     sock.send(packet.JoinGamePacket(gameId).message)
+
+    # we're player 2
+    playerId = 2
 
 
 def leaveGame(sock):
