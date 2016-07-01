@@ -29,7 +29,11 @@ class Simulator:
             time.sleep( 1 )
 
             print "+++ sending missions"
-            self.udpSocket.sendto(packet.UdpMissionPacket( self.units, self.packetId ).message, self.udpAddress)
+            self.udpSocket.sendto( packet.UdpMissionPacket( self.units, self.packetId ).message, self.udpAddress)
+            self.packetId += 1
+
+            print "+++ sending unit stats"
+            self.udpSocket.sendto( packet.UdpUnitStatsPacket( self.units, self.packetId ).message, self.udpAddress)
             self.packetId += 1
 
         print "+++ simulation thread done"

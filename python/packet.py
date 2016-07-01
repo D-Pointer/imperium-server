@@ -200,3 +200,16 @@ class UdpMissionPacket(Packet):
         # create the message
         self.message = struct.pack('>BBIB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_MISSION & 0xff, packetId, len(units), missionData)
 
+
+class UdpUnitStatsPacket(Packet):
+    def __init__(self, units, packetId):
+        # get a list of all the unit datas and create a single string from it
+        statsData = reduce( lambda d1, d2: d1 + d2, map( lambda u: u.getStats(), units ) )
+
+        # combined length of all the datas
+        dataLength = len( statsData )
+
+        print "data length: %d" % dataLength
+
+        # create the message
+        self.message = struct.pack('>BBIB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_UNIT_STATS & 0xff, packetId, len(units), statsData )
