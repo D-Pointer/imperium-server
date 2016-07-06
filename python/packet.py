@@ -28,7 +28,8 @@ class Packet:
     READY_TO_START = 21
     GET_RESOURCE_PACKET = 22
     RESOURCE_PACKET = 23
-    INVALID_RESOURCE_PACKET = 24
+    INVALID_RESOURCE_NAME_PACKET = 24
+    INVALID_RESOURCE_PACKET = 25
 
     # TCP sub packets
     SETUP_UNITS = 0
@@ -69,6 +70,7 @@ class Packet:
         READY_TO_START: 'READY_TO_START',
         GET_RESOURCE_PACKET: 'GET_RESOURCE_PACKET',
         RESOURCE_PACKET: 'RESOURCE_PACKET',
+        INVALID_RESOURCE_NAME_PACKET: 'INVALID_RESOURCE_NAME_PACKET',
         INVALID_RESOURCE_PACKET: 'INVALID_RESOURCE_PACKET'
     }
 
@@ -213,3 +215,19 @@ class UdpUnitStatsPacket(Packet):
 
         # create the message
         self.message = struct.pack('>BBIB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_UNIT_STATS & 0xff, packetId, len(units), statsData )
+
+
+class UdpFirePacket(Packet):
+    def __init__(self, attackerId, hitX, hitY, casualties, packetId):
+        if casualties and len( casualties ) > 0:
+            # get a list of all the casualties and create a single string from it
+            casualtiesData = reduce( lambda d1, d2: d1 + d2, map( lambda c: struct.pack('>hBBhh', *c), casualties ) )
+            dataLength = len( casualtiesData )
+            print "data length: %d" % dataLength
+
+            self.message = struct.pack('>BBIhhhB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_FIRE & 0xff, packetId, attackerId, hitX, hitY, len(casualties), casualtiesData )
+
+        else:
+            # no casualties
+            self.message = struct.pack('>BBIhhhB', Packet.UDP_DATA & 0xff, Packet.UDP_DATA_FIRE & 0xff, packetId, attackerId, hitX, hitY, 0 )
+

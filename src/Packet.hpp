@@ -37,6 +37,7 @@ public:
         ReadyToStartPacket,
         GetResourcePacket,
         ResourcePacket,
+        InvalidResourceNamePacket,
         InvalidResourcePacket,
     };
 

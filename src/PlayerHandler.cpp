@@ -538,10 +538,12 @@ void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
     unsigned short resourceNameLength = packet->getUnsignedShort( offset );
     offset += sizeof( unsigned short );
 
+    std::vector<boost::asio::const_buffer> buffers;
+
     // invalid name?
     if ( resourceNameLength == 0 || resourceNameLength > 1024 ) {
         logWarning << "PlayerHandler::handleResourcePacket [" << m_id << "]: bad resource name length: " << resourceNameLength;
-        sendPacket( Packet::InvalidResourcePacket );
+        sendPacket( Packet::InvalidResourceNamePacket );
         return;
     }
 
@@ -549,24 +551,59 @@ void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
     std::string resourceName = packet->getString( offset, resourceNameLength );
     logDebug << "PlayerHandler::handleResourcePacket [" << m_id << "]: fetching resource: '" << resourceName << "'";
 
+    // always add the name first
+    unsigned short netNameLength = htons( resourceNameLength );
+    buffers.push_back( boost::asio::buffer( &netNameLength, sizeof( unsigned short )));
+    buffers.push_back( boost::asio::buffer( &resourceName[0], resourceName.length()));
+
     std::string resource = ResourceLoader::loadResource( resourceName );
     if ( resource.length() == 0 ) {
         logWarning << "PlayerHandler::handleResourcePacket [" << m_id << "]: no data found for resource: " << resourceName;
-        sendPacket( Packet::InvalidResourcePacket );
+        sendPacket( Packet::InvalidResourcePacket, buffers );
         return;
     }
 
-    std::vector<boost::asio::const_buffer> buffers;
+    offset = 0;
+    unsigned char packetIndex = 0;
 
-    // data length
-    unsigned short netResourceLength = htons( resource.length());
-    buffers.push_back( boost::asio::buffer( &netResourceLength, sizeof( unsigned short )));
+    // total resource length
+    unsigned int totalLength = resource.length();
+    unsigned int netTotalLength = htonl( totalLength );
 
-    // raw data
-    buffers.push_back( boost::asio::buffer( &resource[0], resource.length()));
+    // the number of packets we will need to send
+    unsigned char packetCount = totalLength / 65000;
+    if ( packetCount * 65000 < totalLength ) {
+        packetCount++;
+    }
 
-    // send the packet
-    sendPacket( Packet::ResourcePacket, buffers );
+    logDebug << "PlayerHandler::handleResourcePacket [" << m_id << "]: resource: '" << resourceName << "' is " << totalLength
+             << " bytes, sending in " << (int)packetCount << " packets";
+
+    // send all packets
+    while ( offset < totalLength ) {
+        // clear the buffers between sends so that we start with fresh data
+        buffers.clear();
+        buffers.push_back( boost::asio::buffer( &netNameLength, sizeof( unsigned short )));
+        buffers.push_back( boost::asio::buffer( &resourceName[0], resourceName.length()));
+        buffers.push_back( boost::asio::buffer( &netTotalLength, sizeof( unsigned int )));
+        buffers.push_back( boost::asio::buffer( &packetIndex, sizeof( unsigned char )));
+        buffers.push_back( boost::asio::buffer( &packetCount, sizeof( unsigned char )));
+
+        // how much to send?
+        unsigned short packetSize = offset + 65000 <= totalLength ? 65000 : totalLength - offset;
+        unsigned short netPacketSize = htons( packetSize );
+        buffers.push_back( boost::asio::buffer( &netPacketSize, sizeof( unsigned short )));
+        //logDebug << "PlayerHandler::handleResourcePacket [" << m_id << "]: sending " << packetSize << " bytes";
+
+        // raw data
+        buffers.push_back( boost::asio::buffer( &resource[offset], packetSize));
+
+        // send the packet
+        sendPacket( Packet::ResourcePacket, buffers );
+
+        packetIndex++;
+        offset += packetSize;
+    }
 }
 
 

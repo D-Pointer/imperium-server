@@ -2,6 +2,7 @@
 import time
 import thread
 import packet
+import random
 
 class Simulator:
 
@@ -24,8 +25,10 @@ class Simulator:
 
 
     def simulationLoop (self, dummy):
+        counter = 0
+
         while self.keepRunning:
-            print "+++ simulating..."
+            print "+++ simulating turn %d" % counter
             time.sleep( 1 )
 
             print "+++ sending missions"
@@ -35,5 +38,18 @@ class Simulator:
             print "+++ sending unit stats"
             self.udpSocket.sendto( packet.UdpUnitStatsPacket( self.units, self.packetId ).message, self.udpAddress)
             self.packetId += 1
+
+            # combat?
+            if counter > 0 and counter % 3 == 0:
+                attackerId = random.choice( self.units ).id
+                hitX = random.randint( 250, 300 ) * 10
+                hitY = random.randint( 300, 350 ) * 10
+                #targetId = random.randint( 0, 5 )
+
+                print "+++ sending fire"
+                self.udpSocket.sendto( packet.UdpFirePacket( attackerId, hitX, hitY, None, self.packetId ).message, self.udpAddress)
+                self.packetId += 1
+
+            counter += 1
 
         print "+++ simulation thread done"

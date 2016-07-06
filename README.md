@@ -293,19 +293,37 @@ Sent by a player when they wish to get a particular resource.
 Responses:
 
 * **ResourcePacket** containing the resource is sent if the resource was found.
+* **InvalidResourceNamePacket** is sent if the resource name is invalid (too short or too long).
 * **InvalidResourcePacket** is sent if the player asked for an invalid resource.
 
 
 ### ResourcePacket
-Sent by the server as a response to a resource retrieval packet. Contains the raw data for the resource.
+Sent by the server as a response to a resource retrieval packet. Each resource packet can contain 65000 bytes of data,
+which means that bigger resources need to be sent over several packets. For this each packet contain a packeet index
+which indicates the order of the packet as well as a packet count which indicates the total number of packets that will
+be sent. A total resource length is also included with each packet to allow the recipient to preallocate space for the
+full resource. The resource name is also included in all packets. The resource length is the length of the data in that
+particular packet, not a total resource length.
 
-* resource length (`unsigned short`).
-* resource data (resource length of characters).
+* resource name length (`unsigned short`).
+* resource name (resource name length of characters), not null terminated.
+* total resource length (`unsigned int`).
+* packet index (`unsigned char`) indicates the index of this packet. From 0 to packet count - 1.
+* packet count (`unsigned char`) contains the total number of packets neede to deliver the resource.
+* resource length (`unsigned short`) contains the data size of this packet
+* resource data (resource length of bytes).
+
+
+### InvalidResourceNamePacket
+Sent by the server as a response to a resource retrieval packet and indicates that the given resource name is not valid. 
 
 
 ### InvalidResourcePacket
 Sent by the server as a response to a resource retrieval packet and indicates that the wanted resource
 is not valid. The reason is likely be that the resource was not found or that some error occurred.
+
+* resource name length (`unsigned short`).
+* resource name (resource name length of characters), not null terminated.
 
 
 ## UDP packets
