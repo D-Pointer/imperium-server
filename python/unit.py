@@ -34,8 +34,8 @@ class Unit:
 
     def getData (self):
         nameLength = len( self.name)
-        return struct.pack('>hhhhBBBBBBBBBB%ds' % nameLength, self.id, self.x * 10, self.y * 10, self.rotation * 10, self.type, self.mode,
-                           self.men, self.mission, self.morale, self.fatigue, self.experience, self.ammo, self.weapon, nameLength, self.name)
+        return struct.pack('>hhhhBBBBBBBBBB%ds' % nameLength, self.id, self.x * 10, self.y * 10, self.rotation * 10, self.type, self.men,
+                           self.mode, self.mission, self.morale, self.fatigue, self.experience, self.ammo, self.weapon, nameLength, self.name)
 
 
     def getStats (self):

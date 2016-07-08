@@ -425,7 +425,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     logDebug << "PlayerHandler::handleJoinGamePacket [" << m_id << "]: endpoint 1: " << ep1.address() << ", endpoint 2: " << ep2.address();
 
     // set up the UDP handler
-    SharedUdpHandler udpHandler = std::make_shared<UdpHandler>( player1->getUdpSocket(), m_udpSocket, ep1.address(), ep2.address(),
+    SharedUdpHandler udpHandler = std::make_shared<UdpHandler>( m_game->getGameId(), player1->getUdpSocket(), m_udpSocket, ep1.address(), ep2.address(),
                                                                 game->getStatistics( 0 ), game->getStatistics( 1 ));
     m_game->setUdpHandler( udpHandler );
     udpHandler->start();

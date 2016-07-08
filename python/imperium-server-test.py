@@ -222,6 +222,11 @@ def handleData(data, sock):
         print "### sending ready to start packet"
         sock.send(packet.ReadyToStartPacket().message)
 
+    elif subPacketType == packet.Packet.GAME_RESULT:
+        print "### received game result packet"
+        (endType, total1, total2, lost1, lost2, objectives1, objectives2) = struct.unpack_from('>Bhhhhhh', data, offset)
+        print "### end type: %d, total: %d, %d, lost: %d, %d, objectives: %d, %d" % (endType, total1, total2, lost1, lost2, objectives1, objectives2)
+
     else:
         print "### unknown TCP sub packet type: %d" % subPacketType
 

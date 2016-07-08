@@ -5,16 +5,16 @@
 #include "Packet.hpp"
 #include "Log.hpp"
 
-UdpHandler::UdpHandler (udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2, Statistics &stats1,
-                        Statistics &stats2)
-        : m_socket1( socket1 ), m_socket2( socket2 ), m_playerSentUdp1( false ), m_playerSentUdp2( false ), m_address1( address1 ), m_address2( address2 ),
+UdpHandler::UdpHandler (unsigned int gameId, udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2,
+                        Statistics &stats1, Statistics &stats2)
+        : m_gameId(gameId), m_socket1( socket1 ), m_socket2( socket2 ), m_playerSentUdp1( false ), m_playerSentUdp2( false ), m_address1( address1 ), m_address2( address2 ),
           m_stats1( stats1 ), m_stats2( stats2 ) {
 
 }
 
 
 UdpHandler::~UdpHandler () {
-    logDebug << "UdpHandler::~UdpHandler";
+    logDebug << "UdpHandler::~UdpHandler [" << m_gameId << "]";
 }
 
 
@@ -30,12 +30,12 @@ void UdpHandler::start () {
                                   boost::bind( &UdpHandler::handleUdpReceive2, shared_from_this(),
                                                boost::asio::placeholders::error,
                                                boost::asio::placeholders::bytes_transferred ));
-    logDebug << "UdpHandler::start: handler started, ready to handle UDP data";
+    logDebug << "UdpHandler::start [" << m_gameId << "]: handler started, ready to handle UDP data";
 }
 
 
 void UdpHandler::stop () {
-    logDebug << "UdpHandler::stop: cancelling receives";
+    logDebug << "UdpHandler::stop [" << m_gameId << "]: cancelling receives";
     boost::system::error_code error;
     m_socket1.cancel( error );
     m_socket2.cancel( error );
@@ -45,15 +45,15 @@ void UdpHandler::stop () {
 void UdpHandler::sendStartPackets () {
     // have both players sent a first UDP packet?
     if ( !m_playerSentUdp1 ) {
-        logWarning << "UdpHandler::sendStartPackets: player 1 has not sent an initial UDP packet, can not send start packet";
+        logWarning << "UdpHandler::sendStartPackets [" << m_gameId << "]: player 1 has not sent an initial UDP packet, can not send start packet";
         return;
     }
     if ( !m_playerSentUdp2 ) {
-        logWarning << "UdpHandler::sendStartPackets: player 2 has not sent an initial UDP packet, can not send start packet";
+        logWarning << "UdpHandler::sendStartPackets [" << m_gameId << "]: player 2 has not sent an initial UDP packet, can not send start packet";
         return;
     }
 
-    logDebug << "UdpHandler::sendStartPackets: sending starts packets to both players";
+    logDebug << "UdpHandler::sendStartPackets [" << m_gameId << "]: sending starts packets to both players";
 
     std::vector<boost::asio::const_buffer> buffers;
 
@@ -83,7 +83,7 @@ void UdpHandler::sendStartPackets () {
 void UdpHandler::handleUdpReceive1 (const boost::system::error_code &error, size_t size) {
     // on error we do not try to receive again
     if ( error ) {
-        logWarning << "UdpHandler::handleUdpReceive1: error receiving UDP data from player 1: " << error.message();
+        logWarning << "UdpHandler::handleUdpReceive1 [" << m_gameId << "]: error receiving UDP data from player 1: " << error.message();
         return;
     }
 
@@ -103,7 +103,7 @@ void UdpHandler::handleUdpReceive1 (const boost::system::error_code &error, size
 void UdpHandler::handleUdpReceive2 (const boost::system::error_code &error, size_t size) {
     // on error we do not try to receive again
     if ( error ) {
-        logWarning << "UdpHandler::handleUdpReceive2: error receiving UDP data from player 2: " << error.message();
+        logWarning << "UdpHandler::handleUdpReceive2 [" << m_gameId << "]: error receiving UDP data from player 2: " << error.message();
         return;
     }
 
@@ -122,7 +122,7 @@ void UdpHandler::handleUdpReceive2 (const boost::system::error_code &error, size
 
 void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsigned int sender) {
     if ( data.size() < sizeof( unsigned short )) {
-        logError << "UdpHandler::handlePacket: too short packet from player " << sender;
+        logError << "UdpHandler::handlePacket [" << m_gameId << "]: too short packet from player " << sender;
         return;
     }
 
@@ -144,7 +144,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
 
     switch ((Packet::UdpPacketType) packetType ) {
         case Packet::UdpPingPacket:
-            logDebug << "UdpHandler::handlePacket: UDP ping from player " << sender;
+            logDebug << "UdpHandler::handlePacket [" << m_gameId << "]: UDP ping from player " << sender;
             if ( sender == 1 ) {
                 handlePing( data, size, m_socket1, m_endpoint1, stats );
             }
@@ -154,11 +154,11 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             break;
 
         case Packet::UdpDataPacket:
-            logDebug << "UdpHandler::handlePacket: " << size << " bytes of UDP data from player " << sender;
+            logDebug << "UdpHandler::handlePacket [" << m_gameId << "]: " << size << " bytes of UDP data from player " << sender;
             if ( sender == 1 ) {
                 // we can only send to player 2 if that player has sent us at least one packet so that the endpoint is valid
                 if ( !m_playerSentUdp2 ) {
-                    logWarning << "UdpHandler::handlePacket: player 2 has not yet sent their first UDP packet, can not send";
+                    logWarning << "UdpHandler::handlePacket [" << m_gameId << "]: player 2 has not yet sent their first UDP packet, can not send";
                     return;
                 }
 
@@ -166,7 +166,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             }
             else {
                 if ( !m_playerSentUdp1 ) {
-                    logWarning << "UdpHandler::handlePacket: player 1 has not yet sent their first UDP packet, can not send";
+                    logWarning << "UdpHandler::handlePacket [" << m_gameId << "]: player 1 has not yet sent their first UDP packet, can not send";
                     return;
                 }
 
@@ -175,7 +175,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
             break;
 
         default:
-	  logError << "UdpHandler::handlePacket: unknown packet " << (int)packetType << " from player " << sender << ", size: " << size << " bytes";
+	  logError << "UdpHandler::handlePacket [" << m_gameId << "]: unknown packet " << (int)packetType << " from player " << sender << ", size: " << size << " bytes";
             return;
     }
 }

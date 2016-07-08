@@ -33,6 +33,7 @@ class Packet:
 
     # TCP sub packets
     SETUP_UNITS = 0
+    GAME_RESULT = 1
 
     # UDP packets
     UDP_PING = 0

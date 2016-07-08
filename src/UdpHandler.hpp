@@ -16,7 +16,7 @@ class UdpHandler : public std::enable_shared_from_this<UdpHandler> {
 public:
 
 
-    UdpHandler (udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2,
+    UdpHandler (unsigned int gameId, udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2,
                 Statistics &stats1, Statistics &stats2);
 
     virtual ~UdpHandler ();
@@ -39,6 +39,8 @@ private:
     void handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats);
 
     void handleData (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats);
+
+    unsigned int m_gameId;
 
     udp::socket &m_socket1;
     udp::socket &m_socket2;
