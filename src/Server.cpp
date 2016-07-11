@@ -2,6 +2,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
+#include <mutex>
 #include <iostream>
 
 #include "Server.hpp"
