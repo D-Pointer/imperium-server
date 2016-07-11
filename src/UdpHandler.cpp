@@ -6,7 +6,7 @@
 #include "Log.hpp"
 
 UdpHandler::UdpHandler (unsigned int gameId, udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2,
-                        Statistics &stats1, Statistics &stats2)
+                        SharedStatistics stats1, SharedStatistics stats2)
         : m_gameId(gameId), m_socket1( socket1 ), m_socket2( socket2 ), m_playerSentUdp1( false ), m_playerSentUdp2( false ), m_address1( address1 ), m_address2( address2 ),
           m_stats1( stats1 ), m_stats2( stats2 ) {
 
@@ -70,13 +70,13 @@ void UdpHandler::sendStartPackets () {
     m_socket2.send_to( buffers, m_endpoint2 );
 
     // statistics
-    m_stats1.m_lastSentUdp = time( 0 );
-    m_stats1.m_packetsSentUdp++;
-    m_stats1.m_bytesSentUdp += sizeof( unsigned short ) * 2;
+    m_stats1->m_lastSentUdp = time( 0 );
+    m_stats1->m_packetsSentUdp++;
+    m_stats1->m_bytesSentUdp += sizeof( unsigned short ) * 2;
 
-    m_stats2.m_lastSentUdp = m_stats1.m_lastSentUdp;
-    m_stats2.m_packetsSentUdp++;
-    m_stats2.m_bytesSentUdp += sizeof( unsigned short ) * 2;
+    m_stats2->m_lastSentUdp = m_stats1->m_lastSentUdp;
+    m_stats2->m_packetsSentUdp++;
+    m_stats2->m_bytesSentUdp += sizeof( unsigned short ) * 2;
 }
 
 
@@ -127,10 +127,10 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
     }
 
     // statistics
-    Statistics &stats = sender == 1 ?m_stats1 : m_stats2;
-    stats.m_lastReceivedUdp = time( 0 );
-    stats.m_packetsReceivedUdp++;
-    stats.m_bytesReceivedUdp += size;
+    SharedStatistics stats = sender == 1 ?m_stats1 : m_stats2;
+    stats->m_lastReceivedUdp = time( 0 );
+    stats->m_packetsReceivedUdp++;
+    stats->m_bytesReceivedUdp += size;
 
     // handle the first UDP packet
     if ( sender == 1 ) {
@@ -181,7 +181,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
 }
 
 
-void UdpHandler::handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats) {
+void UdpHandler::handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, const SharedStatistics &stats) {
     // for the response we change the packet type to a "pong"
     unsigned char packetType = Packet::UdpPacketType::UdpPongPacket;
     //packetType = htons( packetType );
@@ -192,18 +192,18 @@ void UdpHandler::handlePing (boost::array<char, 4096> &data, size_t size, udp::s
     socket.send_to( boost::asio::buffer( data, size ), receiver );
 
     // statistics
-    stats.m_lastSentUdp = time( 0 );
-    stats.m_packetsSentUdp++;
-    stats.m_bytesSentUdp += size;
+    stats->m_lastSentUdp = time( 0 );
+    stats->m_packetsSentUdp++;
+    stats->m_bytesSentUdp += size;
 }
 
 
-void UdpHandler::handleData (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats) {
+void UdpHandler::handleData (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, const SharedStatistics &stats) {
     // send away
     socket.send_to( boost::asio::buffer( data, size ), receiver );
 
     // statistics
-    stats.m_lastSentUdp = time( 0 );
-    stats.m_packetsSentUdp++;
-    stats.m_bytesSentUdp += size;
+    stats->m_lastSentUdp = time( 0 );
+    stats->m_packetsSentUdp++;
+    stats->m_bytesSentUdp += size;
 }

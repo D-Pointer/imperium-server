@@ -6,9 +6,9 @@
 #include "Log.hpp"
 
 Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId)
-        : m_id(id), m_scenarioId(scenarioId), m_playerId1(playerId), m_playerId2(0), m_started(false), m_startTime(0), m_endTime(0) {
+        : m_id( id ), m_scenarioId( scenarioId ), m_playerId1( playerId ), m_playerId2( 0 ), m_started( false ), m_startTime( 0 ), m_endTime( 0 ) {
     logDebug << "Game::Game: created game: " << m_id << " for announced game: " << m_scenarioId << " by player: " << playerId;
-    m_creationTime = time(0);
+    m_creationTime = time( 0 );
 }
 
 
@@ -19,7 +19,7 @@ Game::~Game () {
 
 
 bool Game::hasStarted () const {
-   return m_started;
+    return m_started;
 }
 
 
@@ -61,6 +61,11 @@ void Game::setPlayerId2 (unsigned int playerId2) {
 }
 
 
+void Game::setStatistics (unsigned int playerId, const SharedStatistics & statistics) {
+    m_statistics[ playerId ] = statistics;
+}
+
+
 void Game::endGame () {
     if ( m_endTime == 0 ) {
         m_endTime = time( 0 );
@@ -88,19 +93,19 @@ time_t Game::getEndTime () const {
 }
 
 
-Statistics & Game::getStatistics (unsigned int player) {
-    return m_statistics[ player ];
+SharedStatistics Game::getStatistics (unsigned int player) {
+    return m_statistics[player];
 }
 
 
-void Game::setUdpHandler (const SharedUdpHandler & udpHandler) {
+void Game::setUdpHandler (const SharedUdpHandler &udpHandler) {
     m_udpHandler = udpHandler;
     m_started = true;
-    m_startTime = time(0);
+    m_startTime = time( 0 );
 }
 
 
-const SharedUdpHandler & Game::getUdpHandler () const {
+const SharedUdpHandler &Game::getUdpHandler () const {
     return m_udpHandler;
 }
 

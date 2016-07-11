@@ -15,8 +15,8 @@ using boost::asio::ip::udp;
 
 PlayerHandler::PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort, unsigned int playerId)
         : m_tcpSocket( io_service ),
-          m_udpSocket( io_service, udp::endpoint( udp::v4(), udpPort )), m_id(playerId),
-          m_data( 0 ), m_loggedIn(false), m_readyToStart(false) {
+          m_udpSocket( io_service, udp::endpoint( udp::v4(), udpPort )), m_id( playerId ),
+          m_data( 0 ), m_statistics( new Statistics ), m_loggedIn( false ), m_readyToStart( false ) {
 }
 
 
@@ -32,13 +32,13 @@ PlayerHandler::~PlayerHandler () {
         if ( m_game->hasStarted()) {
             logDebug << "PlayerHandler::~PlayerHandler [" << m_id << "]: ending started game";
 
-            PlayerHandler * player1 = PlayerManager::instance().getPlayer( m_game->getPlayerId1());
+            PlayerHandler *player1 = PlayerManager::instance().getPlayer( m_game->getPlayerId1());
             if ( player1 ) {
                 player1->sendPacket( Packet::GameEndedPacket );
                 player1->clearGame();
             }
 
-            PlayerHandler * player2 = PlayerManager::instance().getPlayer( m_game->getPlayerId2());
+            PlayerHandler *player2 = PlayerManager::instance().getPlayer( m_game->getPlayerId2());
             if ( player2 ) {
                 player2->sendPacket( Packet::GameEndedPacket );
                 player2->clearGame();
@@ -58,19 +58,38 @@ void PlayerHandler::start () {
 }
 
 
+void PlayerHandler::stop () {
+    logDebug << "PlayerHandler::stop [" << m_id << "]: stopping session";
+    m_tcpSocket.close();
+    m_udpSocket.close();
+}
+
+
 bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType) {
-    logDebug << "PlayerHandler::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
+    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType ) << " to player: " << toString();
+
+    // statistics
+    m_statistics->m_lastSentTcp = time( 0 );
+    m_statistics->m_packetsSentTcp++;
+    m_statistics->m_bytesSentTcp += 2 * sizeof( unsigned short );
 
     // just send a header, we have no data
-    return sendHeader( packetType, 0);
+    return sendHeader( packetType, 0 );
 }
 
 
 bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
-    logDebug << "PlayerHandler::sendPacket: sending packet [" << m_id << "]: " << Packet::getPacketName(packetType) << " to player: " << toString();
+    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType ) << " to player: " << toString();
+
+    size_t packetSize = boost::asio::buffer_size( buffers );
+
+    // statistics
+    m_statistics->m_lastSentTcp = time( 0 );
+    m_statistics->m_packetsSentTcp++;
+    m_statistics->m_bytesSentTcp += 2 * sizeof( unsigned short ) + packetSize;
 
     // send a suitable header
-    sendHeader( packetType, boost::asio::buffer_size( buffers ));
+    sendHeader( packetType, packetSize );
 
     try {
         // wrap the header as a buffer and send off
@@ -78,7 +97,7 @@ bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType, const std::vec
         return true;
     }
     catch (std::exception &ex) {
-        logError << "PlayerHandler::sendPacket: error sending packet [" << m_id << "]: " << ex.what();
+        logError << "PlayerHandler::sendPacket [" << m_id << "]: error sending packet: " << ex.what();
         return false;
     }
 }
@@ -108,16 +127,10 @@ bool PlayerHandler::sendHeader (Packet::TcpPacketType packetType, unsigned short
         // wrap the header as a buffer and send off
         boost::asio::write( m_tcpSocket, buffers );
 
-        // statistics
-//        Statistics &stats = m_game->getStatistics( m_playerIndex );
-//        stats.m_lastSentTcp = time(0);
-//        stats.m_packetsSentTcp++;
-//        stats.m_bytesSentTcp += length;
-
         //logDebug << "Player::sendHeader: sent header for packet: " << Packet::getPacketName(packetType); //", payload length: " << length;
     }
     catch (std::exception &ex) {
-        logError << "PlayerHandler::sendHeader: error sending header [" << m_id << "]: " << ex.what();
+        logError << "PlayerHandler::sendHeader [" << m_id << "]: error sending header: " << ex.what();
         return false;
     }
 
@@ -197,10 +210,9 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
     SharedPacket packet = std::make_shared<Packet>((Packet::TcpPacketType) m_packetType, m_data, m_dataLength );
 
     // statistics
-//        Statistics &stats = m_player->getStatistics();
-//        stats.m_lastReceivedTcp = time( 0 );
-//        stats.m_packetsReceivedTcp++;
-//        stats.m_bytesReceivedTcp += sizeof( unsigned short ) * 2 + m_dataLength;
+    m_statistics->m_lastReceivedTcp = time( 0 );
+    m_statistics->m_packetsReceivedTcp++;
+    m_statistics->m_bytesReceivedTcp += sizeof( unsigned short ) * 2 + m_dataLength;
 
     // check the packets that we can receive
     switch ( packet->getType()) {
@@ -262,7 +274,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
     // wrong protocol version?
     if ( protocolVersion != s_protocolVersion ) {
         logWarning << "PlayerHandler::handleLoginPacket [" << m_id << "]: bad protocol: " << protocolVersion << ", we support: " <<
-        s_protocolVersion;
+                   s_protocolVersion;
         sendPacket( Packet::InvalidProtocolPacket );
         return;
     }
@@ -317,7 +329,7 @@ void PlayerHandler::handleLoginPacket (const SharedPacket &packet) {
         buffers.push_back( boost::asio::buffer( &netScenarioId, sizeof( unsigned short )));
 
         // get the player owning the game
-        PlayerHandler * owner = PlayerManager::instance().getPlayer( game->getPlayerId1());
+        PlayerHandler *owner = PlayerManager::instance().getPlayer( game->getPlayerId1());
         if ( !owner ) {
             continue;
         }
@@ -346,13 +358,14 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
     // do we have an old game?
     if ( m_game ) {
         logWarning << "PlayerHandler::handleAnnounceGamePacket [" << m_id << "]: old game already announced: " << m_game->getScenarioId() <<
-        ", can not announce new";
+                   ", can not announce new";
         sendPacket( Packet::AlreadyAnnouncedPacket );
         return;
     }
 
     // create the new game, we're player 1
     m_game = GameManager::instance().createGame( announcedId, m_id );
+    m_game->setStatistics( 0, m_statistics );
 
     // all ok, send a response with the announced game id
     std::vector<boost::asio::const_buffer> buffers;
@@ -387,7 +400,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     }
 
     logDebug << "PlayerHandler::handleJoinGamePacket [" << m_id << "]: player: " << m_name << " wants to join game: " <<
-    game->toString();
+             game->toString();
 
     // has the game already started?
     if ( game->hasStarted()) {
@@ -397,7 +410,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     }
 
     // find the first, owning player
-    PlayerHandler * player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
+    PlayerHandler *player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
     if ( !player1 ) {
         logWarning << "PlayerHandler::handleJoinGamePacket [" << m_id << "]: owner player not found for game: " << game->toString();
         sendPacket( Packet::InvalidGamePacket );
@@ -407,6 +420,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     // game, meet player, we're player 2
     game->setPlayerId2( m_id );
     m_game = game;
+    m_game->setStatistics( 1, m_statistics );
 
     // create the UDP handler
     boost::system::error_code ec1, ec2;
@@ -477,7 +491,7 @@ void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
     // are we in a game?
     if ( m_game->hasStarted()) {
         logDebug << "PlayerHandler::handleLeaveGamePacket [" << m_id << "]: game in progress, informing other player";
-        PlayerHandler * peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
+        PlayerHandler *peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
         if ( peer ) {
             peer->sendPacket( Packet::GameEndedPacket );
             peer->clearGame();
@@ -497,7 +511,7 @@ void PlayerHandler::handleLeaveGamePacket (const SharedPacket &packet) {
 
 void PlayerHandler::handleDataPacket (const SharedPacket &packet) {
     // find the peer player
-    PlayerHandler * peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
+    PlayerHandler *peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
     if ( !peer ) {
         logError << "PlayerHandler::handleDataPacket [" << m_id << "]: peer not found, can not handle data packet";
         return;
@@ -511,7 +525,7 @@ void PlayerHandler::handleDataPacket (const SharedPacket &packet) {
 
 void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
     // find the peer player
-    PlayerHandler * peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
+    PlayerHandler *peer = PlayerManager::instance().getPlayer( m_game->getPeerId( m_id ));
     if ( !peer ) {
         logError << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: no peer, can not handle ready to start packet";
         return;
@@ -577,7 +591,7 @@ void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
     }
 
     logDebug << "PlayerHandler::handleResourcePacket [" << m_id << "]: resource: '" << resourceName << "' is " << totalLength
-             << " bytes, sending in " << (int)packetCount << " packets";
+             << " bytes, sending in " << (int) packetCount << " packets";
 
     // send all packets
     while ( offset < totalLength ) {
@@ -596,7 +610,7 @@ void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
         //logDebug << "PlayerHandler::handleResourcePacket [" << m_id << "]: sending " << packetSize << " bytes";
 
         // raw data
-        buffers.push_back( boost::asio::buffer( &resource[offset], packetSize));
+        buffers.push_back( boost::asio::buffer( &resource[offset], packetSize ));
 
         // send the packet
         sendPacket( Packet::ResourcePacket, buffers );

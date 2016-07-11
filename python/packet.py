@@ -177,6 +177,14 @@ class SendUnitsPacket(Packet):
         self.message = struct.pack('>hhBB%ds' % dataLength, Packet.DATA, struct.calcsize('>BB') + dataLength, Packet.SETUP_UNITS & 0xff, len(units) & 0xff, unitData )
 
 
+class EndGameGamePacket(Packet):
+    def __init__(self, endType, total1, total2, lost1, lost2, objectives1, objectives2):
+        data = struct.pack( '>BBhhhhhh', Packet.GAME_RESULT, endType, total1, total2, lost1, lost2, objectives1, objectives2)
+        dataLength = len( data )
+
+        self.message = struct.pack('>hh%ds' % dataLength, Packet.DATA, dataLength, data )
+
+
 # UDP packets
 
 class UdpPingPacket(Packet):
@@ -211,8 +219,6 @@ class UdpUnitStatsPacket(Packet):
 
         # combined length of all the datas
         dataLength = len( statsData )
-
-        print "data length: %d" % dataLength
 
         # create the message
         self.message = struct.pack('>BBIB%ds' % dataLength, Packet.UDP_DATA & 0xff, Packet.UDP_DATA_UNIT_STATS & 0xff, packetId, len(units), statsData )

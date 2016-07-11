@@ -13,17 +13,22 @@ using boost::asio::ip::tcp;
 
 class Server {
 public:
-    Server (boost::asio::io_service &io_service, const std::string & ip, short port);
+    Server (boost::asio::io_service &io_service, const std::string &ip, short port);
 
     void handleAccept (PlayerHandler *playerHandler, const boost::system::error_code &error);
 
 
 private:
 
-    void sessionTerminated (PlayerHandler * playerHandler);
+    void sessionTerminated (PlayerHandler *playerHandler);
+
+    void cleanupIdlePlayers (const boost::system::error_code &error);
 
     boost::asio::io_service &m_io_service;
     tcp::acceptor m_acceptor;
+
+    // timer for cleaning up idle players periodically
+    boost::asio::deadline_timer m_cleanupIdlerTimer;
 
     // the next available UDP port
     static unsigned short m_nextUdpPort;

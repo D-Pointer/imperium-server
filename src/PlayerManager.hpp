@@ -33,6 +33,8 @@ public:
      */
     bool broadcastPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers);
 
+    void cleanupIdlePlayers ();
+
 
 private:
 

@@ -1,5 +1,4 @@
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 #include "GameManager.hpp"
 #include "Log.hpp"
@@ -66,13 +65,19 @@ void GameManager::removeGame (const SharedGame &game) {
     }
 
     for ( int index = 0; index < 2; ++index ) {
-        Statistics &stats = game->getStatistics( index );
-        logDebug << "GameManager::removeGame: player " << index << ": UDP packet last received: " << stats.m_lastReceivedUdp;
-        logDebug << "GameManager::removeGame: player " << index << ": UDP packet last sent: " << stats.m_lastSentUdp;
-        logDebug << "GameManager::removeGame: player " << index << ": UDP packets sent: " << stats.m_packetsSentUdp;
-        logDebug << "GameManager::removeGame: player " << index << ": UDP packets received: " << stats.m_packetsReceivedUdp;
-        logDebug << "GameManager::removeGame: player " << index << ": UDP bytes sent: " << stats.m_bytesSentUdp;
-        logDebug << "GameManager::removeGame: player " << index << ": UDP bytes received: " << stats.m_bytesReceivedUdp;
+        SharedStatistics statistics = game->getStatistics( index );
+        logDebug << "GameManager::removeGame: player " << index << ": TCP packet last received: " << statistics->m_lastReceivedTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": TCP packet last sent: " << statistics->m_lastSentTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": TCP packets sent: " << statistics->m_packetsSentTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": TCP packets received: " << statistics->m_packetsReceivedTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": TCP bytes sent: " << statistics->m_bytesSentTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": TCP bytes received: " << statistics->m_bytesReceivedTcp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP packet last received: " << statistics->m_lastReceivedUdp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP packet last sent: " << statistics->m_lastSentUdp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP packets sent: " << statistics->m_packetsSentUdp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP packets received: " << statistics->m_packetsReceivedUdp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP bytes sent: " << statistics->m_bytesSentUdp;
+        logDebug << "GameManager::removeGame: player " << index << ": UDP bytes received: " << statistics->m_bytesReceivedUdp;
     }
 
     char buffer[50];
@@ -99,29 +104,35 @@ void GameManager::removeGame (const SharedGame &game) {
     boost::filesystem::ofstream out( archivePath, std::ios_base::out );
 
     // players
-    PlayerHandler * player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
-    PlayerHandler * player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
+    PlayerHandler *player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
+    PlayerHandler *player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
 
     out << "scenario " << game->getScenarioId() << std::endl
 
-    // times
-    << "created " << game->getCreationTime() << std::endl
-    << "started " << game->getStartTime() << std::endl
-    << "ended " << game->getEndTime() << std::endl
-    << "player1 " << ( player1 ? player1->getName() : "unnamed" ) << std::endl
-    << "player2 " << ( player2 ? player2->getName() : "unnamed" ) << std::endl;
+        // times
+        << "created " << game->getCreationTime() << std::endl
+        << "started " << game->getStartTime() << std::endl
+        << "ended " << game->getEndTime() << std::endl
+        << "player1 " << ( player1 ? player1->getName() : "unnamed" ) << std::endl
+        << "player2 " << ( player2 ? player2->getName() : "unnamed" ) << std::endl;
 
     // stats
     for ( int index = 0; index < 2; ++index ) {
-        Statistics &stats = game->getStatistics( index );
+        SharedStatistics statistics = game->getStatistics( index );
 
         out << "player" << ( index + 1 )
-        << " " << stats.m_lastReceivedUdp
-        << " " << stats.m_lastSentUdp
-        << " " << stats.m_packetsSentUdp
-        << " " << stats.m_packetsReceivedUdp
-        << " " << stats.m_bytesSentUdp
-        << " " << stats.m_bytesReceivedUdp << std::endl;
+            << " " << statistics->m_lastReceivedTcp
+            << " " << statistics->m_lastSentTcp
+            << " " << statistics->m_packetsSentTcp
+            << " " << statistics->m_packetsReceivedTcp
+            << " " << statistics->m_bytesSentTcp
+            << " " << statistics->m_bytesReceivedTcp
+            << " " << statistics->m_lastReceivedUdp
+            << " " << statistics->m_lastSentUdp
+            << " " << statistics->m_packetsSentUdp
+            << " " << statistics->m_packetsReceivedUdp
+            << " " << statistics->m_bytesSentUdp
+            << " " << statistics->m_bytesReceivedUdp << std::endl;
     }
 
     out.close();

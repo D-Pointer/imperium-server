@@ -37,13 +37,15 @@ public:
 
     void setPlayerId2 (unsigned int playerId2);
 
+    void setStatistics (unsigned int playerId, const SharedStatistics & statistics);
+
     void endGame ();
 
     time_t getCreationTime () const;
     time_t getStartTime () const;
     time_t getEndTime () const;
 
-    Statistics & getStatistics (unsigned int player);
+    SharedStatistics getStatistics (unsigned int player);
 
     /**
      * Sets the UDP handler that will handle all UDP traffic between the players. Setting this also marks the game
@@ -77,7 +79,7 @@ private:
     time_t m_endTime;
 
     // all statistics for both players
-    Statistics m_statistics[2];
+    SharedStatistics m_statistics[2];
 
     // UDP handler
     SharedUdpHandler m_udpHandler;
