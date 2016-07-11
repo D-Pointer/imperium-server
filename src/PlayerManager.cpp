@@ -75,3 +75,46 @@ bool PlayerManager::broadcastPacket (Packet::TcpPacketType packetType, const std
     // broadcasted ok
     return true;
 }
+
+
+void PlayerManager::cleanupIdlePlayers () {
+    std::lock_guard<std::mutex> lock( m_mutex );
+    //logDebug << "PlayerManager::cleanupIdlePlayers: checking " << m_players.size() << " players";
+
+    std::set<PlayerHandler *> toStop;
+
+    // current time
+    time_t now = time( 0 );
+
+    // max time in seconds that the players can idle. Longer TCP idle as a player can connect, announce a game and then
+    // sit and wait for players
+    const unsigned int maxTcpSeconds = 600;
+    const unsigned int maxUdpSeconds = 10;
+
+    for ( auto player : m_players ) {
+        SharedStatistics statistics = player.second->getStatistics();
+
+        // has the game started?
+        if ( statistics->m_lastReceivedUdp != 0 ) {
+            // yes, so only check UDP
+            if ( now - statistics->m_lastReceivedUdp > maxUdpSeconds ) {
+                toStop.insert( player.second );
+                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->toString() << " too long idle on UDP";
+            }
+        }
+        else {
+            // not yet started, so check TCP only
+            if ( now - statistics->m_lastReceivedTcp > maxTcpSeconds ) {
+                toStop.insert( player.second );
+                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->toString() << " too long idle on TCP";
+            }
+        }
+    }
+
+    logDebug << "PlayerManager::cleanupIdlePlayers: removing " << toStop.size() << " idle players";
+
+    // now stop the players that have timed out
+    for ( auto player : toStop ) {
+        player->stop();
+    }
+}

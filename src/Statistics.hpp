@@ -2,12 +2,19 @@
 #define STATISTICS_HPP
 
 #include <ctime>
+#include <memory>
 
 class Statistics {
 
 public:
 
     Statistics () {
+        m_lastReceivedTcp = 0;
+        m_lastSentTcp = 0;
+        m_packetsSentTcp = 0;
+        m_packetsReceivedTcp = 0;
+        m_bytesSentTcp = 0;
+        m_bytesReceivedTcp = 0;
         m_lastReceivedUdp = 0;
         m_lastSentUdp = 0;
         m_packetsSentUdp = 0;
@@ -17,12 +24,12 @@ public:
     }
 
     // TCP
-//    time_t m_lastReceivedTcp;
-//    time_t m_lastSentTcp;
-//    unsigned int m_packetsSentTcp;
-//    unsigned int m_packetsReceivedTcp;
-//    uint64_t m_bytesSentTcp;
-//    uint64_t m_bytesReceivedTcp;
+    time_t m_lastReceivedTcp;
+    time_t m_lastSentTcp;
+    unsigned int m_packetsSentTcp;
+    unsigned int m_packetsReceivedTcp;
+    uint64_t m_bytesSentTcp;
+    uint64_t m_bytesReceivedTcp;
 
     // UDP
     time_t m_lastReceivedUdp;
@@ -32,5 +39,7 @@ public:
     uint64_t m_bytesSentUdp;
     uint64_t m_bytesReceivedUdp;
 };
+
+typedef std::shared_ptr<Statistics> SharedStatistics;
 
 #endif

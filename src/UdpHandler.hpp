@@ -17,7 +17,7 @@ public:
 
 
     UdpHandler (unsigned int gameId, udp::socket &socket1, udp::socket &socket2, boost::asio::ip::address address1, boost::asio::ip::address address2,
-                Statistics &stats1, Statistics &stats2);
+                SharedStatistics stats1, SharedStatistics stats2);
 
     virtual ~UdpHandler ();
 
@@ -36,17 +36,17 @@ private:
 
     void handlePacket (boost::array<char, 4096> &data, size_t size, unsigned int sender);
 
-    void handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats);
+    void handlePing (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, const SharedStatistics &stats);
 
-    void handleData (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, Statistics &stats);
+    void handleData (boost::array<char, 4096> &data, size_t size, udp::socket &socket, udp::endpoint &receiver, const SharedStatistics &stats);
 
     unsigned int m_gameId;
 
     udp::socket &m_socket1;
     udp::socket &m_socket2;
 
-    Statistics & m_stats1;
-    Statistics & m_stats2;
+    SharedStatistics m_stats1;
+    SharedStatistics m_stats2;
 
     // have both players sent their initial udp data?
     bool m_playerSentUdp1;

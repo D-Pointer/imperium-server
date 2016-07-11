@@ -30,6 +30,8 @@ public:
      **/
     void start ();
 
+    void stop ();
+
     /**
      * Returns the player unique id.
      */
@@ -39,6 +41,10 @@ public:
 
     const std::string & getName () const {
         return m_name;
+    }
+
+    const SharedStatistics & getStatistics () const {
+        return m_statistics;
     }
 
     bool sendPacket (Packet::TcpPacketType packetType);
@@ -113,6 +119,9 @@ private:
 
     // the player name
     std::string m_name;
+
+    // our own statistics
+    SharedStatistics m_statistics;
 
     // has the player logged in?
     bool m_loggedIn;

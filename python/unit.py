@@ -5,6 +5,7 @@ import struct
 class Unit:
 
     def __init__(self, owner, baseId):
+        print "owner: %d, base id: %d" % ( owner, baseId )
         self.id = (0, 100)[owner] + baseId
 
         self.name = "Unit %d" % self.id

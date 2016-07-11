@@ -6,6 +6,7 @@ import struct
 import datetime
 import thread
 import ssl
+import random
 
 import packet
 from unit import Unit
@@ -29,13 +30,23 @@ UDP_TYPE_TEXT = 0
 UDP_TYPE_TEST = 1
 
 udpSpeedTestStart = None
+udpKeepRunning = True
 
+# game end types
+PLAYER1_DESTROYED = 0
+PLAYER2_DESTROYED = 1
+BOTH_PLAYERS_DESTROYED = 2
+TIMEOUT = 3
 
 
 def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
-    while True:
-        data, addr = udpSocket.recvfrom(2048)
+    while udpKeepRunning:
+        try:
+            data, addr = udpSocket.recvfrom(2048)
+        except:
+            break
+
         print "--- read %d bytes from %s:%d" % (len(data), addr[0], addr[1])
 
         (packetType,) = struct.unpack_from('>B', data, 0)
@@ -97,6 +108,8 @@ def readUdpPackets(udpSocket):
                     targetMoraleChange /= 10.0
                     attackerMoraleChange /= 10.0
                     print "    target %d lost %d men, type: %d, attacker morale: %.1f, target morale: %.1f" % (targetId, casualties, type, attackerMoraleChange, targetMoraleChange)
+
+    print "--- UDP handler stopped"
 
 
 class PacketException(Exception):
@@ -170,7 +183,8 @@ def handleGameJoined(data):
     print "### game joined, UDP port: %d, opponent: %s" % (udpPort, opponentName)
     print "### starting UDP thread"
 
-    global udpAddress, udpSocket
+    global udpAddress, udpSocket, udpKeepRunning
+    udpKeepRunning = True
     udpAddress = (server, udpPort)
     udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     thread.start_new_thread(readUdpPackets, (udpSocket,))
@@ -193,6 +207,17 @@ def handleGameJoinError(reason):
 
 def handleGameEnded():
     print "### game has ended"
+    endGame()
+
+
+def endGame ():
+    global simulator, udpKeepRunning, udpSocket
+    if simulator:
+        simulator.stop()
+        simulator = None
+
+    udpKeepRunning = False
+    udpSocket.close()
 
 
 def handleData(data, sock):
@@ -226,6 +251,7 @@ def handleData(data, sock):
         print "### received game result packet"
         (endType, total1, total2, lost1, lost2, objectives1, objectives2) = struct.unpack_from('>Bhhhhhh', data, offset)
         print "### end type: %d, total: %d, %d, lost: %d, %d, objectives: %d, %d" % (endType, total1, total2, lost1, lost2, objectives1, objectives2)
+        endGame()
 
     else:
         print "### unknown TCP sub packet type: %d" % subPacketType
@@ -312,6 +338,7 @@ def announceGame(sock):
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
     # we're player 1
+    global playerId
     playerId = 0
 
 
@@ -322,7 +349,8 @@ def joinGame(sock):
     sock.send(packet.JoinGamePacket(gameId).message)
 
     # we're player 2
-    playerId = 2
+    global playerId
+    playerId = 1
 
 
 def leaveGame(sock):
@@ -332,61 +360,101 @@ def leaveGame(sock):
     sock.send(packet.LeaveGamePacket().message)
 
 
-# def readyToStart(sock):
-#     print 'Sending ready to start game'
-#
-#     # send the request
-#     sock.send(packet.ReadyToStartPacket().message)
-
-
 def pingServer(sock):
     print ''
     print 'Sending ping'
     udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
 
 
-def sendTcpDataPacket(sock):
-    data = raw_input('TCP data to send: ')
+#def sendTcpDataPacket(sock):
+#     data = raw_input('TCP data to send: ')
+#
+#     if data is None:
+#         return
+#
+#     # send data
+#     sock.send(packet.DataPacket(data).message)
+#
+#
+# def sendUdpDataPacket(sock):
+#     data = raw_input('UDP data to send: ')
+#
+#     if data is None:
+#         return
+#
+#     global udpAddress
+#
+#     # send data
+#     udpSocket.sendto(packet.UdpDataPacket(packet.Packet.UDP_DATA_MISSION, data).message, udpAddress)
+#
+#
+# def sendUdpTestData(sock):
+#     startValue = 0
+#
+#     global udpAddress, udpSpeedTestStart
+#
+#     now = datetime.datetime.now()
+#     udpSpeedTestStart = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
+#
+#     # send data
+#     udpSocket.sendto(packet.UdpDataPacket(UDP_TYPE_TEST, startValue).message, udpAddress)
+#
+#
+# def getResource(sock):
+#     data = raw_input('Name of resource: ')
+#
+#     if data is None:
+#         return
+#
+#     # send data
+#     sock.send(packet.GetResourcePacket(data).message)
 
-    if data is None:
-        return
+def endGameWin(sock):
+    if playerId == 0:
+        endType = PLAYER2_DESTROYED
+    else:
+        endType = PLAYER1_DESTROYED
 
-    # send data
-    sock.send(packet.DataPacket(data).message)
+    total1 = random.randrange( 300, 500 )
+    total2 = random.randrange( 300, 500 )
+    lost1 = random.randrange( 100, 200 )
+    lost2 = random.randrange( 100, 200 )
+    objectives1 = random.randrange( 100, 200 )
+    objectives2 = random.randrange( 100, 200 )
 
-
-def sendUdpDataPacket(sock):
-    data = raw_input('UDP data to send: ')
-
-    if data is None:
-        return
-
-    global udpAddress
-
-    # send data
-    udpSocket.sendto(packet.UdpDataPacket(packet.Packet.UDP_DATA_MISSION, data).message, udpAddress)
+    sock.send(packet.EndGameGamePacket( endType, total1, total2, lost1, lost2, objectives1, objectives2 ).message)
 
 
-def sendUdpTestData(sock):
-    startValue = 0
+def endGameLoss(sock):
+    if playerId == 0:
+        endType = PLAYER1_DESTROYED
+    else:
+        endType = PLAYER2_DESTROYED
 
-    global udpAddress, udpSpeedTestStart
+    total1 = random.randrange( 300, 500 )
+    total2 = random.randrange( 300, 500 )
+    lost1 = random.randrange( 100, 200 )
+    lost2 = random.randrange( 100, 200 )
+    objectives1 = random.randrange( 100, 200 )
+    objectives2 = random.randrange( 100, 200 )
 
-    now = datetime.datetime.now()
-    udpSpeedTestStart = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
-
-    # send data
-    udpSocket.sendto(packet.UdpDataPacket(UDP_TYPE_TEST, startValue).message, udpAddress)
+    sock.send(packet.EndGameGamePacket( endType, total1, total2, lost1, lost2, objectives1, objectives2 ).message)
 
 
-def getResource(sock):
-    data = raw_input('Name of resource: ')
+def endGameDraw(sock):
+    if playerId == 0:
+        endType = PLAYER1_DESTROYED
+    else:
+        endType = PLAYER2_DESTROYED
 
-    if data is None:
-        return
+    total1 = random.randrange( 300, 500 )
+    total2 = random.randrange( 300, 500 )
+    lost1 = random.randrange( 100, 200 )
+    lost2 = random.randrange( 100, 200 )
+    objectives1 = random.randrange( 100, 200 )
+    objectives2 = random.randrange( 100, 200 )
 
-    # send data
-    sock.send(packet.GetResourcePacket(data).message)
+    sock.send(packet.EndGameGamePacket( endType, total1, total2, lost1, lost2, objectives1, objectives2 ).message)
 
 
 def login(sock, name):
@@ -406,17 +474,12 @@ def getInput(sock):
         print '1: announce a new game'
         print '2: join a game'
         print '3: leave a game'
-        #print '4: ready to start'
         print '4: ping'
-        print '5: send TCP data'
-        print '6: send UDP data'
-        print '7: send UDP game data'
-        print '8: get resource'
-        # print '2: join a game'
-        # print '4: list games'
+        print '5: end game with win'
+        print '6: end game with loss'
+        print '7: end game with draw'
 
-        callbacks = (
-        quit, announceGame, joinGame, leaveGame, pingServer, sendTcpDataPacket, sendUdpDataPacket, sendUdpTestData, getResource)
+        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, endGameWin, endGameLoss, endGameDraw)
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler
