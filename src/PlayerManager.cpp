@@ -111,7 +111,9 @@ void PlayerManager::cleanupIdlePlayers () {
         }
     }
 
-    logDebug << "PlayerManager::cleanupIdlePlayers: removing " << toStop.size() << " idle players";
+    if ( toStop.size() > 0 ) {
+        logDebug << "PlayerManager::cleanupIdlePlayers: removing " << toStop.size() << " idle players";
+    }
 
     // now stop the players that have timed out
     for ( auto player : toStop ) {
