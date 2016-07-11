@@ -3,6 +3,7 @@
 
 #include "PlayerManager.hpp"
 #include "Log.hpp"
+#include "Definitions.hpp"
 
 PlayerManager &PlayerManager::instance () {
     static PlayerManager instance;
@@ -85,11 +86,6 @@ void PlayerManager::cleanupIdlePlayers () {
 
     // current time
     time_t now = time( 0 );
-
-    // max time in seconds that the players can idle. Longer TCP idle as a player can connect, announce a game and then
-    // sit and wait for players
-    const unsigned int maxTcpSeconds = 600;
-    const unsigned int maxUdpSeconds = 10;
 
     for ( auto player : m_players ) {
         SharedStatistics statistics = player.second->getStatistics();
