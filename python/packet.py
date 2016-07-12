@@ -45,6 +45,8 @@ class Packet:
     UDP_DATA_MISSION = 0
     UDP_DATA_UNIT_STATS = 1
     UDP_DATA_FIRE = 2
+    UDP_DATA_MELEE = 3
+    UDP_DATA_SET_MISSION = 4
 
     packetNames = {
         LOGIN: 'LOGIN',

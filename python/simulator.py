@@ -42,7 +42,7 @@ class Simulator:
                 self.packetId += 1
 
                 # combat?
-                if counter > 0 and counter % 3 == 0:
+                if counter > 0 and counter % 20 == 0:
                     attackerId = random.choice( self.units ).id
                     hitX = random.randint( 250, 300 ) * 10
                     hitY = random.randint( 300, 350 ) * 10

@@ -102,12 +102,33 @@ def readUdpPackets(udpSocket):
                 y /= 10
                 print "--- fire, %d fires at %d,%d, hitting %d units" % (attackerId, x, y, targetCount )
 
-                for count in range( unitCount ):
-                    (targetId, casualties, type, targetMoraleChange, attackerMoraleChange, ) = struct.unpack_from('>hBBhh', data, offset)
-                    offset += struct.calcsize('>hBBhh')
+                for count in range( targetCount ):
+                    (targetId, casualties, type, targetMoraleChange ) = struct.unpack_from('>hBBh', data, offset)
+                    offset += struct.calcsize('>hBBh')
                     targetMoraleChange /= 10.0
-                    attackerMoraleChange /= 10.0
-                    print "    target %d lost %d men, type: %d, attacker morale: %.1f, target morale: %.1f" % (targetId, casualties, type, attackerMoraleChange, targetMoraleChange)
+                    print "    target %d lost %d men, type: %d, target morale: %.1f" % (targetId, casualties, type, targetMoraleChange)
+                    for unit in units:
+                        if unit.id == targetId:
+                            unit.men = max( 0, unit.men - casualties )
+                            unit.morale = max( 0, unit.morale - targetMoraleChange )
+
+            elif subPacketType == packet.Packet.UDP_DATA_MELEE:
+                (attackerId, targetId, type, casualties, targetMoraleChange ) = struct.unpack_from('>hhBBh', data, offset)
+                offset += struct.calcsize('>hhBBh')
+                targetMoraleChange /= 10.0
+                print "    %d melees with %d, target %d lost %d men, type: %d, target morale: %.1f" % (attackerId, targetId, casualties, type, targetMoraleChange)
+                for unit in units:
+                    if unit.id == targetId:
+                        unit.mission = missionType
+                        unit.morale = max( 0, unit.morale - targetMoraleChange )
+
+            elif subPacketType == packet.Packet.UDP_DATA_SET_MISSION:
+                (unitId, missionType ) = struct.unpack_from('>hB', data, offset)
+                offset += struct.calcsize('>hB')
+                print "    %d gets mission %d" % (unitId, missionType)
+                for unit in units:
+                    if unit.id == unitId:
+                        unit.mission = missionType
 
     print "--- UDP handler stopped"
 
