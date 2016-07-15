@@ -47,6 +47,8 @@ class Packet:
     UDP_DATA_FIRE = 2
     UDP_DATA_MELEE = 3
     UDP_DATA_SET_MISSION = 4
+    UDP_DATA_PLAYER_PING = 5
+    UDP_DATA_PLAYER_PONG = 6
 
     packetNames = {
         LOGIN: 'LOGIN',
@@ -239,4 +241,10 @@ class UdpFirePacket(Packet):
         else:
             # no casualties
             self.message = struct.pack('>BBIhhhB', Packet.UDP_DATA & 0xff, Packet.UDP_DATA_FIRE & 0xff, packetId, attackerId, hitX, hitY, 0 )
+
+
+class UdpPlayerPongPacket(Packet):
+    def __init__(self, ms, packetId):
+        # create the message
+        self.message = struct.pack('>BBIL', Packet.UDP_DATA & 0xff, Packet.UDP_DATA_PLAYER_PONG & 0xff, packetId, ms)
 

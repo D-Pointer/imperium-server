@@ -7,6 +7,7 @@ import datetime
 import thread
 import ssl
 import random
+import time
 
 import packet
 from unit import Unit
@@ -39,6 +40,13 @@ BOTH_PLAYERS_DESTROYED = 2
 TIMEOUT = 3
 
 
+def sendUdpPingPackets(udpSocket, udpAddress):
+    for index in range(10):
+        print "+++ sending UDP ping #%d" % (index + 1)
+        udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
+        time.sleep( 1 )
+
+
 def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
     while udpKeepRunning:
@@ -60,11 +68,12 @@ def readUdpPackets(udpSocket):
         elif packetType == packet.Packet.UDP_DATA_START_ACTION:
             print "--- start action, starting simulator"
             # create the simulator and start it
+            global simulator
             simulator = Simulator( units, udpSocket, udpAddress )
             simulator.start()
 
         elif packetType == packet.Packet.UDP_DATA:
-            (packetType, subPacketType, packetId,) = struct.unpack_from('>BBL', data, 0)
+            (packetType, subPacketType, packetId,) = struct.unpack_from('>BBI', data, 0)
             offset = struct.calcsize('>BBL')
             print "--- UDP data type %d, packet id: %d, total bytes: %d" % (subPacketType, packetId, len(data))
 
@@ -129,6 +138,12 @@ def readUdpPackets(udpSocket):
                 for unit in units:
                     if unit.id == unitId:
                         unit.mission = missionType
+
+            elif subPacketType == packet.Packet.UDP_DATA_PLAYER_PING:
+                (ms, ) = struct.unpack_from('>L', data, offset)
+                offset += struct.calcsize('>L')
+                print "--- player ping, their time: %d, sending response" % ms
+                udpSocket.sendto(packet.UdpPlayerPongPacket( ms, simulator.getPacketId()).message, udpAddress)
 
     print "--- UDP handler stopped"
 
@@ -201,7 +216,7 @@ def handleNoGame():
 def handleGameJoined(data):
     (udpPort, nameLength,) = struct.unpack_from('>hh', data, 0)
     (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hh'))
-    print "### game joined, UDP port: %d, opponent: %s" % (udpPort, opponentName)
+    print "### game joined, UDP server: %s:%d, opponent: %s" % (server, udpPort, opponentName)
     print "### starting UDP thread"
 
     global udpAddress, udpSocket, udpKeepRunning
@@ -211,8 +226,8 @@ def handleGameJoined(data):
     thread.start_new_thread(readUdpPackets, (udpSocket,))
 
     # send an initial "ping" to open up the connection so that the server knows our port
-    print "### sending UDP ping"
-    udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
+    print "### starting UDP ping thread"
+    thread.start_new_thread( sendUdpPingPackets, (udpSocket,udpAddress))
 
     # set up our army
     global units

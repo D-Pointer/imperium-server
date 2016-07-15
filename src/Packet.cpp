@@ -40,7 +40,6 @@ const std::vector<std::string> Packet::packetNames = {
 Packet::Packet (TcpPacketType type, const unsigned char *data, size_t dataLength)
         : m_type( type ), m_data( data ),
           m_dataLength( dataLength ) {
-    logDebug << "Packet::Packet: creating a packet: " << Packet::getPacketName(type) << ", data size: " << dataLength;
 }
 
 

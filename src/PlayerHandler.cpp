@@ -364,7 +364,7 @@ void PlayerHandler::handleAnnounceGamePacket (const SharedPacket &packet) {
     }
 
     // create the new game, we're player 1
-    m_game = GameManager::instance().createGame( announcedId, m_id );
+    m_game = GameManager::instance().createGame( announcedId, m_id, m_name );
     m_game->setStatistics( 0, m_statistics );
 
     // all ok, send a response with the announced game id
@@ -418,7 +418,7 @@ void PlayerHandler::handleJoinGamePacket (const SharedPacket &packet) {
     }
 
     // game, meet player, we're player 2
-    game->setPlayerId2( m_id );
+    game->setPlayer2Data( m_id, m_name );
     m_game = game;
     m_game->setStatistics( 1, m_statistics );
 
@@ -533,8 +533,6 @@ void PlayerHandler::handleReadyToStartPacket (const SharedPacket &packet) {
 
     logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: player is now ready to start";
     m_readyToStart = true;
-
-    logDebug << "PlayerHandler::handleReadyToStartPacket [" << m_id << "]: " << peer->isReadyToStart() << " " << m_game;
 
     // check a lot in case there was a player disconnect
     if ( peer->isReadyToStart() && m_game && m_game->getUdpHandler()) {

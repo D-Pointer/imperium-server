@@ -13,7 +13,7 @@ class Game {
 
 public:
 
-    Game (unsigned int id, unsigned short scenarioId, unsigned int playerId);
+    Game (unsigned int id, unsigned short scenarioId, unsigned int playerId, const std::string & playerName1);
 
     ~Game ();
 
@@ -26,6 +26,9 @@ public:
     unsigned int getPlayerId1 () const;
     unsigned int getPlayerId2 () const;
 
+    const std::string & getPlayerName1 () const;
+    const std::string & getPlayerName2 () const;
+
     /**
      * Returns the id of the peer player for the given @p playerId. This only works if the game has started.
      *
@@ -35,7 +38,7 @@ public:
      */
     unsigned int getPeerId (unsigned int playerId) const;
 
-    void setPlayerId2 (unsigned int playerId2);
+    void setPlayer2Data (unsigned int playerId2, const std::string & playerName2);
 
     void setStatistics (unsigned int playerId, const SharedStatistics & statistics);
 
@@ -69,6 +72,12 @@ private:
     // the announcing/owning player and the secondary player
     unsigned int m_playerId1;
     unsigned int m_playerId2;
+
+    // the names of the players. we keep the player names too in addition to the player ids as when a player is disconnected he/she is immediately
+    // removed from the player manager and the id can no longer be used to retrieve info about him/her. Saving also the name means that we can
+    // always get the name later, even if both players have disconnected
+    std::string m_playerName1;
+    std::string m_playerName2;
 
     // has the game started?
     bool m_started;

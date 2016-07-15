@@ -5,8 +5,9 @@
 #include "PlayerHandler.hpp"
 #include "Log.hpp"
 
-Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId)
-        : m_id( id ), m_scenarioId( scenarioId ), m_playerId1( playerId ), m_playerId2( 0 ), m_started( false ), m_startTime( 0 ), m_endTime( 0 ) {
+Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId, const std::string & playerName1)
+        : m_id( id ), m_scenarioId( scenarioId ), m_playerId1( playerId ), m_playerId2( 0 ), m_playerName1(playerName1), m_playerName2("unknown"),
+          m_started( false ), m_startTime( 0 ), m_endTime( 0 ) {
     logDebug << "Game::Game: created game: " << m_id << " for announced game: " << m_scenarioId << " by player: " << playerId;
     m_creationTime = time( 0 );
 }
@@ -43,6 +44,16 @@ unsigned int Game::getPlayerId2 () const {
 }
 
 
+const std::string & Game::getPlayerName1 () const {
+    return m_playerName1;
+}
+
+
+const std::string & Game::getPlayerName2 () const {
+    return m_playerName2;
+}
+
+
 unsigned int Game::getPeerId (unsigned int playerId) const {
     if ( playerId == m_playerId1 ) {
         return m_playerId2;
@@ -56,8 +67,9 @@ unsigned int Game::getPeerId (unsigned int playerId) const {
 }
 
 
-void Game::setPlayerId2 (unsigned int playerId2) {
+void Game::setPlayer2Data (unsigned int playerId2, const std::string & playerName2) {
     m_playerId2 = playerId2;
+    m_playerName2 = playerName2;
 }
 
 

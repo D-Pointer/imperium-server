@@ -24,11 +24,11 @@ SharedGame GameManager::getGame (unsigned int gameId) {
 }
 
 
-SharedGame GameManager::createGame (unsigned short scenarioId, unsigned int playerId) {
+SharedGame GameManager::createGame (unsigned short scenarioId, unsigned int playerId, const std::string & playerName) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     // create a new game
-    SharedGame game = std::make_shared<Game>( m_nextId, scenarioId, playerId );
+    SharedGame game = std::make_shared<Game>( m_nextId, scenarioId, playerId, playerName );
 
     m_nextId++;
 
@@ -104,18 +104,12 @@ void GameManager::removeGame (const SharedGame &game) {
 
     boost::filesystem::ofstream out( archivePath, std::ios_base::out );
 
-    // players
-    PlayerHandler *player1 = PlayerManager::instance().getPlayer( game->getPlayerId1());
-    PlayerHandler *player2 = PlayerManager::instance().getPlayer( game->getPlayerId2());
-
     out << "scenario " << game->getScenarioId() << std::endl
-
-        // times
         << "created " << game->getCreationTime() << std::endl
         << "started " << game->getStartTime() << std::endl
         << "ended " << game->getEndTime() << std::endl
-        << "player1 " << ( player1 ? player1->getName() : "unnamed" ) << std::endl
-        << "player2 " << ( player2 ? player2->getName() : "unnamed" ) << std::endl;
+        << "player1 " << game->getPlayerName1() << std::endl
+        << "player2 " << game->getPlayerName2() << std::endl;
 
     // stats
     for ( int index = 0; index < 2; ++index ) {

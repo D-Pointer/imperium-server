@@ -16,7 +16,7 @@ public:
 
     SharedGame getGame (unsigned int gameId);
 
-    SharedGame createGame (unsigned short scenarioId, unsigned int playerId);
+    SharedGame createGame (unsigned short scenarioId, unsigned int playerId, const std::string & playerName);
 
     void removeGame (const SharedGame & game);
 

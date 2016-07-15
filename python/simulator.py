@@ -24,6 +24,12 @@ class Simulator:
         self.keepRunning = False
 
 
+    def getPacketId (self):
+        # TODO: mutex
+        id = self.packetId
+        self.packetId += 1
+        return id
+
     def simulationLoop (self, dummy):
         counter = 0
 

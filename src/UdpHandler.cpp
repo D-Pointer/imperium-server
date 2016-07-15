@@ -53,7 +53,9 @@ void UdpHandler::sendStartPackets () {
         return;
     }
 
-    logDebug << "UdpHandler::sendStartPackets [" << m_gameId << "]: sending starts packets to both players";
+    // TODO: send this a few times
+
+    logDebug << "UdpHandler::sendStartPackets [" << m_gameId << "]: sending start packets to both players";
 
     std::vector<boost::asio::const_buffer> buffers;
 
@@ -162,7 +164,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
                     return;
                 }
 
-                handleData( data, size, m_socket1, m_endpoint2, stats );
+                handleData( data, size, m_socket2, m_endpoint2, stats );
             }
             else {
                 if ( !m_playerSentUdp1 ) {
@@ -170,7 +172,7 @@ void UdpHandler::handlePacket (boost::array<char, 4096> &data, size_t size, unsi
                     return;
                 }
 
-                handleData( data, size, m_socket2, m_endpoint1, stats );
+                handleData( data, size, m_socket1, m_endpoint1, stats );
             }
             break;
 
