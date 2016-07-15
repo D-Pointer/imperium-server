@@ -60,13 +60,24 @@ void PlayerHandler::start () {
 
 void PlayerHandler::stop () {
     logDebug << "PlayerHandler::stop [" << m_id << "]: stopping session";
-    m_tcpSocket.close();
-    m_udpSocket.close();
+
+    boost::system::error_code error;
+    m_tcpSocket.close( error );
+
+    // do we have a game in progress?
+    if ( m_game ) {
+        // end the game nicely
+        m_game->endGame();
+    }
+    else {
+        // no game, just close the socket
+        m_udpSocket.close( error );
+    }
 }
 
 
 bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType) {
-    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType ) << " to player: " << toString();
+    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType );
 
     // statistics
     m_statistics->m_lastSentTcp = time( 0 );
@@ -79,7 +90,7 @@ bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType) {
 
 
 bool PlayerHandler::sendPacket (Packet::TcpPacketType packetType, const std::vector<boost::asio::const_buffer> &buffers) {
-    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType ) << " to player: " << toString();
+    logDebug << "PlayerHandler::sendPacket [" << m_id << "]: sending packet: " << Packet::getPacketName( packetType );
 
     size_t packetSize = boost::asio::buffer_size( buffers );
 
@@ -242,6 +253,10 @@ void PlayerHandler::handlePacket (const boost::system::error_code &error) {
 
         case Packet::GetResourcePacket:
             handleResourcePacket( packet );
+            break;
+
+        case Packet::KeepAlivePacket:
+            handleKeepAlivePacket( packet );
             break;
 
         default:
@@ -616,6 +631,11 @@ void PlayerHandler::handleResourcePacket (const SharedPacket &packet) {
         packetIndex++;
         offset += packetSize;
     }
+}
+
+
+void PlayerHandler::handleKeepAlivePacket (const SharedPacket &packet) {
+    logDebug << "PlayerHandler::handleKeepAlivePacket [" << m_id << "]: got keepalive";
 }
 
 

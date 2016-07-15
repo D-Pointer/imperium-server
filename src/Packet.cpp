@@ -34,6 +34,7 @@ const std::vector<std::string> Packet::packetNames = {
         "ResourcePacket",
         "InvalidResourceNamePacket",
         "InvalidResourcePacket",
+        "KeepAlivePacket"
 };
 
 

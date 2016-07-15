@@ -75,7 +75,7 @@ void Server::handleAccept (PlayerHandler *playerHandler, const boost::system::er
 
 
 void Server::sessionTerminated (PlayerHandler *playerHandler) {
-    logInfo << "Server::sessionTerminated: player: " << playerHandler->toString() << " terminated";
+    logInfo << "Server::sessionTerminated: player: " << playerHandler->getId() << " terminated";
 
     PlayerManager::instance().removePlayer( playerHandler );
     logDebug << "Server::sessionTerminated: players handlers left: " << PlayerManager::instance().getPlayerCount();

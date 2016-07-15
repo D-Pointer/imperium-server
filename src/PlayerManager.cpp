@@ -30,7 +30,7 @@ void PlayerManager::addPlayer (PlayerHandler * player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     m_players[ player->getId() ] = player;
-    logDebug << "PlayerManager::addPlayer: added player: " << player->toString() << ", players now: " << m_players.size();
+    logDebug << "PlayerManager::addPlayer: added player: " << player->getId() << ", players now: " << m_players.size();
 }
 
 
@@ -38,7 +38,7 @@ void PlayerManager::removePlayer (PlayerHandler *player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     m_players.erase( player->getId() );
-    logDebug << "PlayerManager::removePlayer: removed player: " << player->toString() << ", players now: " << m_players.size();
+    logDebug << "PlayerManager::removePlayer: removed player: " << player->getId() << ", players now: " << m_players.size();
 }
 
 
@@ -95,14 +95,14 @@ void PlayerManager::cleanupIdlePlayers () {
             // yes, so only check UDP
             if ( now - statistics->m_lastReceivedUdp > maxUdpSeconds ) {
                 toStop.insert( player.second );
-                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->toString() << " too long idle on UDP";
+                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->getId() << " too long idle on UDP";
             }
         }
         else {
             // not yet started, so check TCP only
             if ( now - statistics->m_lastReceivedTcp > maxTcpSeconds ) {
                 toStop.insert( player.second );
-                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->toString() << " too long idle on TCP";
+                logDebug << "PlayerManager::cleanupIdlePlayers: player " << player.second->getId() << " too long idle on TCP";
             }
         }
     }

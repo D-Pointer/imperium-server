@@ -102,6 +102,8 @@ private:
 
     void handleResourcePacket (const SharedPacket &packet);
 
+    void handleKeepAlivePacket (const SharedPacket &packet);
+
     void broadcastGameAdded (const SharedGame &game);
 
     void broadcastGameRemoved (const SharedGame &game);
