@@ -61,9 +61,12 @@ void GameManager::removeGame (const SharedGame &game) {
     logDebug << "GameManager::removeGame: removed game: " << game->toString() << ", games now: " << m_games.size();
     logDebug << "GameManager::removeGame: game created: " << created << ", started: " << started << ", ended: " << ended;
 
-    if ( ended != 0 ) {
-        logDebug << "GameManager::removeGame: game duration: " << ( ended - started ) << " seconds";
+    if ( started == 0 || ended == 0 ) {
+        // game never started
+        return;
     }
+
+    logDebug << "GameManager::removeGame: game duration: " << ( ended - started ) << " seconds";
 
     for ( int index = 0; index < 2; ++index ) {
         SharedStatistics statistics = game->getStatistics( index );
