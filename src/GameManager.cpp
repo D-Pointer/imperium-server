@@ -146,6 +146,11 @@ std::set<SharedGame> GameManager::getAllGames () {
 }
 
 
+size_t GameManager::getGameCount () const {
+    return m_games.size();
+}
+
+
 GameManager::GameManager () : m_sequenceFile( "games.seq" ) {
     try {
         if ( boost::filesystem::exists( m_sequenceFile )) {

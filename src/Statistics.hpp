@@ -9,6 +9,9 @@ class Statistics {
 public:
 
     Statistics () {
+        m_name = "";
+        m_connected = 0;
+        m_disconnected = 0;
         m_lastReceivedTcp = 0;
         m_lastSentTcp = 0;
         m_packetsSentTcp = 0;
@@ -22,6 +25,11 @@ public:
         m_bytesSentUdp = 0;
         m_bytesReceivedUdp = 0;
     }
+
+    // general info
+    std::string m_name;
+    time_t m_connected;
+    time_t m_disconnected;
 
     // TCP
     time_t m_lastReceivedTcp;

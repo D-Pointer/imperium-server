@@ -72,8 +72,6 @@ public:
         return m_readyToStart;
     }
 
-    std::string toString () const;
-
 
 private:
 
@@ -107,6 +105,8 @@ private:
     void broadcastGameAdded (const SharedGame &game);
 
     void broadcastGameRemoved (const SharedGame &game);
+
+    std::string logData(const std::string & method);
 
     boost::asio::ip::tcp::socket m_tcpSocket;
 

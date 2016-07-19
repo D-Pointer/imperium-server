@@ -22,14 +22,13 @@ public:
      **/
     void start ();
 
-    std::string toString () const;
-
 
 private:
 
     void handleRequest (const boost::system::error_code& error, std::size_t bytesTransferred);
 
     void handleStatus ();
+    void handleQuit ();
 
     boost::asio::ip::tcp::socket m_tcpSocket;
 

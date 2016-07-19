@@ -35,13 +35,6 @@ void ManagementClient::start () {
 }
 
 
-std::string ManagementClient::toString () const {
-    std::stringstream ss;
-    ss << "[ManagementClient]";
-    return ss.str();
-}
-
-
 void ManagementClient::handleRequest (const boost::system::error_code &error, std::size_t bytesTransferred) {
     // some form of error?
     if ( error ) {
@@ -66,6 +59,10 @@ void ManagementClient::handleRequest (const boost::system::error_code &error, st
     if ( request == "status" ) {
         handleStatus();
     }
+    else if ( request == "quit" ) {
+        handleQuit();
+        return;
+    }
     else {
         logError << "ManagementClient::handleRequest: unknown request '" << request << "', ignoring";
     }
@@ -86,22 +83,32 @@ void ManagementClient::handleStatus () {
     GlobalStatistics &stats( GlobalStatistics::instance());
 
     ss << "{" << std::endl
-    << "\"started\":" << stats.m_startTime << ',' << std::endl
-    << "\"majorVersion\":" << MAJOR_VERSION << ',' << std::endl
-    << "\"minorVersion\":" << MINOR_VERSION << ',' << std::endl
-    << "\"extraVersion\":" << EXTRA_VERSION << ',' << std::endl
-    << "\"totalConnectedPlayers\":" << stats.m_totalConnectedPlayers << ',' << std::endl
-    << "\"totalConnectedManagers\":" << stats.m_totalConnectedManagers << ',' << std::endl
-    << "\"lastConnectedPlayer\":" << stats.m_lastConnectedPlayer << ',' << std::endl
-    << "\"lastConnectedManager\":" << stats.m_lastConnectedManager << std::endl
-    << "}" << std::endl;
+       << "\"started\":" << stats.m_startTime << ',' << std::endl
+       << "\"majorVersion\":" << MAJOR_VERSION << ',' << std::endl
+       << "\"minorVersion\":" << MINOR_VERSION << ',' << std::endl
+       << "\"extraVersion\":" << EXTRA_VERSION << ',' << std::endl
+       << "\"totalConnectedPlayers\":" << stats.m_totalConnectedPlayers << ',' << std::endl
+       << "\"totalConnectedManagers\":" << stats.m_totalConnectedManagers << ',' << std::endl
+       << "\"lastConnectedPlayer\":" << stats.m_lastConnectedPlayer << ',' << std::endl
+       << "\"lastConnectedManager\":" << stats.m_lastConnectedManager << std::endl
+       << "\"activePlayers\":" << PlayerManager::instance().getPlayerCount() << std::endl
+       << "\"disconnectedPlayers\":" << PlayerManager::instance().getOldStatisticsCount() << std::endl
+       << "\"activeGames\":" << GameManager::instance().getGameCount() << std::endl
+       << "}" << std::endl;
 
     // send the reply
     boost::system::error_code error;
-    boost::asio::write( m_tcpSocket, boost::asio::buffer( ss.str() ), boost::asio::transfer_all(), error );
+    boost::asio::write( m_tcpSocket, boost::asio::buffer( ss.str()), boost::asio::transfer_all(), error );
 
     // sent ok?
     if ( error ) {
         logError << "ManagementClient::handleStatus: error sending status to client";
     }
+}
+
+
+void ManagementClient::handleQuit () {
+    logDebug << "ManagementClient::handleQuit: closing connection";
+    boost::system::error_code tmpError;
+    m_tcpSocket.close( tmpError );
 }

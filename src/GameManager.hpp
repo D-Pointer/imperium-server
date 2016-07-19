@@ -25,6 +25,8 @@ public:
      */
     std::set<SharedGame> getAllGames ();
 
+    size_t getGameCount () const;
+
 
 private:
 

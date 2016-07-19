@@ -37,15 +37,33 @@ void PlayerManager::addPlayer (PlayerHandler * player) {
 void PlayerManager::removePlayer (PlayerHandler *player) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
+    // save the stats
+    m_disconnectedPlayers.push_back( player->getStatistics() );
+    while ( m_disconnectedPlayers.size() > playerStatisticsCount ) {
+        m_disconnectedPlayers.pop_front();
+    }
+
     m_players.erase( player->getId() );
-    logDebug << "PlayerManager::removePlayer: removed player: " << player->getId() << ", players now: " << m_players.size();
+    logDebug << "PlayerManager::removePlayer: removed player: " << player->getId() << ", players now: " << m_players.size() << ", old stats now: " << m_disconnectedPlayers.size();
 }
 
 
 size_t PlayerManager::getPlayerCount ()  {
     std::lock_guard<std::mutex> lock( m_mutex );
-
     return m_players.size();
+}
+
+
+size_t PlayerManager::getOldStatisticsCount () {
+    std::lock_guard<std::mutex> lock( m_mutex );
+    return m_disconnectedPlayers.size();
+}
+
+
+std::list<SharedStatistics> PlayerManager::getAllOldStatistics () {
+    std::lock_guard<std::mutex> lock( m_mutex );
+
+    return std::list<SharedStatistics>( m_disconnectedPlayers.begin(), m_disconnectedPlayers.end() );
 }
 
 

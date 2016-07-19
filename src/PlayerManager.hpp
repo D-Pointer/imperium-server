@@ -2,6 +2,7 @@
 #define PLAYER_MANAGER_HPP
 
 #include <map>
+#include <list>
 
 #include "PlayerHandler.hpp"
 #include "Packet.hpp"
@@ -28,6 +29,10 @@ public:
 
     size_t getPlayerCount ();
 
+    size_t getOldStatisticsCount ();
+
+    std::list<SharedStatistics> getAllOldStatistics ();
+
     /**
      * Sends the given packet to all players.
      */
@@ -48,6 +53,9 @@ private:
 
     // all active players
     std::map<unsigned int, PlayerHandler *> m_players;
+
+    // a list of disconnected players
+    std::list<SharedStatistics> m_disconnectedPlayers;
 };
 
 

@@ -11,4 +11,7 @@ static const int s_maxPlayers = 5;
 const unsigned int maxTcpSeconds = 60;
 const unsigned int maxUdpSeconds = 10;
 
+// how many old player statistics should the player manager store?
+const unsigned int playerStatisticsCount = 1000;
+
 #endif

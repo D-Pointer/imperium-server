@@ -49,6 +49,10 @@ def sendUdpPingPackets(udpSocket, udpAddress):
 
 def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
+
+    # all received packet ids
+    receivedIds = set();
+
     while udpKeepRunning:
         try:
             data, addr = udpSocket.recvfrom(2048)
@@ -76,6 +80,14 @@ def readUdpPackets(udpSocket):
             (packetType, subPacketType, packetId,) = struct.unpack_from('>BBI', data, 0)
             offset = struct.calcsize('>BBL')
             print "--- UDP data type %d, packet id: %d, total bytes: %d" % (subPacketType, packetId, len(data))
+
+            # already received this?
+            if packetId in receivedIds:
+                # skip this
+                print "--- ignoring duplicate packet %d" % packetId
+                continue
+
+            receivedIds.add( packetId )
 
             if subPacketType == packet.Packet.UDP_DATA_MISSION:
                 (unitCount,) = struct.unpack_from('>B', data, offset)
