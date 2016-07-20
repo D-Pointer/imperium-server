@@ -63,6 +63,12 @@ void ManagementClient::handleRequest (const boost::system::error_code &error, st
         handleQuit();
         return;
     }
+    else if ( request == "games" ) {
+        handleGames();
+    }
+    else if ( request == "players" ) {
+        handlePlayers();
+    }
     else {
         logError << "ManagementClient::handleRequest: unknown request '" << request << "', ignoring";
     }
@@ -90,20 +96,84 @@ void ManagementClient::handleStatus () {
        << "\"totalConnectedPlayers\":" << stats.m_totalConnectedPlayers << ',' << std::endl
        << "\"totalConnectedManagers\":" << stats.m_totalConnectedManagers << ',' << std::endl
        << "\"lastConnectedPlayer\":" << stats.m_lastConnectedPlayer << ',' << std::endl
-       << "\"lastConnectedManager\":" << stats.m_lastConnectedManager << std::endl
-       << "\"activePlayers\":" << PlayerManager::instance().getPlayerCount() << std::endl
-       << "\"disconnectedPlayers\":" << PlayerManager::instance().getOldStatisticsCount() << std::endl
+       << "\"lastConnectedManager\":" << stats.m_lastConnectedManager << ',' << std::endl
+       << "\"activePlayers\":" << PlayerManager::instance().getPlayerCount() << ',' << std::endl
+       << "\"disconnectedPlayers\":" << PlayerManager::instance().getOldStatisticsCount() << ',' << std::endl
        << "\"activeGames\":" << GameManager::instance().getGameCount() << std::endl
        << "}" << std::endl;
 
     // send the reply
+    sendResponse( ss.str());
+}
+
+
+void ManagementClient::handleGames () {
+    std::stringstream ss;
+
+    std::set<SharedGame> games = GameManager::instance().getAllGames();
+
+    ss << "{" << std::endl
+       << "\"games\": [" << std::endl;
+
+    bool first = true;
+    for ( auto game : games ) {
+        ss << ( first ? "{" : ",{" ) << std::endl
+           << "\"id\":" << game->getGameId() << ',' << std::endl
+           << "\"scenarioId\":" << game->getScenarioId() << ',' << std::endl
+           << "\"playerId1\":" << game->getPlayerId1() << ',' << std::endl
+           << "\"playerId2\":" << game->getPlayerId2() << ',' << std::endl
+           << "\"playerName1\":" << game->getPlayerName1() << ',' << std::endl
+           << "\"playerName2\":" << game->getPlayerName2() << ',' << std::endl
+           << "\"created\":" << game->getCreationTime() << ',' << std::endl
+           << "\"started\":" << game->getStartTime() << ',' << std::endl
+           << "\"ended\":" << game->getEndTime() << std::endl
+           << "}" << std::endl;
+
+        first = false;
+    }
+
+    ss << "] }" << std::endl;
+
+    // send the reply
+    sendResponse( ss.str());
+}
+
+
+void ManagementClient::handlePlayers () {
+    std::stringstream ss;
+
+    //std::set<SharedGame> games = PlayerManager::instance().get
+
+    ss << "{" << std::endl
+       << "\"players\": [" << std::endl;
+
+    bool first = true;
+    for ( auto game : games ) {
+        ss << ( first ? "{" : ",{" ) << std::endl
+           << "}" << std::endl;
+
+        first = false;
+    }
+
+    ss << "] }" << std::endl;
+
+    // send the reply
+    sendResponse( ss.str());
+}
+
+
+bool ManagementClient::sendResponse (const std::string &response) {
+    // send the reply
     boost::system::error_code error;
-    boost::asio::write( m_tcpSocket, boost::asio::buffer( ss.str()), boost::asio::transfer_all(), error );
+    boost::asio::write( m_tcpSocket, boost::asio::buffer( response ), boost::asio::transfer_all(), error );
 
     // sent ok?
     if ( error ) {
-        logError << "ManagementClient::handleStatus: error sending status to client";
+        logError << "ManagementClient::sendResponse: error sending response to client: " << error.message();
+        return false;
     }
+
+    return true;
 }
 
 

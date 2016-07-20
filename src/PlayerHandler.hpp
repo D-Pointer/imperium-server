@@ -13,7 +13,7 @@
 /**
  *
  **/
-class PlayerHandler : public std::enable_shared_from_this<PlayerHandler> {
+class PlayerHandler { //: public std::enable_shared_from_this<PlayerHandler> {
 public:
 
     PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort, unsigned int playerId);

@@ -25,12 +25,19 @@ public:
 
 private:
 
-    void handleRequest (const boost::system::error_code& error, std::size_t bytesTransferred);
+    void handleRequest (const boost::system::error_code &error, std::size_t bytesTransferred);
 
     void handleStatus ();
-    void handleQuit ();
 
-    boost::asio::ip::tcp::socket m_tcpSocket;
+    void handleGames ();
+
+    void handlePlayers ();
+
+        void handleQuit ();
+
+    bool sendResponse (const std::string & response);
+
+        boost::asio::ip::tcp::socket m_tcpSocket;
 
     // buffer we read into
     boost::asio::streambuf m_buffer;
