@@ -17,7 +17,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Imperium game server"
 NAME=imperium-server
-DAEMON=/opt/imperium/$NAME
+DAEMON=/opt/imperium/$NAME.sh
 DAEMON_ARGS="--workingdir=/opt/imperium --interface 0.0.0.0 --port 11001 --username imperium"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
@@ -34,6 +34,8 @@ export LC_ALL=C
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
+VERBOSE=1
+
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.2-14) to ensure that this file is present
 # and status_of_proc is working.
@@ -48,9 +50,9 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
+	start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
 		|| return 1
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS \
+	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS \
 		|| return 2
 	# Add code here, if necessary, that waits for the process to be ready
 	# to handle requests from services started subsequently which depend
