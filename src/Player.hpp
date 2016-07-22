@@ -13,17 +13,12 @@
 /**
  *
  **/
-class PlayerHandler { //: public std::enable_shared_from_this<PlayerHandler> {
+class Player : public std::enable_shared_from_this<Player> {
 public:
 
-    PlayerHandler (boost::asio::io_service &io_service, unsigned short udpPort, unsigned int playerId);
+    Player (boost::asio::io_service &io_service, unsigned short udpPort, unsigned int playerId);
 
-    virtual ~PlayerHandler ();
-
-    /**
-     * Signal emitted when the session terminates.
-     */
-    boost::signals2::signal<void (PlayerHandler *)> terminated;
+    virtual ~Player ();
 
     /**
      * Starts the session. Reads the first header.
@@ -57,6 +52,11 @@ public:
 
     boost::asio::ip::udp::socket &getUdpSocket () {
         return m_udpSocket;
+    }
+
+
+    const SharedGame & getGame () const {
+        return m_game;
     }
 
     void clearGame () {
@@ -106,6 +106,8 @@ private:
 
     void broadcastGameRemoved (const SharedGame &game);
 
+    void terminate ();
+
     std::string logData(const std::string & method);
 
     boost::asio::ip::tcp::socket m_tcpSocket;
@@ -135,6 +137,6 @@ private:
     SharedGame m_game;
 };
 
-typedef std::shared_ptr<PlayerHandler> SharedPlayerHandler;
+typedef std::shared_ptr<Player> SharedPlayer;
 
 #endif

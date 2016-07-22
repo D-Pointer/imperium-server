@@ -122,8 +122,8 @@ void ManagementClient::handleGames () {
            << "\"scenarioId\":" << game->getScenarioId() << ',' << std::endl
            << "\"playerId1\":" << game->getPlayerId1() << ',' << std::endl
            << "\"playerId2\":" << game->getPlayerId2() << ',' << std::endl
-           << "\"playerName1\":" << game->getPlayerName1() << ',' << std::endl
-           << "\"playerName2\":" << game->getPlayerName2() << ',' << std::endl
+           << "\"playerName1\":\"" << game->getPlayerName1() << "\"," << std::endl
+           << "\"playerName2\":\"" << game->getPlayerName2() << "\"," << std::endl
            << "\"created\":" << game->getCreationTime() << ',' << std::endl
            << "\"started\":" << game->getStartTime() << ',' << std::endl
            << "\"ended\":" << game->getEndTime() << std::endl
@@ -142,15 +142,36 @@ void ManagementClient::handleGames () {
 void ManagementClient::handlePlayers () {
     std::stringstream ss;
 
-    //std::set<SharedGame> games = PlayerManager::instance().get
+    std::set<SharedPlayer> players = PlayerManager::instance().getAllPlayers();
 
     ss << "{" << std::endl
        << "\"players\": [" << std::endl;
 
     bool first = true;
-    for ( auto game : games ) {
+    for ( auto player : players ) {
         ss << ( first ? "{" : ",{" ) << std::endl
-           << "}" << std::endl;
+           << "\"id\":" << player->getId() << ',' << std::endl
+           << "\"name\":\"" << player->getName() << "\"," << std::endl
+           << "\"connected\":" << player->getStatistics()->m_connected << ',' << std::endl
+           << "\"isLoggedIn\":" << player->isLoggedIn() << ',' << std::endl
+           << "\"isReadyToStart\":" << player->isReadyToStart() << ',' << std::endl;
+
+        SharedGame game = player->getGame();
+        if ( game ) {
+            ss << "\"game\":{"
+               << "\"id\":" << game->getGameId() << ',' << std::endl
+               << "\"scenarioId\":" << game->getScenarioId() << ',' << std::endl
+               << "\"playerId1\":" << game->getPlayerId1() << ',' << std::endl
+               << "\"playerId2\":" << game->getPlayerId2() << ',' << std::endl
+               << "\"playerName1\":\"" << game->getPlayerName1() << "\"," << std::endl
+               << "\"playerName2\":\"" << game->getPlayerName2() << "\"," << std::endl
+               << "\"created\":" << game->getCreationTime() << ',' << std::endl
+               << "\"started\":" << game->getStartTime() << ',' << std::endl
+               << "\"ended\":" << game->getEndTime() << std::endl
+               << "}" << std::endl;
+        }
+
+        ss << "}" << std::endl;
 
         first = false;
     }

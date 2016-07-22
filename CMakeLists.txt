@@ -13,8 +13,8 @@ set(SOURCE_FILES
         src/Version.hpp
         src/Server.hpp
         src/Server.cpp
-        src/PlayerHandler.hpp
-        src/PlayerHandler.cpp
+        src/Player.hpp
+        src/Player.cpp
         src/Packet.cpp
         src/Packet.hpp
         src/PlayerState.hpp

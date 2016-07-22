@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "Game.hpp"
-#include "PlayerHandler.hpp"
+#include "Player.hpp"
 #include "Log.hpp"
 
 Game::Game (unsigned int id, unsigned short scenarioId, unsigned int playerId, const std::string & playerName1)

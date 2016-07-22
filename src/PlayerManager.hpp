@@ -3,8 +3,9 @@
 
 #include <map>
 #include <list>
+#include <set>
 
-#include "PlayerHandler.hpp"
+#include "Player.hpp"
 #include "Packet.hpp"
 
 /**
@@ -18,16 +19,18 @@ public:
 
     bool isNameTaken (const std::string &name);
 
-    void addPlayer (PlayerHandler *player);
+    void addPlayer (const SharedPlayer & player);
 
-    void removePlayer (PlayerHandler * player);
+    void removePlayer (const SharedPlayer & player);
 
     /**
      * Returns the player with the given id or a null shared reference if not found.
      */
-    PlayerHandler * getPlayer (unsigned int playerId);
+    SharedPlayer getPlayer (unsigned int playerId);
 
     size_t getPlayerCount ();
+
+    std::set<SharedPlayer> getAllPlayers ();
 
     size_t getOldStatisticsCount ();
 
@@ -52,7 +55,7 @@ private:
     std::mutex m_mutex;
 
     // all active players
-    std::map<unsigned int, PlayerHandler *> m_players;
+    std::map<unsigned int, SharedPlayer> m_players;
 
     // a list of disconnected players
     std::list<SharedStatistics> m_disconnectedPlayers;
