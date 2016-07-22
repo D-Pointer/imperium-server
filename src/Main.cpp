@@ -1,11 +1,12 @@
 #include <cstdlib>
 #include <unistd.h>
-#include <iostream>
+#include <sys/param.h>
+#include <pwd.h>
 
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <pwd.h>
 
 #include "Version.hpp"
 #include "Server.hpp"
@@ -127,16 +128,24 @@ int main (int argc, char *argv[]) {
 
     std::cout << "Log file: " << "imperium-server.log" << std::endl;
     std::cout << "Resource dir: " << ResourceLoader::resourceDir << std::endl;
+    std::cout << "IP/port: " << arguments.interface << ":" << arguments.port << std::endl;
+    std::cout << "Management IP/port: " << arguments.managementInterface << ":" << arguments.managementPort << std::endl;
 
 
     logInfo << "--------------------------------------------------------------------------------------------------------------------";
     logInfo << "version " << MAJOR_VERSION << "." << MINOR_VERSION << "." << EXTRA_VERSION;
     logInfo << "build date: " << GlobalStatistics::instance().m_buildDate << " " << GlobalStatistics::instance().m_buildTime;
 
+    char cwd[ MAXPATHLEN ];
+    getcwd( cwd, MAXPATHLEN );
     logInfo << "main: using ip/port: " << arguments.interface << ":" << arguments.port;
     logInfo << "main: using management ip/port: " << arguments.managementInterface << ":" << arguments.managementPort;
-    std::cout << "IP/port: " << arguments.interface << ":" << arguments.port << std::endl;
-    std::cout << "Management IP/port: " << arguments.managementInterface << ":" << arguments.managementPort << std::endl;
+    logInfo << "main: sandbox dir: " << arguments.workingDir << ", cwd: " << cwd;
+    logInfo << "main: resource dir: " << ResourceLoader::resourceDir;
+
+    if ( arguments.daemonize ) {
+        logInfo << "main: running as daemon";
+    }
 
     try {
         boost::asio::io_service ioService;
