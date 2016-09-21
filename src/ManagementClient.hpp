@@ -33,11 +33,11 @@ private:
 
     void handlePlayers ();
 
-        void handleQuit ();
+    void handleQuit ();
 
     bool sendResponse (const std::string & response);
 
-        boost::asio::ip::tcp::socket m_tcpSocket;
+    boost::asio::ip::tcp::socket m_tcpSocket;
 
     // buffer we read into
     boost::asio::streambuf m_buffer;

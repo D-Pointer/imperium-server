@@ -149,7 +149,8 @@ but it is always there.
 
 
 ### Login
-Sent by clients.
+Sent by clients. The response if all is ok will be two packets: **LoginOkPacket** and **PlayerCountPacket**. The latter is also sent
+periodically when new players join and leave.
 
 * name length (`unsigned short`)
 * name (name length of characters), not null terminated
@@ -160,11 +161,14 @@ Responses:
 * **AlreadyLoggedInPacket**, if the player has already logged in with this connection.
 * **InvalidNamePacket**, invalid name. The name must be 1 to 50 characters long.
 * **NameTakenPacket**, name taken by another player.
-* **LoginOkPacket** packet.
+* **LoginOkPacket** packet and a **PlayerCountPacket**.
 
 ### Login ok
 Sent by the server as a response to a **Login** packet and indicates that the player was logged in ok and can now
 announce games or join existing games.
+
+### Player count
+Sent by the server as a response to a successful **Login** packet as well as when a player joins or leaves.
 
 ### Invalid protocol
 Sent by the server as a response to a **Login** packet and indicates that the game and the server use different protocols and
@@ -187,6 +191,7 @@ The player needs to choose another name and log in again.
 ### Server full
 Sent by the server as a response to a **Login** packet and indicates that the server is currently full and does nto accept any more
 players. The player can try to log in again later.
+
 
 ### Announce
 Sent by players when they announce a game that some other player can join.

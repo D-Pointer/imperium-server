@@ -11,7 +11,7 @@ const std::vector<std::string> Packet::packetNames = {
         "LoginPacket",
         "LoginOkPacket",
         "InvalidProtocolPacket",
-	"AlreadyLoggedIn",
+        "AlreadyLoggedIn",
         "InvalidNamePacket",
         "NameTakenPacket",
         "ServerFullPacket",
@@ -34,7 +34,8 @@ const std::vector<std::string> Packet::packetNames = {
         "ResourcePacket",
         "InvalidResourceNamePacket",
         "InvalidResourcePacket",
-        "KeepAlivePacket"
+        "KeepAlivePacket",
+        "PlayerCountPacket"
 };
 
 

@@ -321,13 +321,19 @@ void Player::handleLoginPacket (const SharedPacket &packet) {
 
     // now our player has logged in
     m_name = name;
-    m_statistics->m_name = name;
     m_loggedIn = true;
 
     logDebug << logData( "handleLoginPacket" ) << "login from player: " << m_name;
 
     // player login ok
     sendPacket( Packet::LoginOkPacket );
+
+    // send the updated player count to all players
+    std::vector<boost::asio::const_buffer> buffers;
+    unsigned short netCount = htons( PlayerManager::instance().getPlayerCount() );
+    buffers.push_back( boost::asio::buffer( &netCount, sizeof( unsigned short )));
+    PlayerManager::instance().broadcastPacket( Packet::PlayerCountPacket, buffers );
+
 
     // send all current games as "game added" packets
     for ( auto game : GameManager::instance().getAllGames()) {
@@ -674,6 +680,12 @@ void Player::terminate () {
     logDebug << logData( "terminate" ) << "terminating";
     SharedPlayer self = shared_from_this();
     PlayerManager::instance().removePlayer( SharedPlayer( self ));
+
+    // send the updated player count to all players
+    std::vector<boost::asio::const_buffer> buffers;
+    unsigned short netCount = htons( PlayerManager::instance().getPlayerCount() );
+    buffers.push_back( boost::asio::buffer( &netCount, sizeof( unsigned short )));
+    PlayerManager::instance().broadcastPacket( Packet::PlayerCountPacket, buffers );
 }
 
 

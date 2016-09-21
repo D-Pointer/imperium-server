@@ -117,21 +117,28 @@ def readUdpPackets(udpSocket):
                           % (unitId, men, mode, missionType, morale, fatigue, ammo, x, y, facing)
 
             elif subPacketType == packet.Packet.UDP_DATA_FIRE:
-                (attackerId, x, y, targetCount, ) = struct.unpack_from('>hhhB', data, offset)
-                offset += struct.calcsize('>hhhB')
+                (attackerId, x, y, ) = struct.unpack_from('>hhh', data, offset)
+                offset += struct.calcsize('>hhh')
                 x /= 10
                 y /= 10
-                print "--- fire, %d fires at %d,%d, hitting %d units" % (attackerId, x, y, targetCount )
 
-                for count in range( targetCount ):
-                    (targetId, casualties, type, targetMoraleChange ) = struct.unpack_from('>hBBh', data, offset)
-                    offset += struct.calcsize('>hBBh')
-                    targetMoraleChange /= 10.0
-                    print "    target %d lost %d men, type: %d, target morale: %.1f" % (targetId, casualties, type, targetMoraleChange)
-                    for unit in units:
-                        if unit.id == targetId:
-                            unit.men = max( 0, unit.men - casualties )
-                            unit.morale = max( 0, unit.morale - targetMoraleChange )
+                # any targets left?
+                if offset == len(data):
+                    print "--- smoke, %d fires smoke at %d,%d" % (attackerId, x, y )
+                else:
+                    (targetCount, ) = struct.unpack_from('>B', data, offset)
+                    offset += struct.calcsize('>B')
+                    print "--- fire, %d fires at %d,%d, hitting %d units" % (attackerId, x, y, targetCount )
+
+                    for count in range( targetCount ):
+                        (targetId, casualties, type, targetMoraleChange ) = struct.unpack_from('>hBBh', data, offset)
+                        offset += struct.calcsize('>hBBh')
+                        targetMoraleChange /= 10.0
+                        print "    target %d lost %d men, type: %d, target morale: %.1f" % (targetId, casualties, type, targetMoraleChange)
+                        for unit in units:
+                            if unit.id == targetId:
+                                unit.men = max( 0, unit.men - casualties )
+                                unit.morale = max( 0, unit.morale - targetMoraleChange )
 
             elif subPacketType == packet.Packet.UDP_DATA_MELEE:
                 (attackerId, targetId, type, casualties, targetMoraleChange ) = struct.unpack_from('>hhBBh', data, offset)
@@ -156,6 +163,18 @@ def readUdpPackets(udpSocket):
                 offset += struct.calcsize('>L')
                 print "--- player ping, their time: %d, sending response" % ms
                 udpSocket.sendto(packet.UdpPlayerPongPacket( ms, simulator.getPacketId()).message, udpAddress)
+
+            elif subPacketType == packet.Packet.UDP_DATA_SMOKE:
+                (smokeCount,  ) = struct.unpack_from('>h', data, offset)
+                offset += struct.calcsize('>h')
+                print "--- got data for %d smokes" % smokeCount
+                for count in range( smokeCount ):
+                    (x, y, opacity, ) = struct.unpack_from('>hhB', data, offset)
+                    offset += struct.calcsize('>hhB')
+                    x /= 10
+                    y /= 10
+                    print "--- smoke %d at %d,%d, opacity: %d" % (count, x, y, opacity)
+
 
     print "--- UDP handler stopped"
 
@@ -301,6 +320,14 @@ def handleData(data, sock):
         print "### end type: %d, total: %d, %d, lost: %d, %d, objectives: %d, %d" % (endType, total1, total2, lost1, lost2, objectives1, objectives2)
         endGame()
 
+    elif subPacketType == packet.Packet.WIND:
+        print "### received wind packet"
+        (windDirection, windStrength) = struct.unpack_from('>hh', data, offset)
+        windDirection /= 10
+        windStrength /= 10
+        offset += struct.calcsize('>hh')
+        print "### direction %f, strength %f" % (windDirection, windStrength)
+
     else:
         print "### unknown TCP sub packet type: %d" % subPacketType
 
@@ -313,6 +340,11 @@ def handleResource(data):
 
 def handleInvalidResource(data):
      print "### invalid resource"
+
+
+def handlePlayerCount(data):
+    (playerCount,) = struct.unpack_from('>h', data, 0)
+     print "### current player count: %d" % playerCount
 
 
 def readNextPacket(sock):
@@ -368,6 +400,9 @@ def readNextPacket(sock):
 
         elif receivedType == packet.Packet.INVALID_RESOURCE_PACKET:
             handleInvalidResource(data)
+
+        elif receivedType == packet.Packet.PLAYER_COUNT_PACKET:
+            handlePlayerCount(data)
 
         else:
             print "### unknown packet type: %d" % receivedType

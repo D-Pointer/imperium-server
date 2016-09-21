@@ -40,6 +40,7 @@ public:
         InvalidResourceNamePacket,
         InvalidResourcePacket,
         KeepAlivePacket,
+        PlayerCountPacket,
     };
 
     enum UdpPacketType {
@@ -50,7 +51,7 @@ public:
     };
 
     static bool isValidPacket (unsigned short value) {
-        return value <= TcpPacketType::KeepAlivePacket;
+        return value <= TcpPacketType::PlayerCountPacket;
     }
 
     Packet (TcpPacketType type, const unsigned char *data, size_t dataLength);
