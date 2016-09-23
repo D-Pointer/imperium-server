@@ -11,6 +11,28 @@ GameManager &GameManager::instance () {
 }
 
 
+bool GameManager::initialize (const std::string &filename) {
+    std::lock_guard<std::mutex> lock( m_mutex );
+
+    m_sequenceFile = filename;
+
+    try {
+        if ( boost::filesystem::exists( m_sequenceFile )) {
+            boost::filesystem::ifstream in( m_sequenceFile, std::ios_base::in );
+            in >> m_nextId;
+        } else {
+            m_nextId = 0;
+        }
+    }
+    catch (const boost::filesystem::filesystem_error &ex) {
+        std::cout << "GameManager::initialize: failed to read game sequence from: " << m_sequenceFile.string() << ", reason: " << ex.what();
+        return false;
+    }
+
+    return true;
+}
+
+
 SharedGame GameManager::getGame (unsigned int gameId) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
@@ -24,7 +46,7 @@ SharedGame GameManager::getGame (unsigned int gameId) {
 }
 
 
-SharedGame GameManager::createGame (unsigned short scenarioId, unsigned int playerId, const std::string & playerName) {
+SharedGame GameManager::createGame (unsigned short scenarioId, unsigned int playerId, const std::string &playerName) {
     std::lock_guard<std::mutex> lock( m_mutex );
 
     // create a new game
@@ -151,19 +173,5 @@ size_t GameManager::getGameCount () const {
 }
 
 
-GameManager::GameManager () : m_sequenceFile( "games.seq" ) {
-    try {
-        if ( boost::filesystem::exists( m_sequenceFile )) {
-            boost::filesystem::ifstream in( m_sequenceFile, std::ios_base::in );
-            in >> m_nextId;
-        }
-        else {
-            m_nextId = 0;
-        }
-    }
-    catch (const boost::filesystem::filesystem_error &ex) {
-        logError << "GameManager::GameManager: failed to read game sequence from: " << m_sequenceFile.string() << ", reason: " << ex.what();
-    }
-
-    logDebug << "GameManager::GameManager: game sequence starts from: " << m_nextId;
+GameManager::GameManager () {
 }

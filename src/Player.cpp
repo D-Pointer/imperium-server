@@ -6,6 +6,7 @@
 
 #include "Player.hpp"
 #include "ResourceLoader.hpp"
+#include "AuthManager.hpp"
 #include "GameManager.hpp"
 #include "PlayerManager.hpp"
 #include "Definitions.hpp"
@@ -311,11 +312,35 @@ void Player::handleLoginPacket (const SharedPacket &packet) {
 
     // name length is ok, get the name
     std::string name = packet->getString( offset, nameLength );
+    offset += nameLength;
 
     // name already taken?
     if ( PlayerManager::instance().isNameTaken( name )) {
         logWarning << logData( "handleLoginPacket" ) << "name '" << name << "' is already taken, failing login";
         sendPacket( Packet::NameTakenPacket );
+        return;
+    }
+
+
+    // get the password length
+    unsigned short passwordLength = packet->getUnsignedShort( offset );
+    offset += sizeof( unsigned short );
+
+    // invalid name?
+    if ( passwordLength == 0 || passwordLength > 1024 ) {
+        logWarning << logData( "handleLoginPacket" ) << "bad password length: " << passwordLength << ", failing login";
+        sendPacket( Packet::InvalidPasswordPacket );
+        return;
+    }
+
+    // password length is ok, get the password
+    std::string password = packet->getString( offset, passwordLength );
+
+    // validate the password
+    if ( ! AuthManager::instance().validatePassword( password )) {
+        // TODO: remove password printing
+        logWarning << logData( "handleLoginPacket" ) << "invalid password: '" << password << "', failing login";
+        sendPacket( Packet::InvalidPasswordPacket );
         return;
     }
 

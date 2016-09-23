@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 #include <boost/asio.hpp>
-#include <boost/signals2.hpp>
 #include <boost/array.hpp>
 
 #include "Packet.hpp"

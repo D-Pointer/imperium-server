@@ -40,7 +40,8 @@ public:
         InvalidResourceNamePacket,
         InvalidResourcePacket,
         KeepAlivePacket,
-        PlayerCountPacket,
+        PlayerCountPacket, // out
+        InvalidPasswordPacket // error out
     };
 
     enum UdpPacketType {

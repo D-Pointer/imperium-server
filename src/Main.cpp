@@ -14,6 +14,8 @@
 #include "ResourceLoader.hpp"
 #include "ManagementServer.hpp"
 #include "GlobalStatistics.hpp"
+#include "GameManager.hpp"
+#include "AuthManager.hpp"
 
 struct Arguments {
     std::string workingDir;
@@ -23,6 +25,8 @@ struct Arguments {
     bool daemonize;
     std::string managementInterface;
     unsigned short managementPort;
+    std::string sequenceFile;
+    std::string passwordFile;
 };
 
 
@@ -31,17 +35,15 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
     try {
         desc.add_options()
                 ( "help,h", "Help screen" )
-                ( "workingdir,w", boost::program_options::value<std::string>()->required(),
-                  "The directory where all data for the server is, used as a chroot jail." )
+                ( "workingdir,w", boost::program_options::value<std::string>()->required(), "The directory where all data for the server is, used as a chroot jail." )
                 ( "interface,i", boost::program_options::value<std::string>()->default_value( "127.0.0.1" ), "IP address of the interface to listen on." )
                 ( "port,p", boost::program_options::value<unsigned short>()->default_value( 11001 ), "Port to listen on." )
-                ( "username,u", boost::program_options::value<std::string>()->default_value( "" ),
-                  "Name of the user to run as if given (drops root privileges)." )
+                ( "username,u", boost::program_options::value<std::string>()->default_value( "" ), "Name of the user to run as if given (drops root privileges)." )
                 ( "daemonize,d", boost::program_options::value<bool>()->default_value( false ), "Daemonize the server and run in the background." )
-                ( "managementinterface", boost::program_options::value<std::string>()->default_value( "127.0.0.1" ),
-                  "IP address of the management interface to listen on." )
-                ( "managementport", boost::program_options::value<unsigned short>()->default_value( 11002 ), "Management port to listen on." );
-
+                ( "managementinterface", boost::program_options::value<std::string>()->default_value( "127.0.0.1" ), "IP address of the management interface to listen on." )
+                ( "managementport", boost::program_options::value<unsigned short>()->default_value( 11002 ), "Management port to listen on." )
+                ( "sequencefile", boost::program_options::value<std::string>()->default_value( "./games.seq" ), "Name of file where the game id sequence is stored." )
+                ( "passwordfile", boost::program_options::value<std::string>()->default_value( "./password.txt" ), "Name of file where the game password is stored." );
 
         boost::program_options::variables_map variablesMap;
         boost::program_options::store( boost::program_options::parse_command_line( argc, argv, desc ), variablesMap );
@@ -55,11 +57,14 @@ Arguments validateCommandLineArguments (int argc, char *argv[]) {
 
         return Arguments { variablesMap["workingdir"].as<std::string>(),
                            variablesMap["interface"].as<std::string>(),
-                           variablesMap["port"].as<unsigned short>(),
+                           variablesMap["port"].as < unsigned short>(),
                 variablesMap["username"].as<std::string>(),
                 variablesMap["daemonize"].as<bool>(),
                 variablesMap["managementinterface"].as<std::string>(),
-                variablesMap["managementport"].as < unsigned short>() };
+                variablesMap["managementport"].as < unsigned short>(),
+                variablesMap["sequencefile"].as<std::string>(),
+                variablesMap["passwordfile"].as<std::string>()
+        };
     }
     catch (std::exception &ex) {
         std::cerr << "Failed to handle command line arguments: " << ex.what() << std::endl;
@@ -110,6 +115,24 @@ int main (int argc, char *argv[]) {
         std::cout << "Running as user: " << pwd.pw_name << ", user id: " << pwd.pw_uid << std::endl;
     }
 
+    if ( !Log::instance().initialize( "imperium-server.log", 10 * 1024 * 1024, 10 )) {
+        // failed to init the log, what to do now?
+        std::cout << "Failed to initialize logging, aborting" << std::endl;
+        exit( EXIT_FAILURE );
+    }
+
+    // read the game sequence
+    if ( !GameManager::instance().initialize( arguments.sequenceFile )) {
+        std::cout << "Failed to load the game id sequence file: " << arguments.sequenceFile << std::endl;
+        exit( EXIT_FAILURE );
+    }
+
+    // read the password
+    if ( !AuthManager::instance().initialize( arguments.passwordFile )) {
+        std::cout << "Failed to load the password from: " << arguments.passwordFile << std::endl;
+        exit( EXIT_FAILURE );
+    }
+
     // daemonize the server
     if ( arguments.daemonize ) {
         if ( daemon( 1, 1 ) == -1 ) {
@@ -118,12 +141,6 @@ int main (int argc, char *argv[]) {
         }
 
         std::cout << "Daemonized ok" << std::endl;
-    }
-
-    if ( !Log::instance().initialize( "imperium-server.log", 10 * 1024 * 1024, 10 )) {
-        // failed to init the log, what to do now?
-        std::cout << "Failed to initialize logging, aborting" << std::endl;
-        exit( EXIT_FAILURE );
     }
 
     std::cout << "Log file: " << "imperium-server.log" << std::endl;
@@ -136,7 +153,7 @@ int main (int argc, char *argv[]) {
     logInfo << "version " << MAJOR_VERSION << "." << MINOR_VERSION << "." << EXTRA_VERSION;
     logInfo << "build date: " << GlobalStatistics::instance().m_buildDate << " " << GlobalStatistics::instance().m_buildTime;
 
-    char cwd[ MAXPATHLEN ];
+    char cwd[MAXPATHLEN];
     getcwd( cwd, MAXPATHLEN );
     logInfo << "main: using ip/port: " << arguments.interface << ":" << arguments.port;
     logInfo << "main: using management ip/port: " << arguments.managementInterface << ":" << arguments.managementPort;

@@ -1,5 +1,5 @@
-#ifndef IMPERIUM_SERVER_GAMEMANAGER_HPP
-#define IMPERIUM_SERVER_GAMEMANAGER_HPP
+#ifndef GAME_MANAGER_HPP
+#define GAME_MANAGER_HPP
 
 #include <mutex>
 #include <set>
@@ -13,6 +13,15 @@ class GameManager {
 public:
 
     static GameManager & instance ();
+
+    /**
+     * Initializes the game manages and reads the sequence from the given filename.
+     *
+     * @param filename
+     *
+     * @return true if loaded ok and false on error.
+     */
+    bool initialize (const std::string & filename);
 
     SharedGame getGame (unsigned int gameId);
 

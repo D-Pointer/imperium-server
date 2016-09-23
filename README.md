@@ -40,11 +40,11 @@ Installing the server requires a few libs and CMake.
 % make
 ````
 
-The final binary is `imperium-server` in the `build` directory. You may need to add include paths for your dependencies if they are not installed in standard
+The final binary is `imperium-server` in the `build` directory. You may need to add include and library paths for your dependencies if they are not installed in standard
 directories. Example:
 
 ````
-% cmake -DCMAKE_CXX_FLAGS="-I/opt/boost/include" ..
+% cmake -DCMAKE_CXX_FLAGS="-I/opt/boost/include" -DCMAKE_LIBRARY_PATH=/usr/local/lib" ...
 ````
 
 The idea behind the server.
@@ -154,10 +154,13 @@ periodically when new players join and leave.
 
 * name length (`unsigned short`)
 * name (name length of characters), not null terminated
+* password length (`unsigned short`)
+* password (password length of characters), not null terminated
 
 Responses:
 
 * **ServerFullPacket**, server full
+* **InvalidPasswordPacket**, the password was not valid.
 * **AlreadyLoggedInPacket**, if the player has already logged in with this connection.
 * **InvalidNamePacket**, invalid name. The name must be 1 to 50 characters long.
 * **NameTakenPacket**, name taken by another player.
@@ -192,6 +195,10 @@ The player needs to choose another name and log in again.
 Sent by the server as a response to a **Login** packet and indicates that the server is currently full and does nto accept any more
 players. The player can try to log in again later.
 
+### Invalid password
+Sent by the server as a response to a **Login** packet and indicates that the given password was not valid. This normally means
+that the password token expected by the server is different from what the game sent and likely means that either the game or the
+server has stored the wrong password. Verify the server and clients.
 
 ### Announce
 Sent by players when they announce a game that some other player can join.

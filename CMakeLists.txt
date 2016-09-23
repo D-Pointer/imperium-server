@@ -3,9 +3,6 @@ project(imperium-server)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-        /Users/chakie/Work/nemas/libs/osx/lib)
-
 set(SOURCE_FILES
         src/Main.cpp
         src/Log.cpp
@@ -21,6 +18,8 @@ set(SOURCE_FILES
         src/Errors.hpp
         src/GameManager.cpp
         src/GameManager.hpp
+        src/AuthManager.cpp
+        src/AuthManager.hpp
         src/PlayerManager.cpp
         src/PlayerManager.hpp
         src/Game.cpp

@@ -344,7 +344,7 @@ def handleInvalidResource(data):
 
 def handlePlayerCount(data):
     (playerCount,) = struct.unpack_from('>h', data, 0)
-     print "### current player count: %d" % playerCount
+    print "### current player count: %d" % playerCount
 
 
 def readNextPacket(sock):
