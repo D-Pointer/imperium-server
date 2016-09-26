@@ -88,7 +88,9 @@ void GameManager::removeGame (const SharedGame &game) {
         return;
     }
 
-    logDebug << "GameManager::removeGame: game duration: " << ( ended - started ) << " seconds";
+    unsigned int duration = (unsigned int) ( ended - started );
+
+    logDebug << "GameManager::removeGame: game duration: " << duration << " seconds";
 
     for ( int index = 0; index < 2; ++index ) {
         SharedStatistics statistics = game->getStatistics( index );
@@ -133,6 +135,7 @@ void GameManager::removeGame (const SharedGame &game) {
         << "created " << game->getCreationTime() << std::endl
         << "started " << game->getStartTime() << std::endl
         << "ended " << game->getEndTime() << std::endl
+        << "duration " << duration << std::endl
         << "player1 " << game->getPlayerName1() << std::endl
         << "player2 " << game->getPlayerName2() << std::endl;
 
@@ -140,7 +143,7 @@ void GameManager::removeGame (const SharedGame &game) {
     for ( int index = 0; index < 2; ++index ) {
         SharedStatistics statistics = game->getStatistics( index );
 
-        out << "player" << ( index + 1 )
+        out << "stats" << ( index + 1 )
             << " " << statistics->m_lastReceivedTcp
             << " " << statistics->m_lastSentTcp
             << " " << statistics->m_packetsSentTcp
@@ -152,7 +155,15 @@ void GameManager::removeGame (const SharedGame &game) {
             << " " << statistics->m_packetsSentUdp
             << " " << statistics->m_packetsReceivedUdp
             << " " << statistics->m_bytesSentUdp
-            << " " << statistics->m_bytesReceivedUdp << std::endl;
+            << " " << statistics->m_bytesReceivedUdp;
+
+        if ( duration > 0 ) {
+            out << " " << statistics->m_bytesReceivedUdp / duration
+                << " " << statistics->m_bytesSentUdp / duration << std::endl;
+        } else {
+            // too short game, no averages
+            out << " 0 0" << std::endl;
+        }
     }
 
     out.close();
