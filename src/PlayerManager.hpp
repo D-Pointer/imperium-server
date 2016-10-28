@@ -32,9 +32,13 @@ public:
 
     std::set<SharedPlayer> getAllPlayers ();
 
-    size_t getOldStatisticsCount ();
-
-    std::list<SharedStatistics> getAllOldStatistics ();
+    /**
+     * Returns the number of disconnected players, ie. players that have once connected but then disconnected. This value is since the
+     * server was started.
+     *
+     * @return number of disconnected players.
+     */
+    size_t getDisconnectedPlayerCount ();
 
     /**
      * Sends the given packet to all players.
@@ -57,8 +61,8 @@ private:
     // all active players
     std::map<unsigned int, SharedPlayer> m_players;
 
-    // a list of disconnected players
-    std::list<SharedStatistics> m_disconnectedPlayers;
+    // count of disconnected players
+    size_t m_disconnectedPlayerCount;
 };
 
 

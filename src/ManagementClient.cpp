@@ -98,7 +98,7 @@ void ManagementClient::handleStatus () {
        << "\"lastConnectedPlayer\":" << stats.m_lastConnectedPlayer << ',' << std::endl
        << "\"lastConnectedManager\":" << stats.m_lastConnectedManager << ',' << std::endl
        << "\"activePlayers\":" << PlayerManager::instance().getPlayerCount() << ',' << std::endl
-       << "\"disconnectedPlayers\":" << PlayerManager::instance().getOldStatisticsCount() << ',' << std::endl
+       << "\"disconnectedPlayers\":" << PlayerManager::instance().getDisconnectedPlayerCount() << ',' << std::endl
        << "\"activeGames\":" << GameManager::instance().getGameCount() << std::endl
        << "}" << std::endl;
 
