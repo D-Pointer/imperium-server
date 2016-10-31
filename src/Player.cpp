@@ -623,11 +623,11 @@ void Player::handleResourcePacket (const SharedPacket &packet) {
     unsigned char packetIndex = 0;
 
     // total resource length
-    unsigned int totalLength = resource.length();
+    unsigned int totalLength = (unsigned int)resource.length();
     unsigned int netTotalLength = htonl( totalLength );
 
     // the number of packets we will need to send
-    unsigned char packetCount = totalLength / 65000;
+    unsigned char packetCount = (unsigned char)(totalLength / 65000);
     if ( packetCount * 65000 < totalLength ) {
         packetCount++;
     }

@@ -6,9 +6,11 @@ class ClientFactory(Factory):
     # This will be used by the default buildProtocol to create new protocols:
     protocol = Client
 
-    def __init__(self):
+    def __init__(self, authManager):
         self.clients = {}
+        self.games = []
+        self.authManager = authManager
 
 
     def buildProtocol(self, addr):
-        return Client( self.clients )
+        return Client( self.clients, self.games, self.authManager )

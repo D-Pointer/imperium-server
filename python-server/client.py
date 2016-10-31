@@ -1,15 +1,29 @@
+from struct import pack
+
 from twisted.protocols.basic import Int16StringReceiver
 import struct
 from tcp_packet import TcpPacket
+from statistics import Statistics
+import resources
+import definitions
 
 class Client(Int16StringReceiver):
 
     nextId = 0
 
-    def __init__ (self, clients):
+    def __init__ (self, clients, games, authManager):
         self.clients = clients
+        self.games = games
+        self.authManager = authManager
         self.id = Client.nextId
         Client.nextId += 1
+
+        # not yet logged in
+        self.loggedIn = False
+        self.name = None
+
+        # statistics
+        self.statistics = Statistics()
 
         # set up the handlers
         self.handlers = {
@@ -45,42 +59,131 @@ class Client(Int16StringReceiver):
 
         # find a handler to handle the real packet
         if not self.handlers.has_key( packetType ):
-            print "invalid packet type: %d" % packetType
+            print "stringReceived: invalid packet type: %d" % packetType
             self.transport.loseConnection()
             return
 
         # call the handler
-        self.handlers[ packetType ]( string )
+        try:
+            self.handlers[ packetType ]( string )
+        except:
+            print "stringReceived: failed to execute handler for packet %d" % packetType
+            self.transport.loseConnection()
 
 
     def handleLogin(self, data):
         offset = 0
         (packetType, protocol, nameLength) = struct.unpack_from( '!HHH', data, offset )
         offset += struct.calcsize('!HHH')
-        print "handleLogin: protocol: %d" % protocol
+
+        if protocol != definitions.protocolVersion:
+            print "handleLogin: invalid protocol: %d, our: %d" % (protocol, definitions.protocolVersion )
+            self.send( TcpPacket.INVALID_PROTOCOL )
+            self.transport.loseConnection()
+            return
+
+        # already logged in?
+        if self.loggedIn:
+            print "handleLogin: already logged in"
+            self.send( TcpPacket.ALREADY_LOGGED_IN )
+            return
+
+        if nameLength == 0 or nameLength > 100:
+            print "handleLogin: invalid name length: %d" % (nameLength)
+            self.send( TcpPacket.INVALID_NAME )
+            return
 
         # name
-        (name, passwordLength) = struct.unpack_from( '!%dsH' % nameLength, data, offset )
-        offset += struct.calcsize( '%dsH' % nameLength )
-        print "handleLogin: name: '%s'" % name
+        (self.name, passwordLength) = struct.unpack_from( '!%dsH' % nameLength, data, offset )
+        offset += struct.calcsize( '!%dsH' % nameLength )
+
+        # TODO: name taken?
+
+        if passwordLength == 0 or passwordLength > 100:
+            print "handleLogin: invalid password length: %d" % (passwordLength)
+            self.send( TcpPacket.INVALID_PASSWORD_PACKET )
+            return
 
         # password
-        (password) = struct.unpack_from( '!%ds' % passwordLength, data, offset )
-        print "handleLogin: password: '%s'" % password
+        (password, ) = struct.unpack_from( '!%ds' % passwordLength, data, offset )
+
+        if not self.authManager.validatePassword( password ):
+            print "handleLogin: invalid password"
+            self.send( TcpPacket.INVALID_PASSWORD_PACKET )
+            return
+
+        # login ok
+        self.send( TcpPacket.LOGIN_OK )
+
+        self.loggedIn = True
+        print "handleLogin: player %s logged in" % self.name
+
+        # broadcast the changed player count
+        self.broadcast( TcpPacket.PLAYER_COUNT_PACKET, struct.pack( '!H', len(self.clients)) )
+
+        # TODO: send all games to this player
 
 
     def handleGetResource(self, data):
         offset = 0
-        (packetType, resourceNameLength) = struct.unpack_from( '!HH', data, offset )
+        (packetType, nameLength) = struct.unpack_from( '!HH', data, offset )
         offset += struct.calcsize('!HH')
 
+        if nameLength == 0 or nameLength > 1024:
+            # invalid resource name length
+            self.send( TcpPacket.INVALID_RESOURCE_NAME_PACKET )
+            return
+
         # resource name
-        (resourceName, ) = struct.unpack_from( '%ds' % resourceNameLength, data, offset )
-        print "handleGetResource: name: '%s'" % resourceName
+        (name, ) = struct.unpack_from( '%ds' % nameLength, data, offset )
+        print "handleGetResource: name: '%s'" % name
+
+        parts = resources.loadResource( name )
+        if parts == None or len(parts) == 0:
+            # invalid resource
+            self.send( TcpPacket.INVALID_RESOURCE_PACKET )
+            return
+
+        # resource loaded ok, send off it in parts
+        partIndex = 0
+        partCount = len(parts)
+        for part in parts:
+            partLength = len(part)
+            print "handleGetResource: part %d, length: %d, parts: %d" % (partIndex, partLength, partCount )
+            self.send( TcpPacket.RESOURCE_PACKET, struct.pack( '!H%dsIBB' % nameLength, nameLength, name, len(part), partIndex, partCount ) )
+            partIndex += 1
 
 
     def handleKeepAlivePacket(self, data):
         offset = 0
         (packetType, ) = struct.unpack_from( '!H', data, offset )
         offset += struct.calcsize('!H')
-        print "handleKeepAlivePacket"
+        print "handleKeepAlivePacket: TODO"
+
+
+    def send (self, packetType, data=None):
+        if data != None:
+            dataLength = len(data)
+            packetLength = struct.calcsize( '!H' ) + dataLength
+            print "send: packet type: %s, data length: %d" % ( TcpPacket.name(packetType), dataLength)
+            self.transport.write( struct.pack( '!HH', packetLength, packetType) )
+            self.transport.write( data )
+
+            self.statistics.tcpBytesSent += 2 + packetLength
+
+        else:
+            print "send: packet type: %s" % ( TcpPacket.name(packetType), )
+            packetLength = struct.calcsize( '!H' )
+            self.transport.write( struct.pack( '!HH', packetLength, packetType) )
+
+        self.statistics.tcpBytesSent += 2 + packetLength
+        self.statistics.tcpPacketsSent += 1
+
+
+
+    def broadcast (self, packetType, data):
+        """Send the packet to all clients."""
+        dataLength = len(data)
+        print "broadcast: packet type: %s, data length: %d" % ( TcpPacket.name(packetType), dataLength)
+        for clientId, client in self.clients.iteritems():
+            client.send( packetType, data )

@@ -5,3 +5,4 @@ log
 run
 build
 /libs
+/cmake-build-debug
