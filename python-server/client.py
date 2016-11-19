@@ -1,26 +1,39 @@
-from struct import pack
 
 from twisted.protocols.basic import Int16StringReceiver
 import struct
+import datetime
+
 from tcp_packet import TcpPacket
 from statistics import Statistics
 import resources
 import definitions
+from game import Game
+from udp_handler import UdpHandler
 
 class Client(Int16StringReceiver):
 
     nextId = 0
 
     def __init__ (self, clients, games, authManager):
+        self.id = Client.nextId
+        Client.nextId += 1
+
         self.clients = clients
         self.games = games
         self.authManager = authManager
-        self.id = Client.nextId
-        Client.nextId += 1
 
         # not yet logged in
         self.loggedIn = False
         self.name = None
+
+        # no own game yet
+        self.game = None
+
+        # not ready to start yet
+        self.readyToStart = False
+
+        # no UDP handler yet connected to the client
+        self.udpHandler = None
 
         # statistics
         self.statistics = Statistics()
@@ -28,21 +41,23 @@ class Client(Int16StringReceiver):
         # set up the handlers
         self.handlers = {
             TcpPacket.LOGIN: self.handleLogin,
-            TcpPacket.ANNOUNCE: self.handleLogin,
-            TcpPacket.LEAVE_GAME: self.handleLogin,
-            TcpPacket.JOIN_GAME: self.handleLogin,
-            TcpPacket.DATA: self.handleLogin,
-            TcpPacket.READY_TO_START: self.handleLogin,
+            TcpPacket.ANNOUNCE: self.handleAnnounce,
+            TcpPacket.LEAVE_GAME: self.handleLeave,
+            TcpPacket.JOIN_GAME: self.handleJoin,
+            TcpPacket.DATA: self.handleData,
+            TcpPacket.READY_TO_START: self.handleReadyToStart,
             TcpPacket.GET_RESOURCE_PACKET: self.handleGetResource,
             TcpPacket.KEEPALIVE_PACKET: self.handleKeepAlivePacket,
         }
 
+
     def connectionMade(self):
         self.clients[ self.id ] = self
-        print "connectionMade: clients now: %d" % len(self.clients)
 
-        # self.factory was set by the factory's default buildProtocol:
-        #self.transport.write( 'Hello world!\r\n')
+        remotePeer = self.transport.getPeer()
+        print "connectionMade: client from: %s:%d, clients now: %d" % ( remotePeer.host, remotePeer.port, len(self.clients) )
+
+        self.statistics.connected = datetime.datetime.now()
 
 
     def connectionLost(self, reason):
@@ -51,11 +66,15 @@ class Client(Int16StringReceiver):
 
         print "connectionLost: clients left: %d" % len(self.clients)
 
+        self.game = None
+        if self.udpHandler:
+            self.udpHandler.cleanup()
+
 
     def stringReceived(self, string):
         # get the first byte, the packet type
         (packetType, ) = struct.unpack_from( '!H', string, 0 )
-        print "stringReceived: packet type: %d, name: %s" % (packetType, TcpPacket.name(packetType))
+        print "stringReceived: packet type: %d, name: %s, bytes: %d" % (packetType, TcpPacket.name(packetType), len(string))
 
         # find a handler to handle the real packet
         if not self.handlers.has_key( packetType ):
@@ -65,16 +84,23 @@ class Client(Int16StringReceiver):
 
         # call the handler
         try:
-            self.handlers[ packetType ]( string )
+            # call the handler, and strip out the first 2 bytes: the packet type
+            self.handlers[ packetType ]( string[2:] )
+
+            # update statistics
+            self.statistics.tcpBytesReceived += len(string)
+            self.statistics.tcpPacketsReceived += 1
+            self.statistics.tcpLastR = datetime.datetime.now()
         except:
             print "stringReceived: failed to execute handler for packet %d" % packetType
             self.transport.loseConnection()
+            raise
 
 
     def handleLogin(self, data):
         offset = 0
-        (packetType, protocol, nameLength) = struct.unpack_from( '!HHH', data, offset )
-        offset += struct.calcsize('!HHH')
+        (protocol, nameLength) = struct.unpack_from( '!HHH', data, offset )
+        offset += struct.calcsize('!HH')
 
         if protocol != definitions.protocolVersion:
             print "handleLogin: invalid protocol: %d, our: %d" % (protocol, definitions.protocolVersion )
@@ -97,14 +123,18 @@ class Client(Int16StringReceiver):
         (self.name, passwordLength) = struct.unpack_from( '!%dsH' % nameLength, data, offset )
         offset += struct.calcsize( '!%dsH' % nameLength )
 
-        # TODO: name taken?
+        # name taken?
+        for player in self.clients.values():
+            if player != self and player.name == name:
+                self.send( TcpPacket.NAME_TAKEN )
+                return
 
+        # password
         if passwordLength == 0 or passwordLength > 100:
             print "handleLogin: invalid password length: %d" % (passwordLength)
             self.send( TcpPacket.INVALID_PASSWORD_PACKET )
             return
 
-        # password
         (password, ) = struct.unpack_from( '!%ds' % passwordLength, data, offset )
 
         if not self.authManager.validatePassword( password ):
@@ -124,10 +154,140 @@ class Client(Int16StringReceiver):
         # TODO: send all games to this player
 
 
+    def handleAnnounce (self, data):
+        # do we already have a game?
+        if self.game:
+            print "handleAnnounce: alread have a game"
+            self.send( TcpPacket.ALREADY_ANNOUNCED )
+            return
+
+        offset = 0
+        (scenarioId, ) = struct.unpack_from( '!H', data, offset )
+        offset += struct.calcsize('!HH')
+
+        # set up the game
+        self.game = Game( self, scenarioId )
+        self.games[ self.game.id ] = self.game
+        print "handleAnnounce: announced game %d, scenario: %d" % (self.game.id, self.game.scenarioId)
+
+        # send the game to the client
+        self.send( TcpPacket.ANNOUNCE_OK, struct.pack( '!I', self.game.id) )
+
+        # broadcast the added game to all players
+        self.broadcast( TcpPacket.GAME_ADDED, struct.pack( '!IHH%ds' % len(self.name), self.game.id, self.game.scenarioId, len(self.name), self.name ) )
+
+
+    def handleJoin (self, data):
+        # do we have a game?
+        if self.game:
+            print "handleJoin: already has a game, can not join another"
+            self.send( TcpPacket.ALREADY_HAS_GAME )
+            return
+
+        # joined game
+        (gameId, ) = struct.unpack_from( '!I', data, 0 )
+        if not self.games.has_key( gameId ):
+            print "handleJoin: no such game: %d" % gameId
+            self.send( TcpPacket.INVALID_GAME )
+            return
+
+        game = self.games[ gameId ]
+
+        # game already full?
+        if game.hasStarted():
+            print "handleJoin: game has already started, can not join"
+            self.send( TcpPacket.GAME_FULL )
+            return
+
+        # game is ok and it's ours
+        game.player2 = self
+        self.game = game
+
+        opponent = game.player1
+
+        # set up UDP handlers
+        self.udpHandler = UdpHandler()
+        opponent.udpHandler = UdpHandler()
+
+        # the opponent is player 1, send its UDP port and our name
+        dataTo1 = struct.pack( '!HH%ds' % len(self.name), opponent.udpHandler.getLocalPort(), len(self.name), self.name )
+        opponent.send( TcpPacket.GAME_JOINED, dataTo1 )
+
+        # send the opponent data to us, along with our UDP port
+        dataTo2 = struct.pack( '!HH%ds' % len(opponent.name), self.udpHandler.getLocalPort(), len(opponent.name), opponent.name )
+        self.send( TcpPacket.GAME_JOINED, dataTo2 )
+
+        # the game is no longer open, tell everyone
+        self.broadcast( TcpPacket.GAME_REMOVED, struct.pack( '!I', self.game.id ) )
+
+
+    def handleLeave (self, data):
+        # do we have a game?
+        if not self.game:
+            print "handleLeave: no game, nothing to leave"
+            self.send( TcpPacket.NO_GAME )
+            return
+
+        print "handleLeave: leaving game %d, scenario: %d" % (self.game.id, self.game.scenarioId)
+
+        self.game.endGame()
+
+        # has it started?
+        if self.game.hasStarted():
+            # notify the opponent and clear
+            opponent = self.game.getOpponent()
+            if opponent:
+                opponent.send( TcpPacket.GAME_ENDED )
+                opponent.game = None
+
+            # notify and clear our game
+            self.send( TcpPacket.GAME_ENDED )
+            del( self.games[ self.game.id ] )
+            self.game = None
+
+        else:
+            # not started, so it's still looking for players, broadcast the removal to all players
+            self.broadcast( TcpPacket.GAME_REMOVED, struct.pack( '!I', self.game.id ) )
+
+
+    def handleData (self, data):
+        if self.game == None:
+            print "handleData: no game, can not send data"
+            return
+
+        opponent = self.game.getOpponent()
+        if opponent:
+            print "handleData: sending %d bytes to opponent" % len(data)
+            opponent.send( TcpPacket.DATA, data )
+        else:
+            print "handleData: no opponent, can not send data"
+
+
+    def handleReadyToStart (self, data):
+        if self.game == None:
+            print "handleReadyToStart: no game, can not handle ready to start"
+            self.send( TcpPacket.NO_GAME )
+            return
+
+        opponent = self.game.getOpponent( self )
+        if opponent == None:
+            print "handleReadyToStart: no opponent, can not handle ready to start"
+            self.send( TcpPacket.INVALID_GAME )
+            return
+
+        # we're now ready to start
+        self.readyToStart = True
+
+        # is the opponent also ready to start?
+        if opponent.readyToStart:
+            print "handleReadyToStart: opponent also ready to start, sending start packets"
+            self.udpHandler.sendStartPackets()
+
+
     def handleGetResource(self, data):
         offset = 0
-        (packetType, nameLength) = struct.unpack_from( '!HH', data, offset )
-        offset += struct.calcsize('!HH')
+        (nameLength, ) = struct.unpack_from( '!H', data, offset )
+        offset += struct.calcsize('!H')
 
         if nameLength == 0 or nameLength > 1024:
             # invalid resource name length
@@ -135,7 +295,7 @@ class Client(Int16StringReceiver):
             return
 
         # resource name
-        (name, ) = struct.unpack_from( '%ds' % nameLength, data, offset )
+        (name, ) = struct.unpack_from( '!%ds' % nameLength, data, offset )
         print "handleGetResource: name: '%s'" % name
 
         parts = resources.loadResource( name )
@@ -155,10 +315,15 @@ class Client(Int16StringReceiver):
 
 
     def handleKeepAlivePacket(self, data):
-        offset = 0
-        (packetType, ) = struct.unpack_from( '!H', data, offset )
-        offset += struct.calcsize('!H')
         print "handleKeepAlivePacket: TODO"
+
+
+    def broadcast (self, packetType, data):
+        """Send the packet to all clients."""
+        dataLength = len(data)
+        print "broadcast: packet type: %s, data length: %d" % ( TcpPacket.name(packetType), dataLength)
+        for clientId, client in self.clients.iteritems():
+            client.send( packetType, data )
 
 
     def send (self, packetType, data=None):
@@ -178,12 +343,4 @@ class Client(Int16StringReceiver):
 
         self.statistics.tcpBytesSent += 2 + packetLength
         self.statistics.tcpPacketsSent += 1
-
-
-
-    def broadcast (self, packetType, data):
-        """Send the packet to all clients."""
-        dataLength = len(data)
-        print "broadcast: packet type: %s, data length: %d" % ( TcpPacket.name(packetType), dataLength)
-        for clientId, client in self.clients.iteritems():
-            client.send( packetType, data )
+        self.statistics.tcpLastSent = datetime.datetime.now()

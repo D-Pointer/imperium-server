@@ -679,8 +679,8 @@ void Player::broadcastGameAdded (const SharedGame &game) {
     buffers.push_back( boost::asio::buffer( &netScenarioId, sizeof( unsigned short )));
 
     // name length
-    unsigned short netnameLength = htons( m_name.length());
-    buffers.push_back( boost::asio::buffer( &netnameLength, sizeof( unsigned short )));
+    unsigned short netNameLength = htons( m_name.length());
+    buffers.push_back( boost::asio::buffer( &netNameLength, sizeof( unsigned short )));
 
     // raw name
     buffers.push_back( boost::asio::buffer( &m_name[0], m_name.length()));

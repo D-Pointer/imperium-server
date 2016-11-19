@@ -8,7 +8,7 @@ class ClientFactory(Factory):
 
     def __init__(self, authManager):
         self.clients = {}
-        self.games = []
+        self.games = {}
         self.authManager = authManager
 
 
