@@ -14,13 +14,14 @@ class Client(Int16StringReceiver):
 
     nextId = 0
 
-    def __init__ (self, clients, games, authManager):
+    def __init__ (self, clients, games, authManager, reactor):
         self.id = Client.nextId
         Client.nextId += 1
 
         self.clients = clients
         self.games = games
         self.authManager = authManager
+        self.reactor = reactor
 
         # not yet logged in
         self.loggedIn = False
@@ -47,7 +48,7 @@ class Client(Int16StringReceiver):
             TcpPacket.DATA: self.handleData,
             TcpPacket.READY_TO_START: self.handleReadyToStart,
             TcpPacket.GET_RESOURCE_PACKET: self.handleGetResource,
-            TcpPacket.KEEPALIVE_PACKET: self.handleKeepAlivePacket,
+            TcpPacket.KEEP_ALIVE_PACKET: self.handleKeepAlivePacket,
         }
 
 
@@ -73,8 +74,9 @@ class Client(Int16StringReceiver):
 
     def stringReceived(self, string):
         # get the first byte, the packet type
+        print "stringReceived: bytes: %d" % len(string)
         (packetType, ) = struct.unpack_from( '!H', string, 0 )
-        print "stringReceived: packet type: %d, name: %s, bytes: %d" % (packetType, TcpPacket.name(packetType), len(string))
+        print "stringReceived: packet type: %d, name: %s" % (packetType, TcpPacket.name(packetType))
 
         # find a handler to handle the real packet
         if not self.handlers.has_key( packetType ):
@@ -99,7 +101,7 @@ class Client(Int16StringReceiver):
 
     def handleLogin(self, data):
         offset = 0
-        (protocol, nameLength) = struct.unpack_from( '!HHH', data, offset )
+        (protocol, nameLength) = struct.unpack_from( '!HH', data, offset )
         offset += struct.calcsize('!HH')
 
         if protocol != definitions.protocolVersion:
@@ -125,7 +127,7 @@ class Client(Int16StringReceiver):
 
         # name taken?
         for player in self.clients.values():
-            if player != self and player.name == name:
+            if player != self and player.name == self.name:
                 self.send( TcpPacket.NAME_TAKEN )
                 return
 
@@ -151,7 +153,11 @@ class Client(Int16StringReceiver):
         # broadcast the changed player count
         self.broadcast( TcpPacket.PLAYER_COUNT_PACKET, struct.pack( '!H', len(self.clients)) )
 
-        # TODO: send all games to this player
+        # send all games to this player
+        for gameId, game in self.games.iteritems():
+            ownerName = game.player1.name
+            data = struct.pack( '!IHH%ds' % len(ownerName), gameId, game.scenarioId, len(ownerName), ownerName )
+            self.send( TcpPacket.GAME_ADDED, data )
 
 
     def handleAnnounce (self, data):
@@ -206,8 +212,8 @@ class Client(Int16StringReceiver):
         opponent = game.player1
 
         # set up UDP handlers
-        self.udpHandler = UdpHandler()
-        opponent.udpHandler = UdpHandler()
+        self.udpHandler = UdpHandler( self.reactor )
+        opponent.udpHandler = UdpHandler( self.reactor )
 
         # the opponent is player 1, send its UDP port and our name
         dataTo1 = struct.pack( '!HH%ds' % len(self.name), opponent.udpHandler.getLocalPort(), len(self.name), self.name )

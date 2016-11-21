@@ -25,7 +25,7 @@ simulator = None
 udpSocket = None
 udpAddress = None
 
-PROTOCOL_VERSION = 0
+PROTOCOL_VERSION = 1
 
 UDP_TYPE_TEXT = 0
 UDP_TYPE_TEST = 1
@@ -141,10 +141,10 @@ def readUdpPackets(udpSocket):
                                 unit.morale = max( 0, unit.morale - targetMoraleChange )
 
             elif subPacketType == packet.Packet.UDP_DATA_MELEE:
-                (attackerId, targetId, type, casualties, targetMoraleChange ) = struct.unpack_from('>hhBBh', data, offset)
+                (attackerId, targetId, missionType, casualties, targetMoraleChange ) = struct.unpack_from('>hhBBh', data, offset)
                 offset += struct.calcsize('>hhBBh')
                 targetMoraleChange /= 10.0
-                print "    %d melees with %d, target %d lost %d men, type: %d, target morale: %.1f" % (attackerId, targetId, casualties, type, targetMoraleChange)
+                print "    %d melees with %d, target lost %d men, type: %d, target morale: %.1f" % (attackerId, targetId, casualties, type, targetMoraleChange)
                 for unit in units:
                     if unit.id == targetId:
                         unit.mission = missionType
@@ -230,8 +230,8 @@ def handleAlreadyAnnounced():
 
 
 def handleGameAdded(data):
-    (gameId, scenarioid, nameLength) = struct.unpack_from('>Ihh', data, 0)
-    (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>Ihh'))
+    (gameId, scenarioid, nameLength) = struct.unpack_from('>IHH', data, 0)
+    (playerName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>IHH'))
     print "### game added by %s, id: %d, scenario: %d" % (playerName, gameId, scenarioid)
 
 
@@ -245,8 +245,8 @@ def handleNoGame():
 
 
 def handleGameJoined(data):
-    (udpPort, nameLength,) = struct.unpack_from('>hh', data, 0)
-    (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>hh'))
+    (udpPort, nameLength,) = struct.unpack_from('>HH', data, 0)
+    (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>HH'))
     print "### game joined, UDP server: %s:%d, opponent: %s" % (server, udpPort, opponentName)
     print "### starting UDP thread"
 
@@ -540,8 +540,8 @@ def endGameDraw(sock):
     sock.send(packet.EndGameGamePacket( endType, total1, total2, lost1, lost2, objectives1, objectives2 ).message)
 
 
-def login(sock, name):
-    sock.send(packet.LoginPacket(PROTOCOL_VERSION, name).message)
+def login(sock, name, password):
+    sock.send(packet.LoginPacket(PROTOCOL_VERSION, name, password).message)
 
 
 def quit(sock):
@@ -570,15 +570,16 @@ def getInput(sock):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4 and len(sys.argv) != 5:
-        print "Usage: %s server port name [ssl]" % sys.argv[0]
+    if len(sys.argv) != 5 and len(sys.argv) != 6:
+        print "Usage: %s server port name password [ssl]" % sys.argv[0]
         exit(1)
 
     server = sys.argv[1]
     port = int(sys.argv[2])
     name = sys.argv[3]
+    password = sys.argv[4]
 
-    if len(sys.argv) == 5:
+    if len(sys.argv) == 6:
         useSsl = True
     else:
         useSsl = False
@@ -600,7 +601,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # log in
-    login(s, name)
+    login(s, name, password)
 
     # set up a thread to read packets
     thread.start_new_thread(readNextPacket, (s,))

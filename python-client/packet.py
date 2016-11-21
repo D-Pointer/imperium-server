@@ -30,7 +30,7 @@ class Packet:
     RESOURCE_PACKET = 23
     INVALID_RESOURCE_NAME_PACKET = 24
     INVALID_RESOURCE_PACKET = 25
-    KEEPALIVE_PACKET = 26
+    KEEP_ALIVE_PACKET = 26
     PLAYER_COUNT_PACKET = 27
 
     # TCP sub packets
@@ -81,18 +81,18 @@ class Packet:
         RESOURCE_PACKET: 'RESOURCE_PACKET',
         INVALID_RESOURCE_NAME_PACKET: 'INVALID_RESOURCE_NAME_PACKET',
         INVALID_RESOURCE_PACKET: 'INVALID_RESOURCE_PACKET',
-        KEEPALIVE_PACKET: 'KEEPALIVE_PACKET',
+        KEEP_ALIVE_PACKET: 'KEEP_ALIVE_PACKET',
         PLAYER_COUNT_PACKET: 'PLAYER_COUNT_PACKET'
     }
 
     # precalculated data lengths
-    headerLength = struct.calcsize('>hh')
+#    headerLength = struct.calcsize('>hh')
     shortLength = struct.calcsize('>h')
 
-    @staticmethod
-    def parseHeader(data):
-        """Returns a (length, type) tuple."""
-        return struct.unpack_from('>hh', data, 0)
+#    @staticmethod
+#    def parseHeader(data):
+#        """Returns a (length, type) tuple."""
+#        return struct.unpack_from('>hh', data, 0)
 
     @staticmethod
     def readRawPacket(sock):
@@ -101,13 +101,18 @@ class Packet:
 
         while len(data) != Packet.shortLength * 2:
             tmp = sock.recv(Packet.shortLength * 2 - len(data))
+            #tmp = sock.recv( Packet.shortLength )
             if not tmp:
                 return None
 
             data += tmp
 
-        (packetType, length,) = struct.unpack('>hh', data)
-        # print "packet type: %d, length: %d" % (packetType, length)
+        (length, packetType,) = struct.unpack('!HH', data)
+
+        # the length contains the packet type which we've already read, so skip that
+        length -= Packet.shortLength
+
+        print "packet type: %d, length: %d" % (packetType, length)
 
         data = ''
         while len(data) != length:
@@ -128,28 +133,31 @@ def name(packetType):
 
 
 class LoginPacket(Packet):
-    def __init__(self, protocolVersion, name):
+    def __init__(self, protocolVersion, name, password):
         nameLength = len(name)
-        packetLength = struct.calcsize('>hh') + nameLength
-        self.message = struct.pack('>hhhh%ds' % nameLength, Packet.LOGIN, packetLength, protocolVersion, nameLength, name)
+        passLength = len(password)
+        packetLength = struct.calcsize('>hhhh') + nameLength + passLength
+        self.message = struct.pack('>hhhh%dsh%ds' % (nameLength, passLength), packetLength, Packet.LOGIN, protocolVersion, nameLength, name, passLength, password)
 
 
 class AnnounceGamePacket(Packet):
     def __init__(self, scenarioId):
         # create the message
-        self.message = struct.pack('>hhh', Packet.ANNOUNCE, Packet.shortLength, scenarioId)
+        length = struct.calcsize('>hh')
+        self.message = struct.pack('>hhh', length, Packet.ANNOUNCE, scenarioId)
 
 
 class LeaveGamePacket(Packet):
     def __init__(self):
         # create the message
-        self.message = struct.pack('>hh', Packet.LEAVE_GAME, 0)
+        length = struct.calcsize('>h')
+        self.message = struct.pack('>hh', length, Packet.LEAVE_GAME )
 
 
 class JoinGamePacket(Packet):
     def __init__(self, id):
-        length = struct.calcsize('>I')
-        self.message = struct.pack('>hhI', Packet.JOIN_GAME, length, id)
+        length = struct.calcsize('>hI')
+        self.message = struct.pack('>hhI', length, Packet.JOIN_GAME, id)
 
 
 class DataPacket(Packet):

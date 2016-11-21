@@ -16,7 +16,7 @@ class UdpHandler (DatagramProtocol):
 
 
     def startProtocol(self):
-        print "start protocol"
+        print "start UDP protocol"
         # host = "192.168.1.1"
         # port = 1234
         #
@@ -26,19 +26,19 @@ class UdpHandler (DatagramProtocol):
 
 
     def datagramReceived(self, data, addr):
-        print("received %r from %s" % (data, addr))
+        print("received %d bytes from %s" % (len(data), addr))
 
 
     def cleanup (self):
         print "cleanup"
-        self.transport.close()
+        self.transport.loseConnection()
         if self.socket:
             self.socket.close()
             self.socket = None
 
 
     def getLocalPort(self):
-        self.port
+        return self.socket.getsockname()[ 1 ]
 
 
     def sendStartPackets (self):
