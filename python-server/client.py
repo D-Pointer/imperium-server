@@ -215,6 +215,10 @@ class Client(Int16StringReceiver):
         self.udpHandler = UdpHandler( self.reactor )
         opponent.udpHandler = UdpHandler( self.reactor )
 
+        # let the UDP handlers know about each other
+        self.udpHandler.opponent = opponent
+        opponent.opponent = self.udpHandler
+
         # the opponent is player 1, send its UDP port and our name
         dataTo1 = struct.pack( '!HH%ds' % len(self.name), opponent.udpHandler.getLocalPort(), len(self.name), self.name )
         opponent.send( TcpPacket.GAME_JOINED, dataTo1 )
