@@ -1,9 +1,9 @@
 
 import datetime
 
-class Game:
+import game_id_sequence
 
-    nextId = 0
+class Game:
 
     def __init__ (self, player1, scenarioId):
         # we have the first player now
@@ -11,8 +11,7 @@ class Game:
         self.player2 = None
         self.scenarioId = scenarioId
 
-        self.id = Game.nextId
-        Game.nextId += 1
+        self.id = game_id_sequence.getNextGameId()
 
         # the game was announced now
         self.created = datetime.datetime.now()

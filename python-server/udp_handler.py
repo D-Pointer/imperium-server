@@ -2,13 +2,17 @@
 from twisted.internet.protocol import DatagramProtocol
 import socket
 import struct
+import logging
+
 import udp_packet
 
 class UdpHandler (DatagramProtocol):
 
     PACKET_TYPE_SIZE = struct.calcsize( '!B' )
 
-    def __init__(self, reactor):
+    def __init__(self, logger, reactor):
+        self.logger = logger
+
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         # Make the port non-blocking and start it listening on any port
@@ -26,7 +30,7 @@ class UdpHandler (DatagramProtocol):
 
 
     def startProtocol(self):
-        print "start UDP protocol"
+        self.logger.info( "start UDP protocol" )
         # host = "192.168.1.1"
         # port = 1234
         #
@@ -36,7 +40,8 @@ class UdpHandler (DatagramProtocol):
 
 
     def datagramReceived(self, data, addr):
-        print("received %d bytes from %s" % (len(data), addr))
+        self.logger.debug("received %d bytes from %s", len(data), addr )
+
         # save the address if needed
         if self.address == None:
             self.address = addr
@@ -47,16 +52,20 @@ class UdpHandler (DatagramProtocol):
 
         if packetType == udp_packet.UdpPacket.PING:
             timestamp, = struct.unpack_from( '!I', data, offset )
-            print "sending pong to %s:%d for timestamp %d" % (addr[0], addr[1], timestamp )
+            self.logger.debug( "sending pong to %s:%d for timestamp %d", addr[0], addr[1], timestamp )
             response = struct.pack( '!BI', udp_packet.UdpPacket.PONG, timestamp )
             self.transport.write( response, addr )
 
         elif packetType == udp_packet.UdpPacket.DATA:
-            self.opponent.transport.write( data, self.opponent.address )
+            # precautions
+            if not self.opponent.address:
+                self.logger.warn( "no opponent UDP handler yet" )
+            else:
+                self.opponent.transport.write( data, self.opponent.address )
 
 
     def cleanup (self):
-        print "cleaning up UDP connection to %s:%d" % self.address
+        self.logger.debug( "cleaning up UDP connection to %s:%d", self.address[0], self.address[1] )
         #self.transport.loseConnection()
         if self.socket:
             self.socket.close()
@@ -71,4 +80,4 @@ class UdpHandler (DatagramProtocol):
 
 
     def sendStartPackets (self):
-        print "sendStartPackets: send to us and opponent"
+        self.logger.debug("TODO: send to us and opponent" )

@@ -1,5 +1,6 @@
 
 import sys
+import logging
 
 class AuthManager:
 
@@ -8,7 +9,7 @@ class AuthManager:
         try:
             self.password = open("password.txt").read().strip()
         except:
-            print "AuthManager.init: failed to read the password file, exiting"
+            logging.critical("failed to read the password file, exiting" )
             sys.exit( 1 )
 
 

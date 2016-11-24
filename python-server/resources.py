@@ -1,19 +1,20 @@
 
 import os.path
 
-resourceDir = "/Users/chakie/Prog/imperium-server/run/resources/"
+resourceDir = "resources/"
 resourcePartSize = 65000
 
-def loadResource (filename):
+
+def loadResource (filename, logger):
     path = resourceDir + filename
 
     # do we have such a resource?
     if not os.path.exists( path ):
-        print "loadResource: resource %s not found" % filename
+        logger.warning( "resource %s not found: %s", filename )
         return None
 
     try:
-        print "loadResource: loading resource %s" % filename
+        logger.warning( "loading resource: %s", filename )
         data = open( path, "rb").read()
 
         # split up into an array of suitable parts
@@ -21,5 +22,5 @@ def loadResource (filename):
         return parts
 
     except:
-        print "loadResource: failed to read %s" % filename
+        logger.error( "failed to read resource: %s", filename )
         return None
