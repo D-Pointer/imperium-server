@@ -2,7 +2,7 @@
 from twisted.internet.protocol import DatagramProtocol
 import socket
 import struct
-import logging
+import datetime
 
 import udp_packet
 
@@ -10,7 +10,8 @@ class UdpHandler (DatagramProtocol):
 
     PACKET_TYPE_SIZE = struct.calcsize( '!B' )
 
-    def __init__(self, logger, reactor):
+    def __init__(self, statistics, logger, reactor):
+        self.statistics = statistics
         self.logger = logger
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,12 +32,6 @@ class UdpHandler (DatagramProtocol):
 
     def startProtocol(self):
         self.logger.info( "start UDP protocol" )
-        # host = "192.168.1.1"
-        # port = 1234
-        #
-        # self.transport.connect(host, port)
-        # print(("now we can only send to host %s port %d" % (host, port)))
-        # self.transport.write(b"hello")  # no need for address
 
 
     def datagramReceived(self, data, addr):
@@ -56,6 +51,14 @@ class UdpHandler (DatagramProtocol):
             response = struct.pack( '!BI', udp_packet.UdpPacket.PONG, timestamp )
             self.transport.write( response, addr )
 
+            # update statistics
+            self.statistics.lock()
+            self.statistics.udpBytesReceived += len(data)
+            self.statistics.udpBytesSent += len(response)
+            self.statistics.udpLastReceived = datetime.datetime.now()
+            self.statistics.udpLastSent = self.statistics.udpLastReceived
+            self.statistics.release()
+
         elif packetType == udp_packet.UdpPacket.DATA:
             # precautions
             if not self.opponent.address:
@@ -63,10 +66,23 @@ class UdpHandler (DatagramProtocol):
             else:
                 self.opponent.transport.write( data, self.opponent.address )
 
+                # update statistics
+                self.statistics.lock()
+                self.statistics.udpPacketsReceived += 1
+                self.statistics.udpBytesReceived += len(data)
+                self.statistics.udpLastReceived = datetime.datetime.now()
+                self.statistics.release()
+
+                # opponent stats
+                self.opponent.statistics.lock()
+                self.opponent.statistics.udpPacketsSent += 1
+                self.opponent.statistics.udpBytesSent += len(data)
+                self.opponent.statistics.udpLastSent = self.statistics.udpLastReceived
+                self.opponent.statistics.release()
+
 
     def cleanup (self):
         self.logger.debug( "cleaning up UDP connection to %s:%d", self.address[0], self.address[1] )
-        #self.transport.loseConnection()
         if self.socket:
             self.socket.close()
             self.socket = None

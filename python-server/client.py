@@ -216,8 +216,8 @@ class Client(Int16StringReceiver):
         opponent = game.player1
 
         # set up UDP handlers
-        self.udpHandler = UdpHandler( self.logger, self.reactor )
-        opponent.udpHandler = UdpHandler( self.logger, self.reactor )
+        self.udpHandler = UdpHandler( self.statistics, self.logger, self.reactor )
+        opponent.udpHandler = UdpHandler( opponent.statistics, self.logger, self.reactor )
 
         # let the UDP handlers know about each other
         self.udpHandler.opponent = opponent
@@ -343,6 +343,8 @@ class Client(Int16StringReceiver):
 
 
     def send (self, packetType, data=None):
+        packetLength = 0
+
         if data != None:
             dataLength = len(data)
             packetLength = struct.calcsize( '!H' ) + dataLength
@@ -350,13 +352,13 @@ class Client(Int16StringReceiver):
             self.transport.write( struct.pack( '!HH', packetLength, packetType) )
             self.transport.write( data )
 
-            self.statistics.tcpBytesSent += 2 + packetLength
-
         else:
             self.logger.debug( "sending empty packet of type: %s", TcpPacket.name(packetType) )
             packetLength = struct.calcsize( '!H' )
             self.transport.write( struct.pack( '!HH', packetLength, packetType) )
 
-        self.statistics.tcpBytesSent += 2 + packetLength
+        self.statistics.lock()
         self.statistics.tcpPacketsSent += 1
+        self.statistics.tcpBytesSent += 2 + packetLength
         self.statistics.tcpLastSent = datetime.datetime.now()
+        self.statistics.release()

@@ -1,4 +1,6 @@
 
+import threading
+
 class Statistics:
 
     def __init__(self):
@@ -23,3 +25,15 @@ class Statistics:
         self.udpPacketsReceived = 0
         self.udpBytesReceived = 0
         self.udpLastReceived = None
+
+        # create a lock
+        self.lock = threading.Lock()
+
+
+    def lock (self):
+        self.lock.acquire()
+
+
+    def release (self):
+        self.lock.release()
+
