@@ -71,6 +71,12 @@ class Client(Int16StringReceiver):
 
         self.logger.info( "client disconnected, now left %d", len(self.clients) )
 
+        # do we have a game?
+        if self.game and self.game.hasStarted():
+            self.logger.debug( "writing game statistics" )
+            self.game.ended = datetime.datetime.now()
+            self.saveStatistics()
+
         self.game = None
         if self.udpHandler:
             self.udpHandler.cleanup()
@@ -299,6 +305,9 @@ class Client(Int16StringReceiver):
             self.logger.debug( "handleReadyToStart: opponent also ready to start, sending start packets" )
             self.udpHandler.sendStartPackets()
 
+            # the game has started now
+            self.game.started = datetime.datetime.now()
+
 
     def handleGetResource(self, data):
         offset = 0
@@ -362,3 +371,35 @@ class Client(Int16StringReceiver):
         self.statistics.tcpBytesSent += 2 + packetLength
         self.statistics.tcpLastSent = datetime.datetime.now()
         self.statistics.release()
+
+
+    def saveStatistics (self):
+        if not self.game:
+            self.logger.warning( "no game, can not save statistics" )
+            return
+
+        filename = 'games/%d.txt' % self.game.id
+
+        try:
+            file = open( filename, 'w')
+            file.write( 'game %d\n' % self.game.id )
+            file.write( 'scenario %d\n' % self.game.scenarioId )
+            file.write( 'created %d\n' % self.game.created.isoformat( ' '))
+
+            if self.game.started:
+                file.write('started %d\n' % self.game.started.isoformat(' '))
+            else:
+                file.write('started -\n')
+
+            if self.game.ended:
+                file.write('ended %d\n' % self.game.ended.isoformat(' '))
+            else:
+                file.write('ended -\n')
+
+            # player 1 stats
+            stats1 = self.game.player1.statistics
+
+            stats2 = self.game.player2.statistics
+
+        except OSError:
+            self.logger.error( "failed to write to statistics file: %s", filename )
