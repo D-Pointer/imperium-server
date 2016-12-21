@@ -27,13 +27,13 @@ class Statistics:
         self.udpLastReceived = None
 
         # create a lock
-        self.lock = threading.Lock()
+        self.threadLock = threading.Lock()
 
 
     def lock (self):
-        self.lock.acquire()
+        self.threadLock.acquire()
 
 
     def release (self):
-        self.lock.release()
+        self.threadLock.release()
 

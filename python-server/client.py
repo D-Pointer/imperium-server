@@ -77,6 +77,9 @@ class Client(Int16StringReceiver):
             self.game.ended = datetime.datetime.now()
             self.saveStatistics()
 
+        # back to old logger
+        self.logger = logging.getLogger( "client-%d" % self.id )
+
         self.game = None
         if self.udpHandler:
             self.udpHandler.cleanup()
@@ -84,13 +87,13 @@ class Client(Int16StringReceiver):
 
     def stringReceived(self, string):
         # get the first byte, the packet type
-        self.logger.debug( "stringReceived: bytes: %d", len(string) )
+        #self.logger.debug( "stringReceived: bytes: %d", len(string) )
         (packetType, ) = struct.unpack_from( '!H', string, 0 )
-        self.logger.debug( "packet type: %d, name: %s", packetType, TcpPacket.name(packetType) )
+        self.logger.debug( "received packet type: %d, name: %s", packetType, TcpPacket.name(packetType) )
 
         # find a handler to handle the real packet
         if not self.handlers.has_key( packetType ):
-            self.logger.error( "invalid packet type: %d", packetType )
+            self.logger.error( "received invalid packet type: %d", packetType )
             self.transport.loseConnection()
             return
 
@@ -104,7 +107,7 @@ class Client(Int16StringReceiver):
             self.statistics.tcpPacketsReceived += 1
             self.statistics.tcpLastR = datetime.datetime.now()
         except:
-            self.logger.error( "stringReceived: failed to execute handler for packet %d", packetType )
+            self.logger.error( "failed to execute handler for packet %d", packetType )
             self.transport.loseConnection()
             raise
 
@@ -185,6 +188,9 @@ class Client(Int16StringReceiver):
         self.game = Game( self, scenarioId )
         self.games[ self.game.id ] = self.game
         self.logger.info( "announced game %d, scenario: %d", self.game.id, self.game.scenarioId )
+
+        # new game logger
+        self.logger = logging.getLogger( "client-%d-%d" % (self.id, self.game.id ) )
 
         # send the game to the client
         self.send( TcpPacket.ANNOUNCE_OK, struct.pack( '!I', self.game.id) )
@@ -267,6 +273,9 @@ class Client(Int16StringReceiver):
             del( self.games[ self.game.id ] )
             self.game = None
 
+            # back to old logger
+            self.logger = logging.getLogger( "client-%d" % self.id )
+
         else:
             # not started, so it's still looking for players, broadcast the removal to all players
             self.broadcast( TcpPacket.GAME_REMOVED, struct.pack( '!I', self.game.id ) )
@@ -323,7 +332,7 @@ class Client(Int16StringReceiver):
         (name, ) = struct.unpack_from( '!%ds' % nameLength, data, offset )
         self.logger.debug( "sending resource: '%s'", name )
 
-        parts = resources.loadResource( name, self.logger )
+        totalLength, parts = resources.loadResource( name, self.logger )
         if parts == None or len(parts) == 0:
             # invalid resource
             self.send( TcpPacket.INVALID_RESOURCE_PACKET )
@@ -335,7 +344,7 @@ class Client(Int16StringReceiver):
         for part in parts:
             partLength = len(part)
             self.logger.debug( "part %d, length: %d, parts: %d", partIndex, partLength, partCount )
-            self.send( TcpPacket.RESOURCE_PACKET, struct.pack( '!H%dsIBB' % nameLength, nameLength, name, len(part), partIndex, partCount ) )
+            self.send( TcpPacket.RESOURCE_PACKET, struct.pack( '!H%dsIBBH%ds' % (nameLength, partLength), nameLength, name, totalLength, partIndex, partCount, partLength, part ) )
             partIndex += 1
 
 
@@ -376,6 +385,11 @@ class Client(Int16StringReceiver):
     def saveStatistics (self):
         if not self.game:
             self.logger.warning( "no game, can not save statistics" )
+            return
+
+        # are we player 1? only the first player saves the statistics
+        if self.game.player1 != self:
+            # not player 1
             return
 
         filename = 'games/%d.txt' % self.game.id
