@@ -398,22 +398,38 @@ class Client(Int16StringReceiver):
             file = open( filename, 'w')
             file.write( 'game %d\n' % self.game.id )
             file.write( 'scenario %d\n' % self.game.scenarioId )
-            file.write( 'created %d\n' % self.game.created.isoformat( ' '))
+            file.write( 'created %s\n' % self.game.created.isoformat( ' '))
 
             if self.game.started:
-                file.write('started %d\n' % self.game.started.isoformat(' '))
+                file.write('started %s\n' % self.game.started.isoformat(' '))
             else:
                 file.write('started -\n')
 
             if self.game.ended:
-                file.write('ended %d\n' % self.game.ended.isoformat(' '))
+                file.write('ended %s\n' % self.game.ended.isoformat(' '))
+                file.write('duration %d\n' % (self.game.ended - self.game.started).seconds )
             else:
                 file.write('ended -\n')
+                file.write('duration -\n')
+
+            file.write( 'player1 %s\n' % self.game.player1.name )
+            file.write( 'player2 %s\n' % self.game.player2.name )
 
             # player 1 stats
             stats1 = self.game.player1.statistics
-
             stats2 = self.game.player2.statistics
+            file.write('tcpPacketsSent %d %d\n' % (stats1.tcpPacketsSent, stats2.tcpPacketsSent ))
+            file.write('tcpBytesSent %d %d\n' % (stats1.tcpBytesSent, stats2.tcpBytesSent ))
+            file.write('tcpLastSent %d %d\n' % (stats1.tcpLastSent, stats2.tcpLastSent ))
+            file.write('tcpPacketsReceived %d %d\n' % (stats1.tcpPacketsReceived, stats2.tcpPacketsReceived ))
+            file.write('tcpBytesReceived %d %d\n' % (stats1.tcpBytesReceived, stats2.tcpBytesReceived ))
+            file.write('tcpLastReceived %d %d\n' % (stats1.tcpLastReceived, stats2.tcpLastReceived ))
+            file.write('udpPacketsSent %d %d\n' % (stats1.udpPacketsSent, stats2.udpPacketsSent ))
+            file.write('udpBytesSent %d %d\n' % (stats1.udpBytesSent, stats2.udpBytesSent ))
+            file.write('udpLastSent %d %d\n' % (stats1.udpLastSent, stats2.udpLastSent ))
+            file.write('udpPacketsReceived %d %d\n' % (stats1.udpPacketsReceived, stats2.udpPacketsReceived ))
+            file.write('udpBytesReceived %d %d\n' % (stats1.udpBytesReceived, stats2.udpBytesReceived ))
+            file.write('udpLastReceived %d %d\n' % (stats1.udpLastReceived, stats2.udpLastReceived ))
 
         except OSError:
             self.logger.error( "failed to write to statistics file: %s", filename )
