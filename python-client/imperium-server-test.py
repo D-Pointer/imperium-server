@@ -14,7 +14,11 @@ from unit import Unit
 from simulator import Simulator
 
 server = None
-port = -1
+
+# index in a game, 0 or 1
+playerIndex = -1
+
+# player id at the server, 0..n
 playerId = -1
 
 # player army
@@ -41,9 +45,9 @@ TIMEOUT = 3
 
 
 def sendUdpPingPackets(udpSocket, udpAddress):
-    for index in range(10):
+    for index in range(2):
         print "+++ sending UDP ping #%d" % (index + 1)
-        udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
+        udpSocket.sendto(packet.UdpPingPacket(playerId).message, udpAddress)
         time.sleep( 1 )
 
 
@@ -51,7 +55,7 @@ def readUdpPackets(udpSocket):
     print "--- reading UDP packets"
 
     # all received packet ids
-    receivedIds = set();
+    receivedIds = set()
 
     while udpKeepRunning:
         try:
@@ -245,15 +249,14 @@ def handleNoGame():
 
 
 def handleGameJoined(data):
-    (udpPort, nameLength,) = struct.unpack_from('>HH', data, 0)
-    (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>HH'))
-    print "### game joined, UDP server: %s:%d, opponent: %s" % (server, udpPort, opponentName)
+    global playerId
+    (playerId, nameLength,) = struct.unpack_from('>IH', data, 0)
+    (opponentName,) = struct.unpack_from('%ds' % nameLength, data, struct.calcsize('>IH'))
+    print "### game joined, our id: %d, opponent: %s" % (playerId, opponentName)
     print "### starting UDP thread"
 
-    global udpAddress, udpSocket, udpKeepRunning
+    global udpKeepRunning
     udpKeepRunning = True
-    udpAddress = (server, udpPort)
-    udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     thread.start_new_thread(readUdpPackets, (udpSocket,))
 
     # send an initial "ping" to open up the connection so that the server knows our port
@@ -264,7 +267,7 @@ def handleGameJoined(data):
     global units
     units = []
     for baseId in range( 10 ):
-        units.append( Unit( playerId, baseId ))
+        units.append( Unit( playerIndex, baseId ))
     print "created %d units" % len( units )
 
 
@@ -332,16 +335,6 @@ def handleData(data, sock):
         print "### unknown TCP sub packet type: %d" % subPacketType
 
 
-def handleResource(data):
-    (dataLength,) = struct.unpack_from('>h', data, 0)
-    (data,) = struct.unpack_from('%ds' % dataLength, data, struct.calcsize('>h'))
-    print "### resoure data:\n%s\n" % data
-
-
-def handleInvalidResource(data):
-     print "### invalid resource"
-
-
 def handlePlayerCount(data):
     (playerCount,) = struct.unpack_from('>h', data, 0)
     print "### current player count: %d" % playerCount
@@ -395,12 +388,6 @@ def readNextPacket(sock):
         elif receivedType == packet.Packet.DATA:
             handleData(data, sock)
 
-        elif receivedType == packet.Packet.RESOURCE_PACKET:
-            handleResource(data)
-
-        elif receivedType == packet.Packet.INVALID_RESOURCE_PACKET:
-            handleInvalidResource(data)
-
         elif receivedType == packet.Packet.PLAYER_COUNT_PACKET:
             handlePlayerCount(data)
 
@@ -421,8 +408,8 @@ def announceGame(sock):
     sock.send(packet.AnnounceGamePacket(scenarioId).message)
 
     # we're player 1
-    global playerId
-    playerId = 0
+    global playerIndex
+    playerIndex = 0
 
 
 def joinGame(sock):
@@ -432,8 +419,8 @@ def joinGame(sock):
     sock.send(packet.JoinGamePacket(gameId).message)
 
     # we're player 2
-    global playerId
-    playerId = 1
+    global playerIndex
+    playerIndex = 1
 
 
 def leaveGame(sock):
@@ -446,7 +433,18 @@ def leaveGame(sock):
 def pingServer(sock):
     print ''
     print 'Sending ping'
-    udpSocket.sendto(packet.UdpPingPacket().message, udpAddress)
+    udpSocket.sendto(packet.UdpPingPacket(playerId).message, udpAddress)
+
+
+def sendTcpData(sock):
+    print ''
+    value = raw_input("Data to send over TCP: ")
+    sock.send(packet.DataPacket(value).message)
+
+def sendUdpData(sock):
+    print ''
+    value = raw_input("Data to send over UDP: ")
+    udpSocket.sendto(packet.UdpDataPacket(playerId, value).message, udpAddress)
 
 
 #def sendTcpDataPacket(sock):
@@ -493,7 +491,7 @@ def pingServer(sock):
 #     sock.send(packet.GetResourcePacket(data).message)
 
 def endGameWin(sock):
-    if playerId == 0:
+    if playerIndex == 0:
         endType = PLAYER2_DESTROYED
     else:
         endType = PLAYER1_DESTROYED
@@ -509,7 +507,7 @@ def endGameWin(sock):
 
 
 def endGameLoss(sock):
-    if playerId == 0:
+    if playerIndex == 0:
         endType = PLAYER1_DESTROYED
     else:
         endType = PLAYER2_DESTROYED
@@ -525,7 +523,7 @@ def endGameLoss(sock):
 
 
 def endGameDraw(sock):
-    if playerId == 0:
+    if playerIndex == 0:
         endType = PLAYER1_DESTROYED
     else:
         endType = PLAYER2_DESTROYED
@@ -558,11 +556,13 @@ def getInput(sock):
         print '2: join a game'
         print '3: leave a game'
         print '4: ping'
-        print '5: end game with win'
-        print '6: end game with loss'
-        print '7: end game with draw'
+        print '5: send TCP data'
+        print '6: send UDP data'
+        print '7: end game with win'
+        print '8: end game with loss'
+        print '9: end game with draw'
 
-        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, endGameWin, endGameLoss, endGameDraw)
+        callbacks = (quit, announceGame, joinGame, leaveGame, pingServer, sendTcpData, sendUdpData, endGameWin, endGameLoss, endGameDraw)
         choice = getInputInteger('> ', 0, len(callbacks))
 
         # call the suitable handler
@@ -570,16 +570,17 @@ def getInput(sock):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 5 and len(sys.argv) != 6:
-        print "Usage: %s server port name password [ssl]" % sys.argv[0]
+    if len(sys.argv) != 6 and len(sys.argv) != 7:
+        print "Usage: %s server port udpPort name password [ssl]" % sys.argv[0]
         exit(1)
 
     server = sys.argv[1]
     port = int(sys.argv[2])
-    name = sys.argv[3]
-    password = sys.argv[4]
+    udpPort = int(sys.argv[3])
+    name = sys.argv[4]
+    password = sys.argv[5]
 
-    if len(sys.argv) == 6:
+    if len(sys.argv) == 7:
         useSsl = True
     else:
         useSsl = False
@@ -599,6 +600,12 @@ if __name__ == '__main__':
         print 'Error connecting to the server, aborting'
         raise
         sys.exit(1)
+
+    #global udpAddress, udpSocket
+    udpAddress = (server, udpPort)
+    udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udpSocket.bind(('', 0))
+
 
     # log in
     login(s, name, password)

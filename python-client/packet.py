@@ -26,12 +26,8 @@ class Packet:
     GAME_ENDED = 19
     DATA = 20
     READY_TO_START = 21
-    GET_RESOURCE_PACKET = 22
-    RESOURCE_PACKET = 23
-    INVALID_RESOURCE_NAME_PACKET = 24
-    INVALID_RESOURCE_PACKET = 25
-    KEEP_ALIVE_PACKET = 26
-    PLAYER_COUNT_PACKET = 27
+    KEEP_ALIVE_PACKET = 22
+    PLAYER_COUNT_PACKET = 23
 
     # TCP sub packets
     SETUP_UNITS = 0
@@ -77,10 +73,6 @@ class Packet:
         GAME_ENDED: 'GAME_ENDED',
         DATA: 'DATA',
         READY_TO_START: 'READY_TO_START',
-        GET_RESOURCE_PACKET: 'GET_RESOURCE_PACKET',
-        RESOURCE_PACKET: 'RESOURCE_PACKET',
-        INVALID_RESOURCE_NAME_PACKET: 'INVALID_RESOURCE_NAME_PACKET',
-        INVALID_RESOURCE_PACKET: 'INVALID_RESOURCE_PACKET',
         KEEP_ALIVE_PACKET: 'KEEP_ALIVE_PACKET',
         PLAYER_COUNT_PACKET: 'PLAYER_COUNT_PACKET'
     }
@@ -112,7 +104,9 @@ class Packet:
         # the length contains the packet type which we've already read, so skip that
         length -= Packet.shortLength
 
-        print "packet type: %d, length: %d" % (packetType, length)
+        packetName = name(packetType)
+
+        #print "packet type: %d, name: %s, length: %d" % (packetType, packetName, length)
 
         data = ''
         while len(data) != length:
@@ -164,21 +158,14 @@ class DataPacket(Packet):
     def __init__(self, data):
         # create the message
         dataLength = len(data)
-        self.message = struct.pack('>hh%ds' % dataLength, Packet.DATA, dataLength, data)
+        packetLength = struct.calcsize('>h') + dataLength
+        self.message = struct.pack('>hh%ds' % dataLength, packetLength, Packet.DATA, data)
 
 
 class ReadyToStartPacket(Packet):
     def __init__(self):
         # create the message
         self.message = struct.pack('>hh', Packet.READY_TO_START, 0)
-
-
-class GetResourcePacket(Packet):
-    def __init__(self, resourceName):
-        # create the message
-        nameLength = len(resourceName)
-        length = struct.calcsize('>h') + nameLength
-        self.message = struct.pack('>hhh%ds' % nameLength, Packet.GET_RESOURCE_PACKET, length, nameLength, resourceName)
 
 
 class SendUnitsPacket(Packet):
@@ -206,17 +193,18 @@ class EndGameGamePacket(Packet):
 # UDP packets
 
 class UdpPingPacket(Packet):
-    def __init__(self):
+    def __init__(self, playerId):
         now = datetime.datetime.now()
         milliseconds = (now.day * 24 * 60 * 60 + now.second) * 1000 + now.microsecond / 1000
         # create the message
-        self.message = struct.pack('>BL', 0x0, milliseconds)
+        self.message = struct.pack('>BIL', 0x0, playerId, milliseconds)
 
 
 class UdpDataPacket(Packet):
-    def __init__(self, type, value):
+    def __init__(self, playerId, value):
+        dataLength = len( value )
         # create the message
-        self.message = struct.pack('>Bhh', 0x3, type, value)
+        self.message = struct.pack('>BI%ds' % dataLength, Packet.UDP_DATA & 0xff, playerId, value)
 
 
 class UdpMissionPacket(Packet):
