@@ -34,7 +34,7 @@ class Log {
 
     private func doLog(message: String, level: String, file: String, function: String) {
         let date = dateFormatter.string(from: Date())
-        var lastFile = (file as NSString).lastPathComponent
+        var lastFile = String(file.split(separator: "/").last ?? "invalid")
         if let pointPos = lastFile.index(of: ".") {
             lastFile = String(lastFile[lastFile.startIndex..<pointPos])
         }
