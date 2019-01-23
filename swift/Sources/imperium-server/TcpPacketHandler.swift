@@ -14,6 +14,7 @@ final class PacketHandler: ChannelInboundHandler {
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let packet = self.unwrapInboundIn(data)
+        
         do {
             try packet.handle(ctx: ctx, state: self.serverState)
         }
@@ -32,7 +33,12 @@ final class PacketHandler: ChannelInboundHandler {
     }
 
     public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        Log.error("error: \(error)")
+        if let player = self.getPlayer(ctx: ctx) {
+            Log.error("\(player) error: \(error)")
+        }
+        else {
+            Log.error("unknown player, error: \(error)")
+        }
 
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
@@ -44,37 +50,33 @@ final class PacketHandler: ChannelInboundHandler {
         let remoteAddress = ctx.remoteAddress!
         let channel = ctx.channel
 
-        Log.debug("channel active: \(remoteAddress)")
-
         serverState.mutex.lock()
         defer {
             serverState.mutex.unlock()
         }
 
-        self.serverState.players[ObjectIdentifier(channel)] = Player(channel: channel)
-        Log.debug("players now: \(self.serverState.players.count)")
+        let player = Player(channel: channel)
+        self.serverState.players[ObjectIdentifier(channel)] = player
+        Log.debug("\(player) connected, players now: \(self.serverState.players.count)")
     }
 
 
     public func channelInactive(ctx: ChannelHandlerContext) {
-        let channel = ctx.channel
-        let id = ObjectIdentifier(channel)
+        let id = ObjectIdentifier(ctx.channel)
 
         serverState.mutex.lock()
         defer {
             serverState.mutex.unlock()
         }
 
-        guard let player = self.serverState.players[id] else {
+        guard let player = self.getPlayer(ctx: ctx) else {
             Log.error("no player found for id \(id)")
             return
         }
 
-        Log.debug("player inactive: \(player)")
-
-        self.serverState.players.removeValue(forKey: ObjectIdentifier(channel))
+        self.serverState.players.removeValue(forKey: ObjectIdentifier(ctx.channel))
         self.serverState.playerLookup.removeValue(forKey: player.id)
-        Log.debug("players now: \(self.serverState.players.count)")
+        Log.debug("\(player) disconnected, players now: \(self.serverState.players.count)")
 
         // does the player have a game?
         if let game = player.game {
@@ -106,6 +108,11 @@ final class PacketHandler: ChannelInboundHandler {
                 Statistics().save(game: game)
             }
         }
+    }
+
+    private func getPlayer(ctx: ChannelHandlerContext) -> Player? {
+        let id = ObjectIdentifier(ctx.channel)
+        return self.serverState.players[id]
     }
 }
 

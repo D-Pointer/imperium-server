@@ -1,0 +1,23 @@
+
+//
+// Prefix header for all source files of the project
+//
+
+#import <Availability.h>
+
+#ifdef __OBJC__
+
+// iOS SDK headers
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+// Cocos2D headers
+#import "cocos2d.h"
+
+#endif // __OBJC__
+
+
+// C++ header files
+#ifdef __cplusplus
+
+#endif // __cplusplus

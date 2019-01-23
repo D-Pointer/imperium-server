@@ -13,12 +13,15 @@ final class Game : Encodable, CustomStringConvertible {
         return players.first!
     }
 
+    // number of players ready to start
+    var readyToStart: Int = 0
+
     var started: Bool {
         return players.count == 2
     }
 
     var description: String {
-        return "[Game id:\(id) scenario:\(scenarioId) owner:\(players.first!.id)]"
+        return "[Game id:\(id) scenario:\(scenarioId) owner:\(players.first!.id)] ready:\(readyToStart)"
     }
 
     // times

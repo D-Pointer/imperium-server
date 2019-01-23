@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "imperium-server",
+    products: [
+        .executable(name: "imperium-server", targets: ["imperium-server"])
+    ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
 	.package(url: "https://github.com/apple/swift-nio.git", from: "1.0.0")

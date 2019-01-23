@@ -47,33 +47,32 @@ class ReadyToStartPacket : Packet {
             return
         }
 
-        // game starts now
-        game.startTime = Date()
-
         Log.info("\(player): ready to start game \(game)")
 
-        // TODO: not done!
-        
-        // send "announce ok"
-        var buffer = ctx.channel.allocator.buffer(capacity: 8)
-        buffer.write(integer: UInt16(6))
-        buffer.write(integer: PacketType.announceOkPacket.rawValue)
-        buffer.write(integer: game.id)
-        state.send(buffer: buffer, channel: ctx.channel)
+        // the player is now ready to start
+        game.readyToStart += 1
 
-        // send "game added"
-        let nameBytes: [UInt8] = Array(game.owner.name.utf8)
-        let length = 2 + 4 + 2 + 2 + nameBytes.count
-        var gameBuffer = ctx.channel.allocator.buffer(capacity: 2 + length)
-        gameBuffer.write(integer: UInt16(length))
-        gameBuffer.write(integer: PacketType.gameAddedPacket.rawValue)
-        gameBuffer.write(integer: UInt32(game.id))
-        gameBuffer.write(integer: game.scenarioId)
-        gameBuffer.write(integer: UInt16(nameBytes.count))
-        gameBuffer.write(bytes: nameBytes)
+        // is the other player also ready?
+        if game.readyToStart >= 2 {
+            // game starts now
+            Log.info("\(game): is starting")
+            game.startTime = Date()
 
-        state.send(buffer: gameBuffer, channels: state.players.map{ (key, value) in
-            return value.channel
-        })
+            // send a few "start" to both player
+            for _ in 0 ..< 5 {
+                try game.players.forEach{ player in
+                    guard let address = player.address else {
+                        Log.error("\(game): can not send start UDP packets, player \(player) has no address")
+                        throw PacketException.playerHasNoAddress
+                    }
+
+                    var buffer = ctx.channel.allocator.buffer(capacity: 2)
+                    buffer.write(integer: UdpPacketType.startActionPacket.rawValue)
+
+                    let envelope = AddressedEnvelope(remoteAddress: address, data: buffer)
+                    ctx.writeAndFlush(NIOAny(envelope), promise: nil)
+                }
+            }
+        }
     }
 }
