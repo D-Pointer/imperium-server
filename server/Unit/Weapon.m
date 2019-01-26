@@ -230,37 +230,6 @@
 }
 
 
-- (SoundType) firingSound {
-    switch (self.type) {
-        case kRifle:
-        case kRifleMk2:
-            return kInfantryFiring;
-
-        case kSniperRifle:
-            return kSniperFiring;
-
-        case kMachineGun:
-        case kSubmachineGun:
-            return kMachinegunFiring;
-
-        case kLightCannon:
-            return kArtilleryFiring;
-
-        case kHeavyCannon:
-            return kArtilleryFiring;
-
-        case kMortar:
-            return kMortarFiring;
-
-        case kHowitzer:
-            return kHowitzerFiring;
-
-        case kFlamethrower:
-            return kFlamethrowerFiring;
-    }
-}
-
-
 - (float) projectileSpeed {
     // meters per second
     switch (self.type) {
@@ -290,32 +259,6 @@
         case kFlamethrower:
             // no projectiles here
             return 0;
-    }
-}
-
-
-- (NSString *) projectileName {
-    switch (self.type) {
-        case kRifle:
-        case kRifleMk2:
-        case kSubmachineGun:
-        case kMachineGun:
-        case kSniperRifle:
-            return @"RifleBullet.png";
-
-        case kLightCannon:
-            return @"CannonBullet.png";
-
-        case kHeavyCannon:
-        case kHowitzer:
-            return @"CannonBullet.png";
-
-        case kMortar:
-            return @"MortarBullet.png";
-
-        case kFlamethrower:
-            // no projectiles here
-            return nil;
     }
 }
 

@@ -111,7 +111,7 @@
 //    return newFound;
 
     /*
-     CCArray * enemies = mover.owner == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
+      NSMutableArray * enemies = mover.owner == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
 
      MapLayer * map = [Globals sharedInstance].mapLayer;
 

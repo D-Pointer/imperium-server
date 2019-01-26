@@ -1,7 +1,7 @@
 #ifndef PATHNODE_H
 #define PATHNODE_H
 
-#import "cocos2d.h"
+
 
 typedef struct _position {
     int x;

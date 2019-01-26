@@ -24,15 +24,15 @@
 - (void) sendPingToServer;
 - (void) sendPingToPlayer;
 
-- (void) sendMissions:(CCArray *)units;
+- (void) sendMissions:( NSMutableArray *)units;
 
 - (void) sendSetMission:(MissionType)mission forUnit:(Unit *)unit;
 
-- (void) sendUnitStats:(CCArray *)units;
+- (void) sendUnitStats:( NSMutableArray *)units;
 
-- (void) sendSmoke:(CCArray *)smoke;
+- (void) sendSmoke:( NSMutableArray *)smoke;
 
-- (void) sendFireWithAttacker:(Unit *)attacker casualties:(CCArray *)casualties hitPosition:(CGPoint)hitPosition;
+- (void) sendFireWithAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition;
 
 - (void) sendMeleeWithAttacker:(Unit *)attacker
                         target:(Unit *)target

@@ -11,9 +11,7 @@
 @property (nonatomic, readonly) float      firingAngle;
 @property (nonatomic, readonly) float      reloadingTime;
 @property (nonatomic, readonly) float      movementSpeedModifier;
-@property (nonatomic, readonly) SoundType  firingSound;
 @property (nonatomic, readonly) float      projectileSpeed;
-@property (nonatomic, readonly) NSString * projectileName;
 @property (nonatomic, readonly) int        menRequired;
 @property (nonatomic, readonly) BOOL       canFireSmoke;
 @property (nonatomic, assign)   int        ammo;

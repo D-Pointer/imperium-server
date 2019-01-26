@@ -69,31 +69,7 @@
    }
      
     CCLOG( @"%@", [message_str stringByReplacingOccurrencesOfString:@"\n" withString:@" "] );
-    
-    // first create the name
-    self.label = [CCLabelBMFont labelWithString:message_str fntFile:self.unit.owner == kPlayer1 ? @"CombatMessageFont1.fnt" : @"CombatMessageFont2.fnt" ];
-    self.label.anchorPoint = ccp( 0.5, 0.5 );
-    self.label.position = self.unit.position;
-    [[Globals sharedInstance].mapLayer addChild:self.label z:kMessageZ];
-
-    // first under the label a background
-    self.background = [CCSprite spriteWithSpriteFrameName:@"TextBackground.png"];
-    self.background.position = self.unit.position;
-    [[Globals sharedInstance].mapLayer addChild:self.background z:kMessageBackgroundZ];
-    
-    // scale the background suitably
-    float scale_x = ( self.label.boundingBox.size.width + 10 ) / self.background.boundingBox.size.width;
-    float scale_y = ( self.label.boundingBox.size.height + 6 ) / self.background.boundingBox.size.height;
-    self.background.scaleX = scale_x;
-    self.background.scaleY = scale_y;
-
-    // show the label some seconds, fade out and then remove
-    [self.label runAction:[CCSequence actions:
-                           [CCDelayTime actionWithDuration:5.0f], 
-                           [CCFadeOut actionWithDuration:0.5f], 
-                           [CCCallFuncN actionWithTarget:self selector:@selector(messageDone:)],
-                           nil] ];
-}
+    }
 
 /*
 - (void) cleanup {

@@ -1,10 +1,10 @@
 
-#import "cocos2d.h"
+
 
 @interface Path : NSObject
 
 @property (readonly, nonatomic)         int       count;
-@property (readonly, nonatomic, strong) CCArray * hexes;
+@property (readonly, nonatomic, strong)  NSMutableArray * hexes;
 @property (readwrite, nonatomic)        BOOL      highlighted;
 
 - (Hex *) firstHex;

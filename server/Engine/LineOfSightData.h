@@ -1,5 +1,5 @@
 
-#import "cocos2d.h"
+
 
 @class Unit;
 
@@ -10,7 +10,7 @@
 @property (nonatomic, readonly) unsigned int oldSeenCount;
 @property (nonatomic, assign)   BOOL         didSpotNewEnemies;
 
-- (instancetype) initWithUnits:(CCArray * )units;
+- (instancetype) initWithUnits:( NSMutableArray * )units;
 
 - (void) clearSeen;
 

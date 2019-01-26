@@ -3,7 +3,7 @@
 
 @interface Path ()
 
-@property (readwrite, nonatomic, retain) CCArray * hexes;
+@property (readwrite, nonatomic, retain)  NSMutableArray * hexes;
 
 @end
 
@@ -17,7 +17,7 @@
 - (id) init {
     self = [super init];
     if (self) {
-        self.hexes = [[[CCArray alloc] init] autorelease];
+        self.hexes = [[[ NSMutableArray alloc] init] autorelease];
     }
     
     return self;
@@ -27,7 +27,7 @@
 - (void) dealloc {
     // clear any highlights
     Hex * hex;
-    CCARRAY_FOREACH( self.hexes, hex ) {
+     NSMutableArray_FOREACH( self.hexes, hex ) {
         hex.highlighted = NO;
     }
     
@@ -45,7 +45,7 @@
     highlighted = highlighted_;
     
     Hex * hex;
-    CCARRAY_FOREACH( self.hexes, hex ) {
+     NSMutableArray_FOREACH( self.hexes, hex ) {
         hex.highlighted = highlighted_;
     }
 }

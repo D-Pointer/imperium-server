@@ -15,8 +15,8 @@
     unsigned int enemyUnitCount;
 }
 
-@property (nonatomic, weak) CCArray * ownUnits;
-@property (nonatomic, weak) CCArray * enemyUnits;
+@property (nonatomic, weak)  NSMutableArray * ownUnits;
+@property (nonatomic, weak)  NSMutableArray * enemyUnits;
 
 @end
 
@@ -26,8 +26,8 @@
 - (instancetype) init {
     self = [super init];
     if (self) {
-        CCArray * units1 = [Globals sharedInstance].unitsPlayer1;
-        CCArray * units2 = [Globals sharedInstance].unitsPlayer2;
+         NSMutableArray * units1 = [Globals sharedInstance].unitsPlayer1;
+         NSMutableArray * units2 = [Globals sharedInstance].unitsPlayer2;
 
         if ( [Globals sharedInstance].player1.type == kLocalPlayer ) {
             self.ownUnits = [Globals sharedInstance].unitsPlayer1;

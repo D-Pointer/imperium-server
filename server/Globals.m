@@ -16,13 +16,13 @@
 - (id) init {
 	if( (self = [super init])) {
         // some global data
-        self.units         = [CCArray array];
-        self.unitsPlayer1  = [CCArray array];
-        self.unitsPlayer2  = [CCArray array];
-        self.objectives    = [CCArray array];
-        self.organizations = [CCArray array];
-        self.scenarios     = [CCArray array];
-        self.multiplayerScenarios = [CCArray array];
+        self.units         = [ NSMutableArray array];
+        self.unitsPlayer1  = [ NSMutableArray array];
+        self.unitsPlayer2  = [ NSMutableArray array];
+        self.objectives    = [ NSMutableArray array];
+        self.organizations = [ NSMutableArray array];
+        self.scenarios     = [ NSMutableArray array];
+        self.multiplayerScenarios = [ NSMutableArray array];
         self.selection     = [Selection new];
         self.scores        = [ScoreCounter new];
         self.audio         = [Audio new];

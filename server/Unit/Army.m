@@ -86,7 +86,7 @@
     Globals *globals = [Globals sharedInstance];
 
     // copy the starting positions
-    CCArray *startPositions = [CCArray arrayWithArray:globals.scenario.startingPositions];
+     NSMutableArray *startPositions = [ NSMutableArray arrayWithArray:globals.scenario.startingPositions];
 
     // unique unit id:s for both players
     int unitId = player == kPlayer1 ? 0 : 100;
@@ -241,7 +241,7 @@
     }
 }
 
-- (void) findStartingPositionFor:(Unit *)unit fromPositions:(CCArray *)startPositions {
+- (void) findStartingPositionFor:(Unit *)unit fromPositions:( NSMutableArray *)startPositions {
     Globals *globals = [Globals sharedInstance];
 
     // does this unit have a headquarter?

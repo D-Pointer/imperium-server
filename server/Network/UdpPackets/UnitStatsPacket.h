@@ -5,6 +5,6 @@
 
 @interface UnitStatsPacket : UdpPacket
 
-- (instancetype) initWithUnits:(CCArray *)units;
+- (instancetype) initWithUnits:( NSMutableArray *)units;
 
 @end

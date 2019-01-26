@@ -34,7 +34,7 @@
     int index;
     float value;
 
-    CCArray * objectives = [Globals sharedInstance].objectives;
+     NSMutableArray * objectives = [Globals sharedInstance].objectives;
 
     // have we set up the old states already? if so then we may not need to update this
     if ( oldStates != 0 ) {

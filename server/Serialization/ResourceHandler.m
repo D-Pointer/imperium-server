@@ -1,6 +1,4 @@
 
-#import <Crashlytics/Answers.h>
-
 #import "ResourceHandler.h"
 
 @implementation ResourceHandler
@@ -22,10 +20,6 @@
     NSString * contents = [NSString stringWithContentsOfFile:resourcePath encoding:NSUTF8StringEncoding error:&error];
     if ( error != nil ) {
         CCLOG( @"failed to read resource : %@", [error localizedDescription] );
-        [Answers logCustomEventWithName:@"Error reading resource"
-                       customAttributes: @{ @"resource": name,
-                                            @"error": @(error.code),
-                                            @"description": [error localizedDescription] }];
         return nil;
     }
 
@@ -40,10 +34,6 @@
     [data writeToFile:resourcePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     if ( error != nil ) {
         CCLOG( @"failed to save resource: %@", [error localizedDescription] );
-        [Answers logCustomEventWithName:@"Error reading resource"
-                       customAttributes: @{ @"resource": name,
-                                            @"error": @(error.code),
-                                            @"description": [error localizedDescription] }];
         return NO;
     }
 

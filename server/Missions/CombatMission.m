@@ -155,8 +155,8 @@
     CCLOG( @"target position: %.0f, %.0f", target.x, target.y );
     CCLOG( @"hit position: %.0f, %.0f", hitPosition.x, hitPosition.y );
 
-    CCArray * allCasualties = [CCArray array];
-    CCArray * hitUnits = [CCArray array];
+     NSMutableArray * allCasualties = [ NSMutableArray array];
+     NSMutableArray * hitUnits = [ NSMutableArray array];
 
     // which units are close enough to get damaged?
     for ( Unit * possibleTarget in [Globals sharedInstance].units ) {
@@ -421,7 +421,7 @@
 }
 
 
-- (void) createAttackVisualizationForAttacker:(Unit *)attacker casualties:(CCArray *)casualties hitPosition:(CGPoint)hitPosition {
+- (void) createAttackVisualizationForAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition {
     // create and show immediately
     AttackVisualization * visualization = [[AttackVisualization alloc] initWithAttacker:attacker casualties:casualties hitPosition:hitPosition];
     [visualization execute];

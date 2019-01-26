@@ -1,5 +1,5 @@
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "cocos2d.h"
+
 
 #import "Definitions.h"
 #import "VictoryCondition.h"
@@ -26,14 +26,14 @@
 @property (nonatomic, assign)   ScenarioType       scenarioType;
 
 @property (nonatomic, readonly) ScenarioState      state;
-@property (nonatomic, strong)   CCArray *          victoryConditions;
+@property (nonatomic, strong)    NSMutableArray *          victoryConditions;
 @property (nonatomic, strong)   VictoryCondition * endCondition;
 
 @property (nonatomic)           int                width;
 @property (nonatomic)           int                height;
 
 // all starting positions for the map
-@property (nonatomic, strong)   CCArray *          startingPositions;
+@property (nonatomic, strong)    NSMutableArray *          startingPositions;
 
 // wind direction (0..360) and strength (m/s)
 @property (nonatomic, assign)   float              windDirection;

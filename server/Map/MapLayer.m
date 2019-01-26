@@ -9,56 +9,18 @@
 #import "House.h"
 #import "Smoke.h"
 
-@interface MapLayer ()
-
-@property (nonatomic, strong) CCSpriteBatchNode * bodiesNode;
-@property (nonatomic, strong) CCSpriteBatchNode * housesNode;
-@property (nonatomic, strong) NSMutableArray *    bodies;
-
-@end
 
 @implementation MapLayer
 
 - (id) init {
 
 	if ((self = [super init])) {
-        self.polygons = [CCArray new];
-        self.smoke1 = [CCArray new];
-        self.smoke2 = [CCArray new];
+        self.polygons = [ NSMutableArray new];
 
         // set up our size
         self.mapWidth = [Globals sharedInstance].scenario.width;
         self.mapHeight = [Globals sharedInstance].scenario.height;
-        [self setContentSize:CGSizeMake( self.mapWidth, self.mapHeight )];
 
-        // unit selection marker
-        self.selectionMarker = [[SelectionMarker alloc] init];
-        [self addChild:self.selectionMarker z:kSelectionMarkerZ];
-
-        // mission visualizer
-        self.losVisualizer = [[LineOfSightVisualizer alloc] init];
-        [self addChild:self.losVisualizer z:kLineOfSightVisualizerZ];
-
-        // firing range visualizer
-        self.rangeVisualizer = [[FiringRangeVisualizer alloc] init];
-        [self addChild:self.rangeVisualizer z:kRangeVisualizerZ];
-
-        // command range visualizer
-        self.commandRangeVisualizer = [[CommandRangeVisualizer alloc] init];
-        [self addChild:self.commandRangeVisualizer z:kCommandRangeVisualizerZ];
-
-        // the batch node for all houses
-        self.housesNode = [CCSpriteBatchNode batchNodeWithFile:@"Spritesheet.png"];
-        self.housesNode.anchorPoint = ccp( 0, 0 );
-        [self addChild:self.housesNode z:kHouseZ];
-
-        // the batch node for all bodies
-        self.bodiesNode = [CCSpriteBatchNode batchNodeWithFile:@"Spritesheet.png"];
-        self.bodiesNode.anchorPoint = ccp( 0, 0 );
-        [self addChild:self.bodiesNode z:kCorpseZ];
-
-        // also store all bodies in a list for easy getting rid of them
-        self.bodies = [NSMutableArray new];
 	}
 
 	return self;
@@ -74,21 +36,6 @@
     // all polygons
     [self.polygons removeAllObjects];
     self.polygons = nil;
-
-    // los visualizer
-    [self.losVisualizer removeFromParentAndCleanup:YES];
-    self.losVisualizer = nil;
-    
-    [self.rangeVisualizer removeFromParentAndCleanup:YES];
-    self.rangeVisualizer = nil;
-
-    [self.commandRangeVisualizer removeFromParentAndCleanup:YES];
-    self.commandRangeVisualizer = nil;
-
-    // get rid of all other children
-    [self removeAllChildrenWithCleanup:YES];
-
-    [self removeFromParentAndCleanup:YES];
 }
 
 
@@ -389,23 +336,6 @@
         }
     }
 
-    if ( visualize ) {
-        if ( canSee ) {
-            [self.losVisualizer showFrom:start to:end];
-        }
-        else {
-            // was it too far?
-            if ( tooFar ) {
-                // the end was further away than we can see
-                [self.losVisualizer showFrom:start toMiddle:losEnd withEnd:realEnd];
-            }
-            else {
-                // the destination was within how far we can see
-                [self.losVisualizer showFrom:start toMiddle:losEnd withEnd:end];
-            }
-        }
-    }
-
     return canSee;
 }
 
@@ -442,77 +372,6 @@
 
     return dx * dx + dy * dy;
     //return sqrtf( dx * dx + dy * dy );
-}
-
-- (void) addBodies:(int)bodies around:(Unit *)unit {
-    NSString * bodyName = unit.owner == kPlayer1 ? @"Body1.png" : @"Body2.png";
-
-    float x = unit.position.x;
-    float y = unit.position.y;
-
-    // find out the largest dimension of the unit sprite
-    float radius = MAX( unit.boundingBox.size.width, unit.boundingBox.size.height ) / 2.0f;
-
-    // add in some bodies
-    for ( int index = 0; index < bodies; ++index ) {
-        CCSprite * body = [CCSprite spriteWithSpriteFrameName:bodyName];
-
-        // random position around the given position
-        body.position = ccp( x - radius + CCRANDOM_0_1() * radius * 2,
-                             y - radius + CCRANDOM_0_1() * radius * 2 );
-
-        // random rotation
-        body.rotation = CCRANDOM_0_1() * 360;
-
-        [self.bodiesNode addChild:body];
-        [self.bodies addObject:body];
-    }
-
-    int maxBodies = sParameters[kParamMaxBodiesI].intValue;
-
-    // too many bodies?
-    while ( self.bodies.count > maxBodies ) {
-        CCSprite * body = self.bodies[0];
-        [self.bodies removeObjectAtIndex:0];
-
-        // and get rid of the node too
-        [self.bodiesNode removeChild:body cleanup:YES];
-    }
-
-    CCLOG( @"added %d bodies, now: %lu", bodies, (unsigned long)self.bodies.count );
-}
-
-
-- (void) addHouse:(House *)house withShadow:(CCSprite *)shadow {
-    [self.housesNode addChild:house z:kHouseZ];
-    [self.housesNode addChild:shadow z:kHouseShadowZ];
-}
-
-
-- (void) addSmoke:(CGPoint)position forPlayer:(PlayerId)player {
-    Smoke * smoke = [Smoke spriteWithSpriteFrameName:@"Smoke.png"];
-    smoke.creator = player;
-    smoke.position = position;
-    smoke.rotation = arc4random_uniform( 360 );
-    [self addChild:smoke z:kSmokeZ];
-
-    if ( player == kPlayer1 ) {
-        [self.smoke1 addObject:smoke];
-    }
-    else {
-        [self.smoke2 addObject:smoke];
-    }
-
-    // add first in the smoke chain
-//    smoke.next = self.smoke;
-//    smoke.prev = nil;
-//    self.smoke = smoke;
-    //[self.smoke addObject:smoke];
-}
-
-
-- (void) addOffMapArtilleryExplosion:(CGPoint)position {
-    CCLOG( @"adding explosion at %.0f %.0f", position.x, position.y );
 }
 
 @end

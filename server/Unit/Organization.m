@@ -14,7 +14,7 @@
         self.owner = hq.owner;
 
         // initially only one unit here
-        self.units = [CCArray new];
+        self.units = [ NSMutableArray new];
         [self.units addObject:hq];
 
         // set up the AI stuff only for the second player
@@ -91,8 +91,8 @@
 
 
 - (void) updateEngagementState {
-    //CCArray * ownUnits   = [Globals sharedInstance].unitsPlayer2;
-    CCArray * enemyUnits = [Globals sharedInstance].unitsPlayer1;
+    // NSMutableArray * ownUnits   = [Globals sharedInstance].unitsPlayer2;
+     NSMutableArray * enemyUnits = [Globals sharedInstance].unitsPlayer1;
 
     // initially assume not engaged
     self.engaged = NO;

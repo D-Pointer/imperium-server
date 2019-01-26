@@ -13,8 +13,8 @@
     int mapHeight;
     int mapWidth;
     
-    CCArray * polygons;
-    CCArray * textures;
+     NSMutableArray * polygons;
+     NSMutableArray * textures;
     
     MapLayer * mapLayer;
 }                             
@@ -31,10 +31,10 @@
     
 	if ((self = [super init])) {        
         // polygon storage
-        polygons = [CCArray array];
+        polygons = [ NSMutableArray array];
 
         // load all textures
-        textures = [CCArray array];
+        textures = [ NSMutableArray array];
         [textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"woods.jpg"] ];
         [textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"field.jpg"] ];
         [textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"grass.jpg"] ];
@@ -163,7 +163,7 @@
     CGPoint pos = ccp( 0, 0 );
     
     // result vertices
-    CCArray * vertices = [CCArray array];
+     NSMutableArray * vertices = [ NSMutableArray array];
     
     // loop all characters in the "d" string
     for ( unsigned int index = 0; index < [data length]; ++index ) {
@@ -444,7 +444,7 @@
     float height = [[TBXML valueOfAttributeNamed:@"height" forElement:element] floatValue];
 
     // result vertices
-    CCArray * vertices = [CCArray arrayWithCapacity:4];
+     NSMutableArray * vertices = [ NSMutableArray arrayWithCapacity:4];
     CGPoint corner1, corner2, corner3, corner4;
     
     // does it have a transform?

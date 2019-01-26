@@ -1,10 +1,10 @@
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 int main(int argc, char *argv[]) {
 
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    int retVal = UIApplicationMain(argc, argv, nil, @"AppDelegate");
-    [pool release];
-    return retVal;
+    @autoreleasepool {
+        
+    }
+    return 0;
 }

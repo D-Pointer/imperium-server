@@ -5,6 +5,6 @@
 
 @interface SmokePacket : UdpPacket
 
-- (instancetype) initWithSmoke:(CCArray *)smoke;
+- (instancetype) initWithSmoke:( NSMutableArray *)smoke;
 
 @end

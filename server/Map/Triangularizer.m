@@ -92,7 +92,7 @@ typedef enum PolygonWinding {
 }
 
 
-- (void) smoothPolygon:(CCArray *)originalVertices {
+- (void) smoothPolygon:( NSMutableArray *)originalVertices {
     CGPoint p0, p2;
     
     // how far out from the center point are the smoothed points
@@ -178,7 +178,7 @@ typedef enum PolygonWinding {
 }
 
 
-- (PolygonWinding) getWinding:(CCArray *)originalVertices {
+- (PolygonWinding) getWinding:( NSMutableArray *)originalVertices {
     // see: http://chipmunk-physics.net/forum/viewtopic.php?f=1&t=109
     CGFloat accum = 0;
 
@@ -199,8 +199,8 @@ typedef enum PolygonWinding {
 }
 
 
-- (CCArray *) triangularize:(CCArray *)originalVertices withSmoothing:(BOOL)smooth {
-    CCArray * result = [CCArray array];
+- ( NSMutableArray *) triangularize:( NSMutableArray *)originalVertices withSmoothing:(BOOL)smooth {
+     NSMutableArray * result = [ NSMutableArray array];
     
     // precautions, there needs to be enough vertices to do this stuff
     if ( originalVertices == nil || originalVertices.count < 3 ) {
@@ -229,7 +229,7 @@ typedef enum PolygonWinding {
     //CCLOG( @"Triangularizer.triangularize: handling %u vertices", vertex_count );
 
     // fill an array with the indices, 0..n. these point to the vertices in 'vertices_copy'
-    indices = [CCArray arrayWithCapacity:vertex_count];
+    indices = [ NSMutableArray arrayWithCapacity:vertex_count];
     for ( unsigned int index = 0; index < vertex_count; ++index ) {
         [indices insertObject:[NSNumber numberWithUnsignedInt:index] atIndex:index];
         //CGPoint p1 = [[vertices objectAtIndex:index] CGPointValue];

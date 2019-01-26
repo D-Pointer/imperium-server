@@ -4,6 +4,6 @@
 
 @interface MissionPacket : UdpPacket
 
-- (instancetype) initWithUnits:(CCArray *)units;
+- (instancetype) initWithUnits:( NSMutableArray *)units;
 
 @end

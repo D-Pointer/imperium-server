@@ -126,7 +126,7 @@
 }
 
 
-- (void) sendMissions:(CCArray *)units {
+- (void) sendMissions:( NSMutableArray *)units {
     [self sendUdpPacket:[[MissionPacket alloc] initWithUnits:units]];
 }
 
@@ -136,17 +136,17 @@
 }
 
 
-- (void) sendUnitStats:(CCArray *)units {
+- (void) sendUnitStats:( NSMutableArray *)units {
     [self sendUdpPacket:[[UnitStatsPacket alloc] initWithUnits:units]];
 }
 
 
-- (void) sendSmoke:(CCArray *)smoke {
+- (void) sendSmoke:( NSMutableArray *)smoke {
     [self sendUdpPacket:[[SmokePacket alloc] initWithSmoke:smoke]];
 }
 
 
-- (void) sendFireWithAttacker:(Unit *)attacker casualties:(CCArray *)casualties hitPosition:(CGPoint)hitPosition {
+- (void) sendFireWithAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition {
     FirePacket * packet = [[FirePacket alloc] initWithAttacker:attacker
                                                     casualties:casualties
                                                    hitPosition:hitPosition];
@@ -446,7 +446,7 @@
 
     // any casualties at all? if 0 then this is a smoke thing
     if ( count > 0 ) {
-        CCArray *allCasualties = [CCArray array];
+         NSMutableArray *allCasualties = [ NSMutableArray array];
 
         // read all casualties
         for (unsigned int index = 0; index < count; ++index) {
@@ -581,7 +581,7 @@
     Globals * globals = [Globals sharedInstance];
     PlayerId enemyPlayerId = globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
 
-    CCArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.mapLayer.smoke2 : globals.mapLayer.smoke1;
+     NSMutableArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.mapLayer.smoke2 : globals.mapLayer.smoke1;
 
     // add smoke if needed
     if ( enemySmoke.count < count ) {
@@ -614,7 +614,7 @@
 
 - (Unit *) getEnemyUnit:(unsigned short)unitId {
     // find among the enemies
-    CCArray *units = [Globals sharedInstance].localPlayer.playerId == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
+     NSMutableArray *units = [Globals sharedInstance].localPlayer.playerId == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
 
     for (Unit *tmp in units) {
         if (tmp.unitId == unitId) {
@@ -628,7 +628,7 @@
 
 - (Unit *) getOwnUnit:(unsigned short)unitId {
     // find among own units
-    CCArray *units = [Globals sharedInstance].localUnits;
+     NSMutableArray *units = [Globals sharedInstance].localUnits;
 
     for (Unit *tmp in units) {
         if (tmp.unitId == unitId) {

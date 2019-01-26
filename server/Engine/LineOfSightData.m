@@ -11,13 +11,13 @@
 @property (nonatomic, readwrite) unsigned int count;
 @property (nonatomic, readwrite) unsigned int seenCount;
 @property (nonatomic, readwrite) unsigned int oldSeenCount;
-@property (nonatomic, weak)      CCArray *    units;
+@property (nonatomic, weak)       NSMutableArray *    units;
 
 @end
 
 @implementation LineOfSightData
 
-- (instancetype) initWithUnits:(CCArray * )units {
+- (instancetype) initWithUnits:( NSMutableArray * )units {
     self = [super init];
     if (self) {
         self.count = units.count;

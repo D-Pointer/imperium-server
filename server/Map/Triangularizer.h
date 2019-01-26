@@ -3,11 +3,11 @@
 
 @interface Triangularizer : NSObject {
 
-    CCArray * vertices;
-    CCArray * indices;
+     NSMutableArray * vertices;
+     NSMutableArray * indices;
 }
 
 
-- (CCArray *) triangularize:(CCArray *)originalVertices withSmoothing:(BOOL)smooth;
+- ( NSMutableArray *) triangularize:( NSMutableArray *)originalVertices withSmoothing:(BOOL)smooth;
 
 @end

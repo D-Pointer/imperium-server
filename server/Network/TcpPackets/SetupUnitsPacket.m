@@ -11,7 +11,7 @@
         // save the type too
         self.type = kDataPacket;
 
-        CCArray *localUnits = [Globals sharedInstance].localUnits;
+         NSMutableArray *localUnits = [Globals sharedInstance].localUnits;
 
         CCLOG( @"sending data for %lu units", (unsigned long)localUnits.count );
 

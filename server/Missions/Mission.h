@@ -1,5 +1,5 @@
 
-#import "cocos2d.h"
+
 #import "Definitions.h"
 #import "Path.h"
 
@@ -13,7 +13,6 @@
 @property (nonatomic, strong) NSString *      name;
 @property (nonatomic, strong) NSString *      preparingName;
 @property (nonatomic, assign) CGPoint         endPoint;
-@property (nonatomic, assign) ccColor4B       color;
 @property (nonatomic, assign) BOOL            canBeCancelled;
 @property (nonatomic, strong) Path *          path;
 @property (nonatomic, strong) RotateMission * rotation;

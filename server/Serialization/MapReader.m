@@ -25,8 +25,8 @@
 
 @interface MapReader ()
 
-@property (nonatomic, strong) CCArray *polygons;
-@property (nonatomic, strong) CCArray *textures;
+@property (nonatomic, strong)  NSMutableArray *polygons;
+@property (nonatomic, strong)  NSMutableArray *textures;
 @property (nonatomic, strong) NSArray *fields;
 @property (nonatomic, strong) Scenario *scenario;
 @property (nonatomic, strong) PolygonNode *currentTerrain;
@@ -42,8 +42,8 @@
 
 - (id) init {
     if ((self = [super init])) {
-        self.polygons = [CCArray new];
-        self.textures = [CCArray new];
+        self.polygons = [ NSMutableArray new];
+        self.textures = [ NSMutableArray new];
         self.fields = nil;
         self.headquarters = [NSMutableDictionary new];
 
@@ -165,7 +165,7 @@
     TerrainType terrain_type = [parts[1] intValue];
 
     // result vertices
-    CCArray *vertices = [CCArray array];
+     NSMutableArray *vertices = [ NSMutableArray array];
 
     unsigned int index = 2;
     while (index < parts.count) {
@@ -347,7 +347,7 @@
     Globals *globals = [Globals sharedInstance];
 
     // make sure the scenario has new starting positions
-    CCArray *startPositions = [CCArray arrayWithCapacity:100];
+     NSMutableArray *startPositions = [ NSMutableArray arrayWithCapacity:100];
     globals.scenario.startingPositions = startPositions;
 
     float x1, x2;
@@ -433,7 +433,7 @@
     //NSString * normalMapFilename = [[Globals sharedInstance].scenario.filename stringByReplacingOccurrencesOfString:@".map" withString:@"-normalmap.png"];
 
     // corners of the map
-    CCArray *corners = [CCArray array];
+     NSMutableArray *corners = [ NSMutableArray array];
     [corners addObject:[NSValue valueWithCGPoint:ccp( 0, 0 )]];
     [corners addObject:[NSValue valueWithCGPoint:ccp( self.scenario.width, 0 )]];
     [corners addObject:[NSValue valueWithCGPoint:ccp( self.scenario.width, self.scenario.height )]];

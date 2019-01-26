@@ -1,5 +1,5 @@
 
-#import "cocos2d.h"
+
 
 #import "UnitStrengthMap.h"
 #import "FrontlineMap.h"

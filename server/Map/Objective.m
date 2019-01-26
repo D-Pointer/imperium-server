@@ -5,13 +5,7 @@
 #import "Utils.h"
 #import "MapLayer.h"
 
-@interface Objective ()
-
-@property (nonatomic, strong) CCLabelBMFont * titleLabel;
-
-@end
-
-
+@i
 @implementation Objective
 
 - (NSString *) description {
@@ -24,57 +18,9 @@
 }
 
 
-- (void) setState:(ObjectiveState)state {
-    // a new state?
-    if ( state == _state ) {
-        // same state, do nothing
-        return;
-    }
-    
-    _state = state;
-
-    NSString * frameName;
-
-    switch ( state ) {
-        case kContested:
-            frameName = @"ObjectiveContested.png";
-            break;
-        case kNeutral:
-            frameName = @"ObjectiveNeutral.png";
-            break;
-        case kOwnerPlayer1:
-            frameName = @"ObjectivePlayer1.png";
-            break;
-        case kOwnerPlayer2:
-            frameName = @"ObjectivePlayer2.png";
-            break;
-    }
-
-    CCSpriteFrameCache* cache = [CCSpriteFrameCache sharedSpriteFrameCache];
-    CCSpriteFrame* frame = [cache spriteFrameByName:frameName];
-    [self setDisplayFrame:frame];
-
-    // animate this a bit
-    [self animate];
-}
-
-
-- (void) animate {
-    [self stopAllActions];
-    
-    // scale up and down
-    [self runAction:[CCRepeat actionWithAction:
-                     [CCSequence actions:
-                      [CCScaleTo actionWithDuration:0.5 scale:0.9],
-                      [CCScaleTo actionWithDuration:0.5 scale:1.1],
-                      nil]
-                     times:3]];
-}
-
-
 + (void) updateOwnerForAllObjectives {
     // all units
-    CCArray * units = [Globals sharedInstance].units;
+     NSMutableArray * units = [Globals sharedInstance].units;
 
     for ( Objective * objective in [Globals sharedInstance].objectives ) {
         BOOL near[2] = { NO, NO };

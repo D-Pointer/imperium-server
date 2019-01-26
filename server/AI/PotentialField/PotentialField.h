@@ -1,5 +1,6 @@
 
-#import "cocos2d.h"
+#include <Foundation/Foundation.h>
+
 
 @interface PotentialField : NSObject
 

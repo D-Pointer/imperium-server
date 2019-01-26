@@ -6,7 +6,7 @@
 
 @implementation SmokePacket
 
-- (instancetype) initWithSmoke:(CCArray *)smoke {
+- (instancetype) initWithSmoke:( NSMutableArray *)smoke {
     self = [super init];
     if (self) {
         self.type = kUdpDataPacket;

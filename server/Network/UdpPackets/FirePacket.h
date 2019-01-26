@@ -5,6 +5,6 @@
 
 @interface FirePacket : UdpPacket
 
-- (instancetype) initWithAttacker:(Unit *)attacker casualties:(CCArray *)casualties hitPosition:(CGPoint)hitPosition;
+- (instancetype) initWithAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition;
 
 @end

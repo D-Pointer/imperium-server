@@ -100,7 +100,7 @@
         {  1, -1 } // down right
     };
 
-    CCArray * open = [CCArray arrayWithCapacity:100];
+     NSMutableArray * open = [ NSMutableArray arrayWithCapacity:100];
 
     // no positions are closed when we start
     memset( closed, 0, positions );
@@ -116,7 +116,7 @@
         // is this the destination?
         if ( node->pos.x == destinationPos.x && node->pos.y == destinationPos.y ) {
             CCLOG( @"destination found, total cost: %1f", node->total );
-            CCArray * result = [CCArray new];
+             NSMutableArray * result = [ NSMutableArray new];
 
             // assemble the final path by traversing back from the destination along the "before" links
             PathNode * loop = node;
@@ -226,7 +226,7 @@
 }
 
 
-- (PathNode *) findPathNode:(CCArray *)open {
+- (PathNode *) findPathNode:( NSMutableArray *)open {
     PathNode * best = nil;
     int pos = 0, bestPos = -1;
 
@@ -278,7 +278,7 @@
 }
 
 
-- (Path *) createPath:(CCArray *)pathPositions {
+- (Path *) createPath:( NSMutableArray *)pathPositions {
     Path * path = [Path new];
 
     // reverse the path to be correct
@@ -297,7 +297,7 @@
 }
 
 
-- (void) debugResult:(CCArray *)result {
+- (void) debugResult:( NSMutableArray *)result {
     for ( NSValue * value in result ) {
         CGPoint position = [value CGPointValue];
 

@@ -1,8 +1,8 @@
 
-#import "cocos2d.h"
+
 #import "Definitions.h"
 
-@interface Objective : CCSprite
+@interface Objective : NSObject
 
 @property (nonatomic, assign) int            objectiveId;
 @property (nonatomic, strong) NSString *     title;

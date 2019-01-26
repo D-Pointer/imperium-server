@@ -1,5 +1,5 @@
 
-#import "cocos2d.h"
+
 #import "Definitions.h"
 
 @interface PolygonNode : CCNode {
@@ -26,9 +26,9 @@
 @property (assign, nonatomic) TerrainType terrainType;
 @property (assign, nonatomic) MapLayerZ   mapLayerZ;
 
-- (id) initWithPolygon:(CCArray *)vertices smoothing:(BOOL)smoothing;
+- (id) initWithPolygon:( NSMutableArray *)vertices smoothing:(BOOL)smoothing;
 
-- (id) initWithPolygon:(CCArray *)vertices;
+- (id) initWithPolygon:( NSMutableArray *)vertices;
 
 - (void) setupShaders;
 

@@ -1,5 +1,5 @@
 
-#import "cocos2d.h"
+
 #import "Definitions.h"
 
 @class Unit;

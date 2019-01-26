@@ -3,7 +3,7 @@
 
 @implementation UnitStatsPacket
 
-- (instancetype) initWithUnits:(CCArray *)units {
+- (instancetype) initWithUnits:( NSMutableArray *)units {
     self = [super init];
     if (self) {
         // save the type too

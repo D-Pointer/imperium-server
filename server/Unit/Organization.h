@@ -1,12 +1,12 @@
 
-#import "cocos2d.h"
+
 #import "Unit.h"
 #import "Objective.h"
 
 @interface Organization : NSObject
 
 @property (nonatomic, weak)   Unit *    headquarter;
-@property (nonatomic, strong) CCArray * units;
+@property (nonatomic, strong)  NSMutableArray * units;
 @property (nonatomic, assign) PlayerId  owner;
 
 // extra AI data for an organization

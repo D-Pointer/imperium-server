@@ -42,7 +42,7 @@
         // no lingering game and updates yet
         self.gameEndLingerUpdates = -1;
 
-        self.messages = [CCArray new];
+        self.messages = [ NSMutableArray new];
     }
 
     return self;
@@ -202,7 +202,7 @@
 
     // get the units that we're simulating for this turn. For multiplayer games we only simulate for the local player
     // as the other party simulates its own units
-    CCArray *units;
+     NSMutableArray *units;
     if (globals.gameType == kMultiplayerGame) {
         units = globals.localUnits;
     }
@@ -443,7 +443,7 @@
 
 
 - (void) updateSmoke {
-    CCArray * removed = [CCArray new];
+     NSMutableArray * removed = [ NSMutableArray new];
     Globals *globals = [Globals sharedInstance];
 
     float direction = globals.scenario.windDirection;
@@ -518,7 +518,7 @@
         }
     }
 
-    CCArray * localSmoke = localPlayerId == kPlayer1 ? globals.mapLayer.smoke1 : globals.mapLayer.smoke2;
+     NSMutableArray * localSmoke = localPlayerId == kPlayer1 ? globals.mapLayer.smoke1 : globals.mapLayer.smoke2;
 
     if ( localSmoke.count > 0 && multiplayer ) {
         CCLOG( @"sending data for %lu smoke", (unsigned long)localSmoke.count );
@@ -531,8 +531,8 @@
     Globals *globals = [Globals sharedInstance];
 
     //CCLOG( @"checking for melee units" );
-    CCArray *units1 = globals.unitsPlayer1;
-    CCArray *units2 = globals.unitsPlayer2;
+     NSMutableArray *units1 = globals.unitsPlayer1;
+     NSMutableArray *units2 = globals.unitsPlayer2;
 
     for (Unit *unit1 in units1) {
         // detroyed, already meleeing or not available for melee?

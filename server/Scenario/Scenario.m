@@ -23,7 +23,7 @@
         self.scenarioType = kCampaign;
         self.battleSize = kNotIncluded;
 
-        //self.polygons = [CCArray array];
+        //self.polygons = [ NSMutableArray array];
         self.width    = -1;
         self.height   = -1;
 
@@ -31,10 +31,10 @@
         self.dependsOn = -1;
 
         // no victory conditions by default
-        self.victoryConditions = [CCArray array];
+        self.victoryConditions = [ NSMutableArray array];
 
         // empty starting positions
-        self.startingPositions = [CCArray array];
+        self.startingPositions = [ NSMutableArray array];
     }
 
     return self;

@@ -1,4 +1,6 @@
 
+#include <Foundation/Foundation.h>
+
 // all parameters
 typedef enum {
     kParamCommandRangeGreenF = 0,           // max command ranges in meters for units of various experience

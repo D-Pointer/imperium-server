@@ -17,7 +17,7 @@
 // static routing utility
 + (RoutMission *) routUnit:(Unit *)router;
 
-- (void) createAttackVisualizationForAttacker:(Unit *)attacker casualties:(CCArray *)casualties hitPosition:(CGPoint)hitPosition;
+- (void) createAttackVisualizationForAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition;
 
 - (void) createMeleeVisualizationForAttacker:(Unit *)attacker
                                     defender:(Unit *)defender

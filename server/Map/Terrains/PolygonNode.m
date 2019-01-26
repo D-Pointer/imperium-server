@@ -5,7 +5,7 @@
 
 @implementation PolygonNode
 
-- (id) initWithPolygon:(CCArray *)vertices {
+- (id) initWithPolygon:( NSMutableArray *)vertices {
     self = [super init];
     if (self) {
         vertices_ = nil;
@@ -53,14 +53,14 @@
 }
 
 
-- (id) initWithPolygon:(CCArray *)vertices smoothing:(BOOL)smoothing {
+- (id) initWithPolygon:( NSMutableArray *)vertices smoothing:(BOOL)smoothing {
     self = [super init];
     if (self) {
         vertices_ = nil;
         originalVertices_ = nil;
 
         // triangulate the polygon
-        CCArray * indices = [[[Triangularizer alloc] init] triangularize:vertices withSmoothing:smoothing];
+         NSMutableArray * indices = [[[Triangularizer alloc] init] triangularize:vertices withSmoothing:smoothing];
         
         NSAssert( indices.count % 3 == 0, @"Invalid index count" );
 
@@ -120,13 +120,6 @@
     }
     
     return self;    
-}
-
-
-- (void) setupShaders {
-    // Must define what shader program OpenGL ES 2.0 should use.
-    // The instance variable shaderProgram exists in the CCNode class in Cocos2d 2.0.
-    self.shaderProgram = [[CCShaderCache sharedShaderCache] programForKey:kCCShader_PositionTexture];
 }
 
 

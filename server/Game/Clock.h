@@ -1,9 +1,9 @@
 
-#import "cocos2d.h"
+#include <Foundation/Foundation.h>
 
-@interface Clock : CCNode
 
-@property (nonatomic, strong) CCLabelBMFont * timeLabel;
+@interface Clock : NSObject
+
 
 // current time in simulation seconds, based on the scenario start time
 @property (nonatomic, assign) float            currentTime;

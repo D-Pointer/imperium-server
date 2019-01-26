@@ -1,5 +1,4 @@
 
-#import "CCBReader.h"
 
 #import "Clock.h"
 #import "Definitions.h"
@@ -18,15 +17,9 @@
 @synthesize timeLabel;
 
 + (Clock *) node {
-    Clock * node = (Clock *)[CCBReader nodeGraphFromFile:@"Clock.ccb"];
     node.elapsedTime = 0;
     node.lastElapsedTime = 0;
     return node;
-}
-
-
-- (void) didLoadFromCCB {
-    [self update];
 }
 
 
@@ -71,9 +64,6 @@
 
     self.baseTime = now;
 
-    // update the visual clock
-    [self update];
-    
     return self.elapsedTime;
 }
 
@@ -87,12 +77,6 @@
 
     // the string to actually show
     return [NSString stringWithFormat:@"%02d:%02d:%02d", hours, minutes, seconds];
-}
-
-
-- (void) update {
-    // the string to actually show
-    [self.timeLabel setString:[self formattedTime]];
 }
 
 
