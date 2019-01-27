@@ -22,6 +22,5 @@
  **/
 - (void) getThreatForPosition:(CGPoint)pos intoAbsolute:(float *)absThreat scaled:(float *)scaledThreat;
 
-- (void) showDebugInfo;
 
 @end

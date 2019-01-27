@@ -55,7 +55,7 @@
         // have we completed?
         if ( [Globals sharedInstance].clock.currentTime > self.organizedTimed ) {
             // we're now done
-            CCLOG( @"unit %@ is no longer disorganized", self.unit.name );
+            NSLog( @"unit %@ is no longer disorganized", self.unit.name );
             return kCompleted;
         }
 
@@ -67,7 +67,7 @@
     int organizingTime = self.fastReorganizing ? (int)self.unit.organizingTime * 0.5f : (int)self.unit.organizingTime;
 
     self.organizedTimed = [Globals sharedInstance].clock.currentTime + organizingTime;
-    CCLOG( @"unit %@ is now disorganized until: %d (%d seconds)", self.unit.name, self.organizedTimed, (int)self.unit.organizingTime );
+    NSLog( @"unit %@ is now disorganized until: %d (%d seconds)", self.unit.name, self.organizedTimed, (int)self.unit.organizingTime );
 
     // still going
     return kInProgress;

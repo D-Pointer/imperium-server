@@ -21,7 +21,7 @@
         offset = saveInt16ToBuffer( self.type, buffer, offset );
         offset = saveInt16ToBuffer( packetLength, buffer, offset );
 
-        //CCLOG( @"packet length: %d, offset: %d", sTcpPacketHeaderLength + packetLength, offset );
+        //NSLog( @"packet length: %d, offset: %d", sTcpPacketHeaderLength + packetLength, offset );
 
         // finally wrap the buffer in a NSData
         self.data = [NSData dataWithBytesNoCopy:buffer length:offset];

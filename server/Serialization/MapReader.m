@@ -1,5 +1,5 @@
 #import "MapReader.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "DefaultPolygonNode.h"
 #import "ScatteredTrees.h"
 #import "Woods.h"
@@ -155,7 +155,7 @@
         [self.scenario.victoryConditions addObject:[TutorialCondition new]];
     }
     else {
-        CCLOG( @"unknown victory condition: %@", type );
+        NSLog( @"unknown victory condition: %@", type );
         NSAssert( NO, @"unknown victory condition" );
     }
 }
@@ -211,10 +211,10 @@
     // find a texture for the polygon
     self.currentTerrain.terrainType = terrain_type;
     self.currentTerrain.position = ccp( 0, 0 );
-    [[Globals sharedInstance].mapLayer addChild:self.currentTerrain z:self.currentTerrain.mapLayerZ];
+    [[Globals sharedInstance].map addChild:self.currentTerrain z:self.currentTerrain.mapZ];
 
     // save for later too
-    [[Globals sharedInstance].mapLayer.polygons addObject:self.currentTerrain];
+    [[Globals sharedInstance].map.polygons addObject:self.currentTerrain];
 }
 
 
@@ -278,13 +278,13 @@
     }
 
     // save for later
-    [[Globals sharedInstance].mapLayer addChild:unit z:kUnitZ];
+    [[Globals sharedInstance].map addChild:unit z:kUnitZ];
     [[Globals sharedInstance].units addObject:unit];
 
     // add a mission visualizer for the local human player's units
     if ((owner == kPlayer1 && [Globals sharedInstance].player1.type == kLocalPlayer) || (owner == kPlayer2 && [Globals sharedInstance].player2.type == kLocalPlayer)) {
         unit.missionVisualizer = [[MissionVisualizer alloc] initWithUnit:unit];
-        [[Globals sharedInstance].mapLayer addChild:unit.missionVisualizer z:kMissionVisualizerZ];
+        [[Globals sharedInstance].map addChild:unit.missionVisualizer z:kMissionVisualizerZ];
     }
     else {
         // not own, hide by default so that the first LOS update starts from all hidden enemies
@@ -295,7 +295,7 @@
     }
 
     if (unit.unitTypeIcon) {
-        [[Globals sharedInstance].mapLayer addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
+        [[Globals sharedInstance].map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
     }
 
     // add to the right container too
@@ -324,7 +324,7 @@
     house.rotation = rotation;
 
     // add the house and shadow
-    [[Globals sharedInstance].mapLayer addHouse:house withShadow:shadow];
+    [[Globals sharedInstance].map addHouse:house withShadow:shadow];
 }
 
 
@@ -353,11 +353,11 @@
     float x1, x2;
     if (globals.localPlayer.playerId == kPlayer1) {
         x1 = 0;
-        x2 = globals.mapLayer.mapWidth / 2.0f;
+        x2 = globals.map.mapWidth / 2.0f;
     }
     else {
-        x1 = globals.mapLayer.mapWidth / 2.0f;
-        x2 = globals.mapLayer.mapWidth;
+        x1 = globals.map.mapWidth / 2.0f;
+        x2 = globals.map.mapWidth;
     }
 
     int ignored = 0;
@@ -375,7 +375,7 @@
         }
     }
 
-    CCLOG( @"parsed %lu and ignored %d starting positions", (unsigned long)startPositions.count, ignored );
+    NSLog( @"parsed %lu and ignored %d starting positions", (unsigned long)startPositions.count, ignored );
 }
 
 
@@ -387,7 +387,7 @@
     NSMutableArray *scriptParts = [NSMutableArray arrayWithArray:parts];
     [scriptParts removeObjectAtIndex:0];
     NSString *script = [[scriptParts componentsJoinedByString:@" "] stringByReplacingOccurrencesOfString:@"|" withString:@"\n"];
-    CCLOG( @"script: '%@'", script );
+    NSLog( @"script: '%@'", script );
 
     // create the real script
     [Globals sharedInstance].scenarioScript = [[ScenarioScript alloc] initWithScript:script];
@@ -413,7 +413,7 @@
     // the ownership is later updated for all objectives at the same time
 
     // save for later
-    [[Globals sharedInstance].mapLayer addChild:objective z:kObjectiveZ];
+    [[Globals sharedInstance].map addChild:objective z:kObjectiveZ];
     [[Globals sharedInstance].objectives addObject:objective];
 }
 
@@ -444,20 +444,20 @@
     baseGrass.terrainType = kGrass;
     baseGrass.texture = [self.textures objectAtIndex:kGrass];
     baseGrass.position = ccp( 0, 0 );
-    [[Globals sharedInstance].mapLayer addChild:baseGrass z:kBackgroundZ];
+    [[Globals sharedInstance].map addChild:baseGrass z:kBackgroundZ];
 
     // load the heightmap
     //baseGrass.normalMap = [[CCTextureCache sharedTextureCache] addImage:normalMapFilename];
     //NSAssert( baseGrass.normalMap, @"normal map is nil" );
-    //CCLOG( @"loaded normal map" );
+    //NSLog( @"loaded normal map" );
 
     // save for later too
-    [Globals sharedInstance].mapLayer.baseGrass = baseGrass;
+    [Globals sharedInstance].map.baseGrass = baseGrass;
 }
 
 
 - (Scenario *) parseScenarioMetaData:(NSString *)name {
-    //CCLOG( @"parsing: %@", name );
+    //NSLog( @"parsing: %@", name );
 
     self.scenario = [[Scenario alloc] init];
     self.scenario.filename = name;
@@ -514,7 +514,7 @@
         }
     }
 
-    CCLOG( @"parsed ok: %@", self.scenario );
+    NSLog( @"parsed ok: %@", self.scenario );
 
     return self.scenario;
 }
@@ -529,7 +529,7 @@
         if ((hqNumber = self.headquarters[[NSNumber numberWithInt:unit.unitId]]) != nil) {
             // the unit has a headquarter
             hqId = [hqNumber intValue];
-            CCLOG( @"unit %@ has hq id: %d", unit, hqId );
+            NSLog( @"unit %@ has hq id: %d", unit, hqId );
 
             // find the hq
             for (Unit *hq in [Globals sharedInstance].units) {
@@ -556,11 +556,11 @@
             organization = [[Organization alloc] initWithHeadquarter:unit];
             unit.organization = organization;
             [globals.organizations addObject:organization];
-            CCLOG( @"created %@", organization );
+            NSLog( @"created %@", organization );
         }
     }
 
-    CCLOG( @"found %lu organizations", (unsigned long) globals.organizations.count );
+    NSLog( @"found %lu organizations", (unsigned long) globals.organizations.count );
 
     // now check all non hq units that have a valid headquarter
     for (Unit *unit in [Globals sharedInstance].units) {
@@ -568,7 +568,7 @@
             // this unit belongs to its hq's organization
             unit.organization = unit.headquarter.organization;
             [unit.organization.units addObject:unit];
-            CCLOG( @"added %@ to %@", unit, unit.organization );
+            NSLog( @"added %@ to %@", unit, unit.organization );
         }
     }
 }
@@ -588,12 +588,12 @@
 
     // always at least 1 m/s wind
     self.scenario.windStrength = 1.0f + CCRANDOM_0_1() * 1.0f;
-    CCLOG( @"wind direction: %.0f, speed: %.1f m/s", self.scenario.windDirection, self.scenario.windStrength );
+    NSLog( @"wind direction: %.0f, speed: %.1f m/s", self.scenario.windDirection, self.scenario.windStrength );
 }
 
 
 - (void) completeScenario:(Scenario *)scenario {
-    CCLOG( @"completing: %@ from file: %@", scenario.title, scenario.filename );
+    NSLog( @"completing: %@ from file: %@", scenario.title, scenario.filename );
 
     _scenario = scenario;
 
@@ -689,7 +689,7 @@
     [self setupWind];
 
     // and we're done
-    CCLOG( @"scenario %@ completed ok", self.scenario.title );
+    NSLog( @"scenario %@ completed ok", self.scenario.title );
 }
 
 @end

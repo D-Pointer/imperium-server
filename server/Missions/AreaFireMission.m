@@ -2,7 +2,7 @@
 #import "RotateMission.h"
 #import "Unit.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "TerrainModifiers.h"
 #import "LineOfSight.h"
 
@@ -21,7 +21,6 @@
         self.type = kAreaFireMission;
         self.name = @"Firing at area";
         self.preparingName = @"Preparing to fire";
-        self.color = sAreaFireLineColor;
         self.rotation = nil;
 
         // no target unit
@@ -42,7 +41,6 @@
         self.name = @"Firing at area";
         self.preparingName = @"Preparing to fire";
         self.endPoint = target;
-        self.color = sAreaFireLineColor;
         self.rotation = nil;
         self.targetPos = target;
 
@@ -65,7 +63,7 @@
 
     // is the target now too far away?
     if (ccpDistance( self.unit.position, self.targetPos ) > self.unit.weapon.firingRange) {
-        CCLOG( @"target is too far away" );
+        NSLog( @"target is too far away" );
         return kCompleted;
     }
 
@@ -73,7 +71,7 @@
         // too big angle to the target, set up a rotation mission first. note that we make a smaller angle than needed!
         self.rotation = [[RotateMission alloc] initFacingTarget:self.targetPos
                                                    maxDeviation:self.unit.weapon.firingAngle / 2.0f - 10.0f];
-        CCLOG( @"target is outside firing arc" );
+        NSLog( @"target is outside firing arc" );
     }
 
     // do we have a rotation mission still to do?
@@ -81,7 +79,7 @@
         if ([self.rotation execute] == kCompleted) {
             // it is, so get rid of it
             self.rotation = nil;
-            CCLOG( @"rotation done" );
+            NSLog( @"rotation done" );
         }
 
         // start firing next update
@@ -97,7 +95,7 @@
     bool targetSeen = YES;
 
     // check LOS
-    if ( ! [[Globals sharedInstance].mapLayer canSeeFrom:self.unit.position to:self.targetPos visualize:NO withMaxRange:self.unit.visibilityRange] ) {
+    if ( ! [[Globals sharedInstance].map canSeeFrom:self.unit.position to:self.targetPos visualize:NO withMaxRange:self.unit.visibilityRange] ) {
         // inside firing range but can not see the target. Was this a mortar unit with a HQ spotter?
         if (self.unit.weapon.type == kMortar || self.unit.weapon.type == kHowitzer) {
             // yes, so it could use its HQ as a spotter
@@ -105,23 +103,23 @@
 
             // does it have an hq within command distance that is alive that can see the enemy?
             if (hq == nil || hq.destroyed) {
-                CCLOG( @"mortar hq destroyed or no hq at all, stopping indirect firing" );
+                NSLog( @"mortar hq destroyed or no hq at all, stopping indirect firing" );
                 return kCompleted;
             }
 
             if (![hq isIdle]) {
-                CCLOG( @"mortar hq not idle, stopping indirect firing" );
+                NSLog( @"mortar hq not idle, stopping indirect firing" );
                 return kCompleted;
             }
 
             if (ccpDistance( self.unit.position, hq.position ) >= hq.commandRange) {
-                CCLOG( @"mortar hq too far away, stopping indirect firing" );
+                NSLog( @"mortar hq too far away, stopping indirect firing" );
                 return kCompleted;
             }
 
-            if ( ! [[Globals sharedInstance].mapLayer canSeeFrom:hq.position to:self.targetPos visualize:NO withMaxRange:self.unit.visibilityRange] ) {
+            if ( ! [[Globals sharedInstance].map canSeeFrom:hq.position to:self.targetPos visualize:NO withMaxRange:self.unit.visibilityRange] ) {
                 // can not use HQ as spotter
-                CCLOG( @"mortar hq can not see target, stopping indirect firing" );
+                NSLog( @"mortar hq can not see target, stopping indirect firing" );
                 return kCompleted;
             }
 
@@ -130,7 +128,7 @@
         }
         else {
             // not a mortar unit so no LOS means we can't fire
-            CCLOG( @"no LOS to target" );
+            NSLog( @"no LOS to target" );
             return kCompleted;
         }
     }

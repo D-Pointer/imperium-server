@@ -3,7 +3,7 @@
 #import "RotateMission.h"
 #import "Unit.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "LineOfSight.h"
 
 
@@ -15,7 +15,6 @@
         self.type = kScoutMission;
         self.name = @"Scouting";
         self.preparingName = @"Preparing to scout";
-        self.color = sScoutLineColor;
 
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamScoutFatigueEffectF].floatValue;
@@ -32,7 +31,6 @@
         self.type = kScoutMission;
         self.name = @"Scouting";
         self.preparingName = @"Preparing to scout";
-        self.color = sScoutLineColor;
         self.endPoint = path.lastPosition;
 
         // fatigue added per minute
@@ -54,7 +52,7 @@
 //
 //        self.enemiesSeenAtStart = tmpSet;
 //
-//        CCLOG( @"at start unit %@ sees %lu enemies", self.unit, (unsigned long)self.enemiesSeenAtStart.count );
+//        NSLog( @"at start unit %@ sees %lu enemies", self.unit, (unsigned long)self.enemiesSeenAtStart.count );
 //    }
 
     if ( [self moveUnit:self.unit alongPath:self.path withSpeed:self.unit.scoutingSpeed] == kCompleted ) {
@@ -64,14 +62,14 @@
 
     // has it seen new enemies?
     if ( self.unit.losData.didSpotNewEnemies ) {
-        CCLOG( @"%@ found new enemies, mission done", self.unit );
+        NSLog( @"%@ found new enemies, mission done", self.unit );
         return kCompleted;
     }
 
     // did we see any new enemy?
 //    if ( [self checkForNewSeenEnemies:self.unit] ) {
 //        // found new enemies
-//        CCLOG( @"found new enemies, mission done" );
+//        NSLog( @"found new enemies, mission done" );
 //        //[self addMessage:kNewEnemySpottedStopping forUnit:self.unit];
 //        return kCompleted;
 //    }
@@ -95,14 +93,14 @@
 //    // do we see more enemies now?
 //    if ( currentEnemies.count > self.enemiesSeenAtStart.count ) {
 //        // new enemies seen
-//        CCLOG( @"%@ sees new enemies", mover );
+//        NSLog( @"%@ sees new enemies", mover );
 //        newFound = YES;
 //    }
 //
 //    // if the current enemies is a subset of the ones seen at start then we have no new enemies
 //    if ( ! [currentEnemies isSubsetOfSet:self.enemiesSeenAtStart] ) {
 //        // new enemies seen
-//        CCLOG( @"%@ sees new enemies", mover );
+//        NSLog( @"%@ sees new enemies", mover );
 //        newFound = YES;
 //    }
 //
@@ -113,7 +111,7 @@
     /*
       NSMutableArray * enemies = mover.owner == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
 
-     MapLayer * map = [Globals sharedInstance].mapLayer;
+     MapLayer * map = [Globals sharedInstance].map;
 
      LineOfSight * los = [Globals sharedInstance].lineOfSight;
 
@@ -134,7 +132,7 @@
      if ( [los canUnit:mover seeTarget:enemy_unit] ) {
      //if ( [map canSeeFrom:mover.position to:enemy_unit.position visualize:NO] ) {
      // now we see it, so that means the scout mission found it
-     CCLOG( @"%@ found %@", mover.name, enemy_unit.name );
+     NSLog( @"%@ found %@", mover.name, enemy_unit.name );
      // TODO: multiplayer
      enemy_unit.visible = YES;
      return YES;

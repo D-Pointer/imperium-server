@@ -46,7 +46,7 @@
         [self setupShaders];
 
         // use default z order
-        self.mapLayerZ = kTerrainZ;
+        self.mapZ = kTerrainZ;
     }
     
     return self;    
@@ -67,7 +67,7 @@
         // the number of vertices in total
         vertex_count = indices.count;
         
-        //CCLOG( @"PolygonNode.initWithPolygon: %u triangles", vertex_count / 3 );
+        //NSLog( @"PolygonNode.initWithPolygon: %u triangles", vertex_count / 3 );
 
         
         // the number of original vertices in total
@@ -116,7 +116,7 @@
         [self setupShaders];
 
         // use default z order
-        self.mapLayerZ = kTerrainZ;
+        self.mapZ = kTerrainZ;
     }
     
     return self;    
@@ -166,11 +166,11 @@
             // crosses
             crossed++;
 
-            CCLOG( @"PolygonNode.containsPoint: %f %f -> %f %f", vertices_[index].x, vertices_[index].y, vertices_[index + 1].x, vertices_[index + 1].y );
+            NSLog( @"PolygonNode.containsPoint: %f %f -> %f %f", vertices_[index].x, vertices_[index].y, vertices_[index + 1].x, vertices_[index + 1].y );
         }
     }
     
-    CCLOG( @"PolygonNode.containsPoint: crossed: %d", crossed );
+    NSLog( @"PolygonNode.containsPoint: crossed: %d", crossed );
 
     return (crossed % 2) == 1;
  */
@@ -251,7 +251,7 @@
         
         // check intersection
         if ( ccpLineIntersect( start, end, p1, p2, &s, &t ) && s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f) {
-            //CCLOG( @"PolygonNode.intersectsLineFrom: hit at %f", s );
+            //NSLog( @"PolygonNode.intersectsLineFrom: hit at %f", s );
             found = YES;
             
             // closer hit?
@@ -291,7 +291,7 @@
 
         // check intersection
         if ( ccpLineIntersect( start, end, p1, p2, &s, &t ) && s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f) {
-            //CCLOG( @"PolygonNode.intersectsLineFrom: hit at %f", s );
+            //NSLog( @"PolygonNode.intersectsLineFrom: hit at %f", s );
             [result addObject:[[HitPosition alloc] initWithPolygon:self atPosition:s]];
         }
     }

@@ -58,25 +58,25 @@
         if ( near[ kPlayer1 ] > 0 && near[ kPlayer2 ] == 0 ) {
             // player 1 has units near it
             objectives[ kPlayer1 ] += sParameters[kParamObjectiveFullValueF].floatValue;
-            //CCLOG( @"player 1 has objective" );
+            //NSLog( @"player 1 has objective" );
         }
         
         else if ( near[ kPlayer1 ] == 0 && near[ kPlayer2 ] > 0 ) {
             // player 2 has units near it
             objectives[ kPlayer2 ] += sParameters[kParamObjectiveFullValueF].floatValue;
-            //CCLOG( @"player 2 has objective" );
+            //NSLog( @"player 2 has objective" );
         }
 
         else if ( near[ kPlayer1 ] > 0 && near[ kPlayer2 ] > 0 ) {
             // both players have units near it
             objectives[ kPlayer1 ] += sParameters[kParamObjectiveSharedValueF].floatValue;
             objectives[ kPlayer2 ] += sParameters[kParamObjectiveSharedValueF].floatValue;
-            //CCLOG( @"both players have objective" );
+            //NSLog( @"both players have objective" );
         }
         
         else {
             // none has it
-            //CCLOG( @"no player has objective" );
+            //NSLog( @"no player has objective" );
         }
     }
 }

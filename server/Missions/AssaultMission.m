@@ -17,7 +17,6 @@
         self.type = kAssaultMission;
         self.name = @"Assaulting";
         self.preparingName = @"Preparing to assault";
-        self.color = sAssaultLineColor;
         self.rotation = nil;
         self.started = NO;
         self.fatigueEffect = sParameters[kParamAssaultFatigueEffectF].floatValue;
@@ -62,7 +61,7 @@
     // did we see any new enemy?
 //    if ( [self checkForNewSeenEnemies:self.unit] ) {
 //        // found new enemies
-//        CCLOG( @"found new enemies" );
+//        NSLog( @"found new enemies" );
 //        [self addMessage:kNewEnemySpotted forUnit:self.unit];
 //    }
 

@@ -7,6 +7,6 @@
 
 @interface ScenarioReader : NSObject
 
-- (void) parseScenario:(NSString *)name forMap:(MapLayer *)mapLayer_;
+- (void) parseScenario:(NSString *)name forMap:(MapLayer *)map_;
 
 @end

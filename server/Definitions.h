@@ -49,12 +49,6 @@ typedef enum {
 } BattleSizeType;
 
 typedef enum {
-    kCampaign,
-    kTutorial,
-    kMultiplayer
-} ScenarioType;
-
-typedef enum {
     kAdvanceMission,
     kAssaultMission,
     kFireMission,

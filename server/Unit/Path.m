@@ -1,7 +1,7 @@
 
 #import "Path.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 
 @interface Path ()
 
@@ -85,7 +85,7 @@
 
         CCSprite * sprite = [CCSprite spriteWithSpriteFrameName:@"CannonBullet.png"];
         sprite.position = position;
-        [[Globals sharedInstance].mapLayer addChild:sprite z:kBulletZ];
+        [[Globals sharedInstance].map addChild:sprite z:kBulletZ];
     }
 }
 

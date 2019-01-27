@@ -2,7 +2,6 @@
 #import "Mission.h"
 #import "RotateMission.h"
 #import "RoutMission.h"
-#import "AttackVisualization.h"
 
 
 @interface CombatMission : Mission

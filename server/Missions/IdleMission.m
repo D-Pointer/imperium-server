@@ -10,11 +10,8 @@
     if (self) {
         self.type = kIdleMission;
         self.name = @"No mission";
-        self.preparingName = @"No mision";
+        self.preparingName = @"No mission";
 
-        // not used
-        self.color = sIdleLineColor;
-        
         // this can be cancelled by the player
         self.canBeCancelled = YES;
 

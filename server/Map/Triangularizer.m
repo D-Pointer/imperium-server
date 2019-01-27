@@ -62,11 +62,11 @@ typedef enum PolygonWinding {
     
     // first check the angle of the triangle
     float angle = ccpAngleSigned( ccpSub( p0, p1 ), ccpSub( p2, p1 ) );
-    //CCLOG( @"Triangularizer:checkTriangle: angle: %f", angle );
+    //NSLog( @"Triangularizer:checkTriangle: angle: %f", angle );
     if ( angle < 0 ) {
         // the angle is larger then 180 degrees, so this triangle can not be cut off, it's no ear
-        //CCLOG( @"Triangularizer:checkTriangle: too large angle: %f %f", angle, angle2 );
-        //CCLOG( @"Triangularizer:checkTriangle: %.f %.f   %.f %.f   %.f %.f", p0.x, p0.y, p1.x, p1.y, p2.x, p2.y );
+        //NSLog( @"Triangularizer:checkTriangle: too large angle: %f %f", angle, angle2 );
+        //NSLog( @"Triangularizer:checkTriangle: %.f %.f   %.f %.f   %.f %.f", p0.x, p0.y, p1.x, p1.y, p2.x, p2.y );
         return NO;
     }
     
@@ -82,7 +82,7 @@ typedef enum PolygonWinding {
         
         if ( [self pointInTriangle:p0 b:p1 c:p2 point:[[vertices objectAtIndex:vertex_index] CGPointValue]] ) {
             // point is inside
-            //CCLOG( @"Triangularizer:checkTriangle: point inside: %u", vertex_index );
+            //NSLog( @"Triangularizer:checkTriangle: point inside: %u", vertex_index );
             return NO;
         }
     }
@@ -127,7 +127,7 @@ typedef enum PolygonWinding {
         // check the angle of the triangle
         float angle = ccpAngleSigned( ccpSub( p0, p1 ), ccpSub( p2, p1 ) );
 
-        //CCLOG( @"Triangularizer.smoothPolygon: smooth index: %d, angle: %f, size: %u", index, angle, originalVertices.count );
+        //NSLog( @"Triangularizer.smoothPolygon: smooth index: %d, angle: %f, size: %u", index, angle, originalVertices.count );
 
         // small/sharp enough?
         if ( angle < -min_angle || angle > min_angle ) {
@@ -143,7 +143,7 @@ typedef enum PolygonWinding {
             smooth_angle = (-M_PI - angle) / 5.0f;
         }
 
-        //CCLOG( @"Triangularizer.smoothPolygon: angle: %f -> %f", angle, smooth_angle );
+        //NSLog( @"Triangularizer.smoothPolygon: angle: %f -> %f", angle, smooth_angle );
 
         // two points rotated around p1
         CGPoint extra_point1 = ccpRotateByAngle( p0, p1, -smooth_angle );
@@ -166,14 +166,14 @@ typedef enum PolygonWinding {
         
         //index += 2; //3;
         
-//        CCLOG( @"Triangularizer.smoothPolygon: %f %f -> %f %f  == %f %f", p1.x, p1.y, p0.x, p0.y, extra_point1.x, extra_point1.y );
-//        CCLOG( @"Triangularizer.smoothPolygon: %f %f -> %f %f  == %f %f", p1.x, p1.y, p2.x, p2.y, extra_point2.x, extra_point2.y );
+//        NSLog( @"Triangularizer.smoothPolygon: %f %f -> %f %f  == %f %f", p1.x, p1.y, p0.x, p0.y, extra_point1.x, extra_point1.y );
+//        NSLog( @"Triangularizer.smoothPolygon: %f %f -> %f %f  == %f %f", p1.x, p1.y, p2.x, p2.y, extra_point2.x, extra_point2.y );
 
     }
     
 //    for ( unsigned int index = 0; index < vertices.count; ++index ) {
 //        CGPoint p = [[vertices objectAtIndex:index] CGPointValue];
-//        CCLOG( @"Triangularizer.smoothPolygon: %f %f", p.x, p.y );
+//        NSLog( @"Triangularizer.smoothPolygon: %f %f", p.x, p.y );
 //    }
 }
 
@@ -204,7 +204,7 @@ typedef enum PolygonWinding {
     
     // precautions, there needs to be enough vertices to do this stuff
     if ( originalVertices == nil || originalVertices.count < 3 ) {
-        CCLOG( @"Triangularizer.triangularize: invalid vertices" );
+        NSLog( @"Triangularizer.triangularize: invalid vertices" );
         return result;
     }
     
@@ -226,22 +226,22 @@ typedef enum PolygonWinding {
     
     NSUInteger vertex_count = vertices.count;
 
-    //CCLOG( @"Triangularizer.triangularize: handling %u vertices", vertex_count );
+    //NSLog( @"Triangularizer.triangularize: handling %u vertices", vertex_count );
 
     // fill an array with the indices, 0..n. these point to the vertices in 'vertices_copy'
     indices = [ NSMutableArray arrayWithCapacity:vertex_count];
     for ( unsigned int index = 0; index < vertex_count; ++index ) {
         [indices insertObject:[NSNumber numberWithUnsignedInt:index] atIndex:index];
         //CGPoint p1 = [[vertices objectAtIndex:index] CGPointValue];
-        //CCLOG( @"%u -> %f %f", index, p1.x, p1.y );
+        //NSLog( @"%u -> %f %f", index, p1.x, p1.y );
     }
 
-    //CCLOG( @"Triangularizer.triangularize: winding: %@", winding == ClockWise ? @"clockwise" : @"counterclockwise" );    
+    //NSLog( @"Triangularizer.triangularize: winding: %@", winding == ClockWise ? @"clockwise" : @"counterclockwise" );    
     
     // now loop while we still have vertices
     while ( indices.count >= 3 ) {
         NSUInteger start_count = indices.count;
-        //CCLOG( @"Triangularizer.triangularize: indices left: %u", indices.count );
+        //NSLog( @"Triangularizer.triangularize: indices left: %u", indices.count );
 
         unsigned int index = 0;
         
@@ -262,7 +262,7 @@ typedef enum PolygonWinding {
                 // vertex set and form a triangle
                 
                 //CGPoint p1 = [[vertices objectAtIndex:vertex_index1] CGPointValue];
-                //CCLOG( @"Triangularizer.triangularize: triangle %u %u %u, %f %f", vertex_index0, vertex_index1, vertex_index2, p1.x, p1.y );
+                //NSLog( @"Triangularizer.triangularize: triangle %u %u %u, %f %f", vertex_index0, vertex_index1, vertex_index2, p1.x, p1.y );
 
                 // snip off the center of the triangle
                 [indices removeObjectAtIndex:(index + 1) % indices.count];    

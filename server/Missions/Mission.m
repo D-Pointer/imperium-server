@@ -2,7 +2,7 @@
 #import "Mission.h"
 #import "Globals.h"
 #import "TerrainModifiers.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "MeleeMission.h"
 #import "Message.h"
 #import "Engine.h"
@@ -96,9 +96,6 @@
 
 
 - (MissionState) moveUnit:(Unit *)unit alongPath:(Path *)path withSpeed:(float)speed {
-    // stop all old actions
-    [unit stopAllActions];
-
     // do we have a rotation going on?
     if ( self.rotation ) {
         // if this is our final rotation then we're completed when it's done.
@@ -120,9 +117,6 @@
     // was completed this same step)
     float timeLeft = [Globals sharedInstance].clock.lastElapsedTime;
 
-    // all the actions that we'll create
-    NSMutableArray * result = [NSMutableArray new];
-
     // starting pos
     CGPoint old_pos = unit.position;
 
@@ -131,10 +125,10 @@
         // we move towards the first position in the path
         CGPoint target = path.firstPosition;
 
-        //CCLOG( @"time left: %.1f, moving towards: %.1f, %.1f", timeLeft, target.x, target.y );
+        //NSLog( @"time left: %.1f, moving towards: %.1f, %.1f", timeLeft, target.x, target.y );
 
         // terrain under the unit
-        TerrainType terrain_type = [[Globals sharedInstance].mapLayer getTerrainForUnit:unit];
+        TerrainType terrain_type = [[Globals sharedInstance].map getTerrainForUnit:unit];
 
         // terrain modifier
         float terrainModifier = getTerrainMovementModifier( unit, terrain_type );
@@ -142,7 +136,7 @@
         // can it even move there?
         if ( terrainModifier < 0 ) {
             // impassable, movement is now done
-            CCLOG( @"impassable" );
+            NSLog( @"impassable" );
             return kCompleted;
         }
 
@@ -172,7 +166,7 @@
         // modify with how far the unit moves with the time left
         CGPoint maxMovement = ccpMult( heading, maxDistance );
 
-        //CCLOG( @"dist: %.2f, max travel: %.2f", distanceToWaypoint, maxDistance );
+        //NSLog( @"dist: %.2f, max travel: %.2f", distanceToWaypoint, maxDistance );
 
         CGPoint new_position;
         float timeUsed;
@@ -192,7 +186,7 @@
             if ( path.count == 0 && self.type != kRetreatMission ) {
                 // set up a final rotation mission to face the unit towards the last step
                 self.rotation = [[RotateMission alloc] initFacingTarget:path.finalFacingTarget];
-                //CCLOG( @"rotating to face final target: %.1f %.1f", path.finalFacingTarget.x, path.finalFacingTarget.y );
+                //NSLog( @"rotating to face final target: %.1f %.1f", path.finalFacingTarget.x, path.finalFacingTarget.y );
             }
         }
         else {
@@ -203,7 +197,7 @@
             timeLeft = -1;
         }
 
-        //CCLOG( @"new pos: %.1f, %.1f", new_position.x, new_position.y );
+        //NSLog( @"new pos: %.1f, %.1f", new_position.x, new_position.y );
 
         // is there any unit nearby?
         //bool stackingOk = YES;
@@ -221,44 +215,39 @@
                 }
 
                 // we've waited long enough
-                CCLOG( @"%@ would stack with %@, cancelling mission", unit, tmp );
+                NSLog( @"%@ would stack with %@, cancelling mission", unit, tmp );
 
                 // is the unit an own unit? don't show stacking errors for enemies
-                if ( unit.owner == [Globals sharedInstance].localPlayer.playerId ) {
-                    [self addMessage:kNoStackingAllowed forUnit:unit];
-                }
+                //if ( unit.owner == [Globals sharedInstance].localPlayer.playerId ) {
+                [self addMessage:kNoStackingAllowed forUnit:unit];
+                //}
 
                 return kCompleted;
             }
         }
 
         // rotation needed?
-        CCRotateTo * rotation = [self turnUnit:unit toFace:new_position withMaxDeviation:sParameters[kParamMaxTurnDeviationF].floatValue inTime:timeUsed];
+        [self turnUnit:unit toFace:new_position withMaxDeviation:sParameters[kParamMaxTurnDeviationF].floatValue inTime:timeUsed];
 
         // movement
-        CCMoveTo * movement = [CCMoveTo actionWithDuration:timeUsed / [Globals sharedInstance].clock.lastElapsedTime
-                                                  position:new_position];
+        //CCMoveTo * movement = [CCMoveTo actionWithDuration:timeUsed / [Globals sharedInstance].clock.lastElapsedTime
+        //                                          position:new_position];
 
         // move and rotate?
-        if ( rotation ) {
-            [result addObject:[CCSpawn actionOne:rotation two:movement]];
-        }
-        else {
-            // move to the new position
-            [result addObject:movement];
-        }
+//        if ( rotation ) {
+//            [result addObject:[CCSpawn actionOne:rotation two:movement]];
+//        }
+//        else {
+//            // move to the new position
+//            [result addObject:movement];
+//        }
 
-        //CCLOG( @"moving to pos: %.1f, %.1f in %.1f", new_position.x, new_position.y, timeUsed );
+        //NSLog( @"moving to pos: %.1f, %.1f in %.1f", new_position.x, new_position.y, timeUsed );
         old_pos = new_position;
     }
 
     // no stacking problems
     self.stackingRetries = 0;
-
-    // setup result actions if there are any
-    if ( result.count > 0 ) {
-        [unit runAction:[CCSequence actionWithArray:result]];
-    }
 
     // still moving
     if ( path.count == 0 && self.rotation == nil ) {
@@ -285,27 +274,30 @@
     // and then the next step we're done
     if ( fabsf( rotation ) <= rotated ) {
         // turn smoothly, but we're not yet done
-        [unit smoothTurnTo:unit.rotation + rotation];
+        //[unit smoothTurnTo:unit.rotation + rotation];
+        unit.rotation += rotation;
         return kInProgress;
     }
 
     // turn clockwise?
     if ( rotation > 0 ) {
-        [unit smoothTurnTo:unit.rotation + rotated];
+        //[unit smoothTurnTo:unit.rotation + rotated];
+        unit.rotation += rotated;
     }
     else {
         // turn smoothly counter clockwise
-        [unit smoothTurnTo:unit.rotation - rotated];
+        //[unit smoothTurnTo:unit.rotation - rotated];
+        unit.rotation -= rotated;
     }
 
     return kInProgress;
 }
 
 
-- (CCRotateTo *) turnUnit:(Unit *)unit toFace:(CGPoint)target withMaxDeviation:(float)deviation inTime:(float)seconds {
+- (void) turnUnit:(Unit *)unit toFace:(CGPoint)target withMaxDeviation:(float)deviation inTime:(float)seconds {
     // retreat missions do not turn
     if ( self.type == kRetreatMission ) {
-        return nil;
+        return;
     }
 
     // rotation amount and direction for the unit
@@ -313,7 +305,7 @@
 
     // close enough?
     if ( fabsf( rotation ) < deviation ) {
-        return nil;
+        return;
     }
 
     // how much has the unit now rotated since the last update?
@@ -323,24 +315,22 @@
     // and then the next step we're done
     if ( fabsf( rotation ) <= rotated ) {
         // turn smoothly, but we're not yet done
-        return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
-                                        angle:unit.rotation + rotation];
+//        return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
+//                                        angle:unit.rotation + rotation];
+        unit.rotation += rotation;
     }
 
     // turn clockwise?
     if ( rotation > 0 ) {
-        return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
-                                        angle:unit.rotation + rotated];
+//        return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
+//                                        angle:unit.rotation + rotated];
+        unit.rotation += rotated;
     }
 
     // turn smoothly counter clockwise
-    return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
-                                    angle:unit.rotation - rotated];
-}
-
-
-- (void) addMessage:(MessageType)message forUnit:(Unit *)unit {
-    [[Globals sharedInstance].engine.messages addObject:[[Message alloc] initWithMessage:message forUnit:unit]];
+//    return [CCRotateTo actionWithDuration:seconds / [Globals sharedInstance].clock.lastElapsedTime
+//                                    angle:unit.rotation - rotated];
+    unit.rotation -= rotated;
 }
 
 
@@ -408,80 +398,4 @@
 
 
 @end
-
-
-/*- (MissionState) moveUnit:(Unit *)unit towards:(CGPoint)target withSpeed:(float)speed untilDistance:(float)distance {
- CGPoint old_pos = unit.position;
-
- // a normalized vector towards the target
- CGPoint heading = ccpNormalize( ccpSub( target, old_pos ) );
-
- // terrain under the unit
- TerrainType terrain_type = [[Globals sharedInstance].mapLayer getTerrainForUnit:unit];
-
- // terrain modifier
- float terrain_modifier = getTerrainMovementModifier( unit, terrain_type );
-
- // can it even move there?
- if ( terrain_modifier < 0 ) {
- // impassable, movement is now done
- return kCompleted;
- }
-
- // modify with how far the unit moves in one step
- heading = ccpMult( heading, speed * terrain_modifier * sTimeMultiplier );
-
- CGPoint new_position;
-
- // avoid overshooting the destination! if we move too far we will get an oscillating movement over the
- // endpoint that never stops
- if ( ccpDistance( unit.position, self.endPoint ) < ccpLength( heading ) ) {
- new_position = self.endPoint;
- }
- else {
- new_position = ccpAdd( old_pos, heading );
- }
-
- // is there any unit nearby?
- for ( Unit * tmp in [Globals sharedInstance].units ) {
- // don't check against ourselves or dead units
- if ( unit == tmp || tmp.destroyed ) {
- continue;
- }
-
- if ( ccpDistance( new_position, tmp.position ) < sParameters[ kParamMinStackingDistanceF].floatValue ) {
- // unit would stack with the other unit, should we wait?
- if ( self.stackingRetries++ < sMaxStackingRetries ) {
- // wait a bit longer
- return kInProgress;
- }
-
- // we've waited long enough
- CCLOG( @"%@ would stack with %@, cancelling mission", unit, tmp );
- [self addMessage:kNoStackingAllowed forUnit:unit];
- return kCompleted;
- }
- }
-
- // no stacking problems
- self.stackingRetries = 0;
-
- // move to the new position
- [unit smoothMoveTo:new_position];
-
- // did we see any new enemy?
- if ( [self checkForNewSeenEnemies:unit] ) {
- // found new enemies
- CCLOG( @"%@ found new enemies", unit.name );
- }
-
- // is it close enough to the destination?
- if ( ccpDistance( self.endPoint, new_position ) < distance ) {
- // has arrived
- return kCompleted;
- }
-
- // not yet there
- return kInProgress;
- }*/
 

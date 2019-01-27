@@ -41,12 +41,12 @@
         // where it stands it has full firepower
         float maxFirepower = unit.weaponCount * unit.weapon.firepower * 5;
 
-        CCLOG( @"%@ range: %f, max: %f", unit, influenceRange, maxFirepower );
+        NSLog( @"%@ range: %f, max: %f", unit, influenceRange, maxFirepower );
 
         int unitX = [self fromWorld:unit.position.x];
         int unitY = [self fromWorld:unit.position.y];
 
-        //CCLOG( @"pos: %d %d", unitX, unitY );
+        //NSLog( @"pos: %d %d", unitX, unitY );
 
         int startX = MAX( 0, unitX - influenceRange );
         int startY = MAX( 0, unitY - influenceRange );

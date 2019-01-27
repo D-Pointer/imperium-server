@@ -20,7 +20,6 @@
         self.type = kChangeModeMission;
         self.name = @"Changing mode";
         self.preparingName = @"Preparing to change mode";
-        self.color = sChangeModeLineColor;
         
         self.startTime = -1.0f;
         self.completedTime = -1.0f;
@@ -45,10 +44,10 @@
     // not yet started?
     if ( self.startTime < 0 ) {
         // now it starts
-        CCLOG( @"starting to change mode for %@", self.unit.name );
+        NSLog( @"starting to change mode for %@", self.unit.name );
         self.startTime = [Globals sharedInstance].clock.currentTime;
         self.completedTime = self.startTime + self.unit.changeModeTime;
-        CCLOG( @"time: %.0f, start: %.0f, end: %.0f", self.completedTime - self.startTime, self.startTime, self.completedTime );
+        NSLog( @"time: %.0f, start: %.0f, end: %.0f", self.completedTime - self.startTime, self.startTime, self.completedTime );
 
         // the mode we change into
         UnitMode changingTo = self.unit.mode == kFormation ? kColumn : kFormation;
@@ -97,7 +96,7 @@
             //[[Globals sharedInstance].connection sendMessage:kChangeModeMessage withData:data];
         }
         
-        CCLOG( @"completed mode change for %@, now: %d", self.unit.name, mode );
+        NSLog( @"completed mode change for %@, now: %d", self.unit.name, mode );
         return kCompleted;
     }
     

@@ -57,10 +57,10 @@
     // add to the total
     self.elapsedTime += self.lastElapsedTime;
 
-//    CCLOG( @"real elapsed time:       %.2f", delta );
-//    CCLOG( @"total real elapsed time: %.2f", totalRealtime );
-//    CCLOG( @"sim elapsed time:        %.2f", self.lastElapsedTime );
-//    CCLOG( @"total sim elapsed time:  %.2f", self.elapsedTime );
+//    NSLog( @"real elapsed time:       %.2f", delta );
+//    NSLog( @"total real elapsed time: %.2f", totalRealtime );
+//    NSLog( @"sim elapsed time:        %.2f", self.lastElapsedTime );
+//    NSLog( @"total sim elapsed time:  %.2f", self.elapsedTime );
 
     self.baseTime = now;
 

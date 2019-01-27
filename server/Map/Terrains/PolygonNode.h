@@ -24,7 +24,7 @@
 
 
 @property (assign, nonatomic) TerrainType terrainType;
-@property (assign, nonatomic) MapLayerZ   mapLayerZ;
+@property (assign, nonatomic) MapLayerZ   mapZ;
 
 - (id) initWithPolygon:( NSMutableArray *)vertices smoothing:(BOOL)smoothing;
 

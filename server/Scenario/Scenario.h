@@ -21,9 +21,7 @@
 @property (nonatomic, strong)   NSString *         title;
 @property (nonatomic, strong)   NSString *         information;
 @property (nonatomic, strong)   NSString *         filename;
-@property (nonatomic, assign)   AIHint             aiHint;
 @property (nonatomic, assign)   BattleSizeType     battleSize;
-@property (nonatomic, assign)   ScenarioType       scenarioType;
 
 @property (nonatomic, readonly) ScenarioState      state;
 @property (nonatomic, strong)    NSMutableArray *          victoryConditions;
@@ -38,14 +36,5 @@
 // wind direction (0..360) and strength (m/s)
 @property (nonatomic, assign)   float              windDirection;
 @property (nonatomic, assign)   float              windStrength;
-
-
-- (BOOL) isPlayableForCampaign:(int)campaignId;
-
-- (BOOL) isCompletedForCampaign:(int)campaignId;
-
-- (void) setCompletedForCampaign:(int)campaignId;
-
-- (void) clearCompletedForCampaign:(int)campaignId;
 
 @end

@@ -15,8 +15,9 @@
 @property (nonatomic, strong) Organization *      organization;
 @property (nonatomic, assign) PlayerId            owner;
 @property (nonatomic, assign) UnitType            type;
+@property (nonatomic, assign) CGPoint             position;
+@property (nonatomic, assign) float               rotation;
 @property (nonatomic, assign) ExperienceType      experience;
-@property (nonatomic, assign) BOOL                selected;
 @property (nonatomic, assign) BOOL                isHeadquarter;
 @property (nonatomic, assign) BOOL                isSupport;
 @property (nonatomic, assign) float               lastFired;

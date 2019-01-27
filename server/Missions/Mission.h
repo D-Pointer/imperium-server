@@ -2,6 +2,7 @@
 
 #import "Definitions.h"
 #import "Path.h"
+#import "CGPointExtension.h"
 
 @class Unit;
 @class RotateMission;
@@ -34,7 +35,7 @@
 
 - (MissionState) turnUnit:(Unit *)unit toFace:(CGPoint)target withMaxDeviation:(float)deviation;
 
-- (CCRotateTo *) turnUnit:(Unit *)unit toFace:(CGPoint)target withMaxDeviation:(float)deviation inTime:(float)seconds;
+- (void) turnUnit:(Unit *)unit toFace:(CGPoint)target withMaxDeviation:(float)deviation inTime:(float)seconds;
 
 - (void) addMessage:(MessageType)message forUnit:(Unit *)unit;
 

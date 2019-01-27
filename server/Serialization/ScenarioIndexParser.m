@@ -25,7 +25,7 @@
 @implementation ScenarioIndexParser
 
 - (BOOL) parseScenarioIndexFile {
-    CCLOG( @"loading scenario index file" );
+    NSLog( @"loading scenario index file" );
 
     // read everything and split into lines
     NSString * contents = [ResourceHandler loadResource:@"Scenarios/Index.txt"];
@@ -35,7 +35,7 @@
     
     NSArray * lines = [contents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 
-    CCLOG( @"read %lu lines", (unsigned long)lines.count );
+    NSLog( @"read %lu lines", (unsigned long)lines.count );
 
     Globals * globals = [Globals sharedInstance];
     int tutorialCount = 0, scenarioCount = 0;
@@ -98,12 +98,12 @@
             // empty line, we're done with this scenario
             if ( self.scenario.scenarioType == kTutorial ) {
                 [globals.scenarios insertObject:self.scenario atIndex:0];
-                CCLOG( @"parsed tutorial: %@", self.scenario );
+                NSLog( @"parsed tutorial: %@", self.scenario );
                 tutorialCount++;
             }
             else {
                 [globals.scenarios addObject:self.scenario];
-                CCLOG( @"parsed scenario: %@", self.scenario );
+                NSLog( @"parsed scenario: %@", self.scenario );
                 scenarioCount++;
             }
 
@@ -112,14 +112,14 @@
 
         else {
             // unknown line
-            CCLOG( @"invalid line in scenario index file: '%@'", line );
+            NSLog( @"invalid line in scenario index file: '%@'", line );
 
             // nothing we want, we're done
             break;
         }
     }
 
-    CCLOG( @"parsed %d scenarios and %d tutorials", scenarioCount, tutorialCount );
+    NSLog( @"parsed %d scenarios and %d tutorials", scenarioCount, tutorialCount );
 
     // parsed ok
     return YES;
@@ -211,7 +211,7 @@
         [self.scenario.victoryConditions addObject:[TutorialCondition new]];
     }
     else {
-        CCLOG( @"unknown victory condition: %@", type );
+        NSLog( @"unknown victory condition: %@", type );
         NSAssert( NO, @"unknown victory condition" );
     }
 }

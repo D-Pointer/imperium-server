@@ -12,7 +12,6 @@
         self.type = kMoveFastMission;
         self.name = @"Moving fast";
         self.preparingName = @"Preparing to move fast";
-        self.color = sMoveFastLineColor;
 
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamMoveFastFatigueEffectF].floatValue;
@@ -30,7 +29,6 @@
         self.name = @"Moving fast";
         self.preparingName = @"Preparing to move fast";
         self.endPoint = path.lastPosition;
-        self.color = sMoveFastLineColor;
 
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamMoveFastFatigueEffectF].floatValue;
@@ -46,7 +44,7 @@
     // did we see any new enemy?
 //    if ( [self checkForNewSeenEnemies:self.unit] ) {
 //        // found new enemies
-//        CCLOG( @"found new enemies" );
+//        NSLog( @"found new enemies" );
 //        [self addMessage:kNewEnemySpotted forUnit:self.unit];
 //    }
 

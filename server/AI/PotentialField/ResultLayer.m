@@ -5,7 +5,7 @@
 @implementation ResultLayer
 
 - (void) update {
-    CCLOG( @"nothing to do" );
+    NSLog( @"nothing to do" );
 }
 
 @end

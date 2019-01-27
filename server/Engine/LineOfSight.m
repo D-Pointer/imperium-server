@@ -2,7 +2,7 @@
 #import "LineOfSight.h"
 #import "Globals.h"
 #import "Unit.h"
-#import "MapLayer.h"
+#import "Map.h"
 
 @interface LineOfSight () {
     // two arrays, one for each player
@@ -79,7 +79,7 @@
 
 
 - (void) update {
-    MapLayer * map = [Globals sharedInstance].mapLayer;
+    MapLayer * map = [Globals sharedInstance].map;
 
     // clear all data
     memset( data[0], 0, ownUnitCount * enemyUnitCount * sizeof(UInt8) );
@@ -145,7 +145,7 @@
                     if ( ! [ownUnit.losData wasUnitPreviouslySeen:enemy] ) {
                         // the unit did spot a new enemy it did not see last update
                         ownUnit.losData.didSpotNewEnemies = YES;
-                        //CCLOG( @"%@ spotted a new enemy: %@", ownUnit, enemy );
+                        //NSLog( @"%@ spotted a new enemy: %@", ownUnit, enemy );
                     }
 
                     enemy.visible = YES;
@@ -161,16 +161,16 @@
         // loop all the units that this unit used to see but no longer sees
         for ( unsigned int oldSeenIndex = 0; oldSeenIndex < humanUnit.losData.oldSeenCount; ++oldSeenIndex ) {
             Unit * oldSeen = [humanUnit.losData getPreviouslySeenUnit:oldSeenIndex];
-            //CCLOG( @"%@ saw %@, still sees: %@", humanUnit, oldSeen, oldSeen.visible ? @"yes" : @"no" );
+            //NSLog( @"%@ saw %@, still sees: %@", humanUnit, oldSeen, oldSeen.visible ? @"yes" : @"no" );
 
             // if the unit that is used to see is not seen any anyone else either, then mark it with a question mark
             if ( ! oldSeen.visible && oldSeen.questionMark == nil && ! oldSeen.destroyed ) {
-                //CCLOG( @"=== unit has been hidden" );
+                //NSLog( @"=== unit has been hidden" );
 
                 // set up the question mark
                 oldSeen.questionMark = [CCSprite spriteWithSpriteFrameName:oldSeen.owner == kPlayer1 ? @"Units/QuestionMark1.png" : @"Units/QuestionMark2.png"];
                 oldSeen.questionMark.position = oldSeen.position;
-                [[Globals sharedInstance].mapLayer addChild:oldSeen.questionMark z:kUnitZ];
+                [[Globals sharedInstance].map addChild:oldSeen.questionMark z:kUnitZ];
             }
         }
     }

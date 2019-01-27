@@ -3,7 +3,6 @@
 
 @interface PotentialFieldLayer : NSObject {
     float *     data;
-    ccColor4B * colors;
 }
 
 
@@ -15,9 +14,6 @@
 
 // a weight 0..100 indicating how important the layer is
 @property (nonatomic, assign)            float        weight;
-
-// for debugging use
-@property (nonatomic, strong)            CCSprite *   sprite;
 
 - (void) update;
 

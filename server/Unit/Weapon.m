@@ -180,11 +180,6 @@
 - (float) reloadingTime {
     // in seconds
 
-    // hardcoded fast time for tutorial
-    if ([Globals sharedInstance].tutorial) {
-        return 10;
-    }
-
     // if the weapon has no ammo then the reloading time is much longer. the troops will then share
     // what ammo they have and scavenge it from somewhere
     float ammoModifier = self.ammo <= 0 ? 2.0f : 1.0f;

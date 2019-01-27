@@ -1,6 +1,6 @@
 
 #import "ScenarioReader.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "PolygonNode.h"
 #import "TBXML.h"
 #import "Definitions.h"
@@ -16,7 +16,7 @@
      NSMutableArray * polygons;
      NSMutableArray * textures;
     
-    MapLayer * mapLayer;
+    MapLayer * map;
 }                             
 
 - (TerrainType) getTerrainTypeForId:(NSString *)polygon_id;
@@ -143,7 +143,7 @@
     NSString * polygon_type = [TBXML valueOfAttributeNamed:@"inkscape:label" forElement:element];
     NSString * polygon_id   = [TBXML valueOfAttributeNamed:@"id" forElement:element];
     
-    CCLOG( @"parsing: %@", polygon_id );
+    NSLog( @"parsing: %@", polygon_id );
     
     // extract the real data, the "d"
     NSString * data = [TBXML valueOfAttributeNamed:@"d" forElement:element];    
@@ -184,7 +184,7 @@
                 continue;
             }
 
-            //CCLOG( @"ScenarioParser.parsePath: completed '%c' = '%@'", type, accum );                
+            //NSLog( @"ScenarioParser.parsePath: completed '%c' = '%@'", type, accum );                
 
             // trim the number a bit
             accum = [accum stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -221,7 +221,7 @@
                     break;
             }
 
-            //CCLOG( @"ScenarioParser.parsePath: '%c' - new vertex: %.f %.f", type, pos.x, pos.y );                                    
+            //NSLog( @"ScenarioParser.parsePath: '%c' - new vertex: %.f %.f", type, pos.x, pos.y );                                    
 
             // save for later
             [vertices addObject:[NSValue valueWithCGPoint:pos]];
@@ -242,7 +242,7 @@
         }
     }
     
-    //CCLOG( @"ScenarioParser.parsePath: creating polygon for %@", polygon_type );
+    //NSLog( @"ScenarioParser.parsePath: creating polygon for %@", polygon_type );
     
     // create a polygon node and position it properly
     PolygonNode * polygon_node = [[PolygonNode alloc] initWithPolygon:vertices 
@@ -253,7 +253,7 @@
     polygon_node.terrainType = [self getTerrainTypeForId:polygon_type];
     polygon_node.texture     = [textures objectAtIndex:polygon_node.terrainType];
     polygon_node.position    = ccp( 0, 0 );
-    [mapLayer addChild:polygon_node z:kTerrainZ];   
+    [map addChild:polygon_node z:kTerrainZ];   
     
     // set up the outline if any
     [self setOutlineColorForPolygon:polygon_node];
@@ -311,7 +311,7 @@
     // new modified center
     CGPoint pos = ccp( a * x + c * y + e, b * x + d * y + f );
     
-    CCLOG( @"%d %f", mapHeight, pos.y );
+    NSLog( @"%d %f", mapHeight, pos.y );
     
     // flip y
     pos.y = mapHeight - pos.y;   
@@ -342,7 +342,7 @@
         NSAssert1( NO, @"Invalid unit type: %@", type_string );
     }
     
-    //CCLOG( @"ScenarioParser.parseUnit: '%@', type: %d pos: %f,%f, angle: %f", title, type, pos.x, pos.y, angle );
+    //NSLog( @"ScenarioParser.parseUnit: '%@', type: %d pos: %f,%f, angle: %f", title, type, pos.x, pos.y, angle );
     
     // the unit's initial mode
     UnitMode mode = [[data objectAtIndex:4] intValue];
@@ -376,13 +376,13 @@
     }
     
     // save for later
-    [mapLayer addChild:unit z:kUnitZ];    
+    [map addChild:unit z:kUnitZ];    
     [[Globals sharedInstance].units addObject:unit];
     
     // add a mission visualizer for the local human player's units
     if ( ( player == kPlayer1 && [Globals sharedInstance].player1.type == kLocalPlayer ) ||  ( player == kPlayer2 && [Globals sharedInstance].player2.type == kLocalPlayer ) ) {
         unit.missionVisualizer = [[MissionVisualizer alloc] initWithUnit:unit];
-        [mapLayer addChild:unit.missionVisualizer z:kMissionVisualizerZ];                
+        [map addChild:unit.missionVisualizer z:kMissionVisualizerZ];                
     }
 
     // add to the right container too
@@ -414,7 +414,7 @@
     objective.title = title;
     
     // save for later
-    [mapLayer addChild:objective z:kObjectiveZ];    
+    [map addChild:objective z:kObjectiveZ];    
     [[Globals sharedInstance].objectives addObject:objective];    
 }
 
@@ -511,7 +511,7 @@
     polygon_node.terrainType = [self getTerrainTypeForId:rect_id];
     polygon_node.texture     = [textures objectAtIndex:polygon_node.terrainType];
     polygon_node.position    = ccp( 0, 0 );
-    [mapLayer addChild:polygon_node z:kHouseZ];   
+    [map addChild:polygon_node z:kHouseZ];   
 
     // set up the outline if any
     [self setOutlineColorForPolygon:polygon_node];
@@ -527,13 +527,13 @@
     // two levels of extra cruft first
     child = [TBXML childElementNamed:@"rdf:RDF" parentElement:element];
     if ( child == nil ) {
-        CCLOG( @"ScenarioParser.parseMetadata: no <rdf::RDF> tag, skipping description");
+        NSLog( @"ScenarioParser.parseMetadata: no <rdf::RDF> tag, skipping description");
         return;
     }
 
     child = [TBXML childElementNamed:@"cc:Work" parentElement:child];
     if ( child == nil ) {
-        CCLOG( @"ScenarioParser.parseMetadata: no <cc:Work> tag, skipping description");
+        NSLog( @"ScenarioParser.parseMetadata: no <cc:Work> tag, skipping description");
         return;
     }
 
@@ -541,14 +541,14 @@
     TBXMLElement * title = [TBXML childElementNamed:@"dc:title" parentElement:child];    
     if ( title != nil ) {
         [Globals sharedInstance].scenario.title = [TBXML textForElement:title];
-        CCLOG( @"ScenarioParser.parseMetadata: scenario title: %@", [Globals sharedInstance].scenario.title );
+        NSLog( @"ScenarioParser.parseMetadata: scenario title: %@", [Globals sharedInstance].scenario.title );
     }
     
     // description
     TBXMLElement * description = [TBXML childElementNamed:@"dc:description" parentElement:child];
     if ( description != nil ) {
         [Globals sharedInstance].scenario.description = [TBXML textForElement:description];
-        CCLOG( @"ScenarioParser.parseMetadata: scenario description: %@", [Globals sharedInstance].scenario.description );
+        NSLog( @"ScenarioParser.parseMetadata: scenario description: %@", [Globals sharedInstance].scenario.description );
     }
     
     // start time and turns
@@ -557,8 +557,8 @@
         NSArray * parts = [[TBXML textForElement:date] componentsSeparatedByString:@" "];
         [Globals sharedInstance].scenario.startTime = [[parts objectAtIndex:0] intValue];
         [Globals sharedInstance].scenario.turns     = [[parts objectAtIndex:1] intValue];
-        CCLOG( @"ScenarioParser.parseMetadata: scenario start time: %lu", [Globals sharedInstance].scenario.startTime );
-        CCLOG( @"ScenarioParser.parseMetadata: scenario turns: %d", [Globals sharedInstance].scenario.turns );
+        NSLog( @"ScenarioParser.parseMetadata: scenario start time: %lu", [Globals sharedInstance].scenario.startTime );
+        NSLog( @"ScenarioParser.parseMetadata: scenario turns: %d", [Globals sharedInstance].scenario.turns );
     }
 }
 */
@@ -571,7 +571,7 @@
             grass = [CCSprite spriteWithFile:@"grass.jpg"];
             grass.anchorPoint = ccp( 0, 0 );
             grass.position = ccp( x, y );
-            [mapLayer addChild:grass z:kBackgroundZ];
+            [map addChild:grass z:kBackgroundZ];
             
             x += grass.boundingBox.size.width;
         }
@@ -582,8 +582,8 @@
 }
 
 
-- (void) parseScenario:(NSString *)name forMap:(MapLayer *)mapLayer_ {
-    mapLayer = mapLayer_;
+- (void) parseScenario:(NSString *)name forMap:(MapLayer *)map_ {
+    map = map_;
     
     NSError *error;
 
@@ -591,7 +591,7 @@
     TBXML * xml = [TBXML tbxmlWithXMLFile:name error:&error];
     
     if (error) {
-        CCLOG( @"%@ %@", [error localizedDescription], [error userInfo]);
+        NSLog( @"%@ %@", [error localizedDescription], [error userInfo]);
         return;
     } 
 
@@ -602,7 +602,7 @@
     mapWidth  = [[TBXML valueOfAttributeNamed:@"width" forElement:root] intValue];    
     mapHeight = [[TBXML valueOfAttributeNamed:@"height" forElement:root] intValue];    
 
-    CCLOG( @"map size: %d %d", mapWidth, mapHeight );
+    NSLog( @"map size: %d %d", mapWidth, mapHeight );
     
     // setup the default background
     [self createDefaultTerrain];
@@ -641,11 +641,11 @@
     }
 
     // and we're done
-    mapLayer.polygons  = polygons;
-    mapLayer.mapWidth  = mapWidth;
-    mapLayer.mapHeight = mapHeight;
+    map.polygons  = polygons;
+    map.mapWidth  = mapWidth;
+    map.mapHeight = mapHeight;
     
-    CCLOG( @"scenario parsed ok" );
+    NSLog( @"scenario parsed ok" );
 }
 
 @end

@@ -52,7 +52,7 @@
 
         // update needed?
         if ( ! updateNeeded ) {
-            CCLOG( @"no change in objectives layer, skipping update" );
+            NSLog( @"no change in objectives layer, skipping update" );
             return;
         }
     }

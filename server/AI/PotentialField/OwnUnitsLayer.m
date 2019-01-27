@@ -49,7 +49,7 @@
         }
     }
 
-    CCLOG( @"max: %.2f", self.max );
+    NSLog( @"max: %.2f", self.max );
 }
 
 @end

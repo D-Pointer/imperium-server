@@ -1,7 +1,7 @@
 
 #import "PotentialFieldLayer.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 
 @interface PotentialFieldLayer ()
 
@@ -16,20 +16,14 @@
 
 - (id) init {
     if ( ( self = [super init] ) ) {
-        // no sprite yet
-        self.sprite = nil;
-
         Globals * globals = [Globals sharedInstance];
-
-        // by default no colors
-        colors = 0;
 
         //self.min = 0;
         self.max = 0;
 
         // size of the raw data array
-        self.width  = [Globals sharedInstance].mapLayer.mapWidth / sParameters[kParamPotentialFieldTileSizeI].intValue;
-        self.height = [Globals sharedInstance].mapLayer.mapHeight / sParameters[kParamPotentialFieldTileSizeI].intValue;
+        self.width  = [Globals sharedInstance].map.mapWidth / sParameters[kParamPotentialFieldTileSizeI].intValue;
+        self.height = [Globals sharedInstance].map.mapHeight / sParameters[kParamPotentialFieldTileSizeI].intValue;
 
         // the raw 2D array
         self.dataSize = self.width * self.height * sizeof(float);
@@ -38,7 +32,7 @@
         // reset all data to 0
         memset( data, 0x00, self.dataSize );
 
-        CCLOG( @"map size: %d %d, potential field size: %d %d, bytes: %d", globals.mapLayer.mapWidth, globals.mapLayer.mapHeight, self.width, self.height, self.dataSize );
+        NSLog( @"map size: %d %d, potential field size: %d %d, bytes: %d", globals.map.mapWidth, globals.map.mapHeight, self.width, self.height, self.dataSize );
     }
 
     return self;
@@ -49,15 +43,6 @@
     if ( data ) {
         free( data );
         data = 0;
-    }
-    if ( colors ) {
-        free( colors );
-        colors = 0;
-    }
-
-    if ( self.sprite ) {
-        [self.sprite removeFromParentAndCleanup:YES];
-        self.sprite = nil;
     }
 }
 
@@ -73,7 +58,7 @@
     float min = 0;
     float max = 0;
 
-    CCLOG( @"applying %@ to %@, source max: %.1f", self.class, target.class, self.max );
+    NSLog( @"applying %@ to %@, source max: %.1f", self.class, target.class, self.max );
 
     // just add the values
     for ( int index = 0; index < self.width * self.height; ++index ) {
@@ -141,7 +126,7 @@
 
 
 - (void) updateDebugSprite {
-    CCLOG( @"max: %.1f", self.max );
+    NSLog( @"max: %.1f", self.max );
 
     // any old sprite?
     if ( self.sprite ) {
@@ -153,13 +138,13 @@
     int textureWidth  = (int)ccNextPOT( self.width * sParameters[kParamPotentialFieldPixelSizeI].intValue );
     int textureHeight = (int)ccNextPOT( self.height * sParameters[kParamPotentialFieldPixelSizeI].intValue );
 
-    //CCLOG( @"texture size: %d x %d", textureWidth, textureHeight );
+    //NSLog( @"texture size: %d x %d", textureWidth, textureHeight );
 
     // allocate space for the colors
     if ( colors == 0 ) {
         unsigned int colorSize = textureWidth * textureHeight * sizeof(ccColor4B);
         colors = (ccColor4B *)malloc( colorSize );
-        //CCLOG( @"color size: %d", colorSize );
+        //NSLog( @"color size: %d", colorSize );
     }
 
     int pixelSize = sParameters[kParamPotentialFieldPixelSizeI].intValue;

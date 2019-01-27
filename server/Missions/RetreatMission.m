@@ -20,7 +20,6 @@
         self.type = kRetreatMission;
         self.name = @"Retreating";
         self.preparingName = @"Preparing to retreat";
-        self.color = sRetreatLineColor;
         self.started = NO;
 
         // fatigue added per minute
@@ -39,7 +38,6 @@
         self.name = @"Retreating";
         self.preparingName = @"Preparing to retreat";
         self.endPoint = path.lastPosition;
-        self.color = sRetreatLineColor;
         self.started = NO;
 
         // fatigue added per minute

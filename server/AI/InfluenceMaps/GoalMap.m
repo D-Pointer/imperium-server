@@ -55,7 +55,7 @@
         }
     }
 
-    CCLOG( @"max: %f, min: %f", self.max, self.min );
+    NSLog( @"max: %f, min: %f", self.max, self.min );
 
     // create the texture data. most tension will be white, least will be black
     for ( int y = 0; y < self.height; ++y ) {

@@ -54,12 +54,12 @@
         // where it stands it has full firepower
         float maxFirepower = [unit getBaseCasualtiesForRange:0];
 
-        CCLOG( @"%@ range: %f, max: %f", unit, influenceRange, maxFirepower );
+        NSLog( @"%@ range: %f, max: %f", unit, influenceRange, maxFirepower );
 
         int unitX = [self fromWorld:unit.position.x];
         int unitY = [self fromWorld:unit.position.y];
 
-        //CCLOG( @"pos: %d %d", unitX, unitY );
+        //NSLog( @"pos: %d %d", unitX, unitY );
 
         // all positions around get a bit influence
         for ( int y = unitY - influenceRange; y <= unitY + influenceRange; ++y ) {
@@ -98,7 +98,7 @@
         }
     }
 
-    CCLOG( @"max: %f, min: %f", self.max, self.min );
+    NSLog( @"max: %f, min: %f", self.max, self.min );
 
     // create the texture data. most influence will be white, least will be black
     for ( int y = 0; y < self.height; ++y ) {

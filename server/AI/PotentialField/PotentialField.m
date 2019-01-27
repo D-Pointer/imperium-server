@@ -1,7 +1,6 @@
 
 #import "PotentialField.h"
 #import "Globals.h"
-#import "GameLayer.h"
 #import "PotentialFieldLayer.h"
 #import "EnemyLayer.h"
 #import "ObjectivesLayer.h"
@@ -56,7 +55,7 @@
 
 
 - (void) updateField {
-    CCLOG( @"updating fields" );
+    NSLog( @"updating fields" );
 
     // update all layers
     for ( PotentialFieldLayer * layer in self.layers ) {
@@ -66,7 +65,7 @@
     // clear the combined
     [self.combined clear];
 
-    CCLOG( @"combining result field" );
+    NSLog( @"combining result field" );
 
     // merge them
     for ( PotentialFieldLayer * layer in self.layers ) {
@@ -85,7 +84,7 @@
     int x = pos.x / sParameters[kParamPotentialFieldTileSizeI].intValue;
     int y = pos.y / sParameters[kParamPotentialFieldTileSizeI].intValue;
 
-    CCLOG( @"finding best position for: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
+    NSLog( @"finding best position for: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
 
     // the data array
     float * data = [self.combined getData];
@@ -95,7 +94,7 @@
     // current value
     float current = data[ y * width + x ];
 
-    CCLOG( @"current potential: %.1f", current );
+    NSLog( @"current potential: %.1f", current );
 
     // set up deltas for all positions that are around
     int around[16] = {
@@ -129,12 +128,12 @@
                 bestFound = YES;
             }
 
-            CCLOG( @"checking %d %d = %.1f", tmpX, tmpY, value );
+            NSLog( @"checking %d %d = %.1f", tmpX, tmpY, value );
         }
     }
 
     if ( bestFound ) {
-        CCLOG( @"best found: %d %d, potential: %.1f", bestX, bestY, bestValue );
+        NSLog( @"best found: %d %d, potential: %.1f", bestX, bestY, bestValue );
         int tileSize = sParameters[kParamPotentialFieldTileSizeI].intValue;
 
         // the result is in the middle of the result tile
@@ -144,7 +143,7 @@
     }
 
     // nothing found
-    CCLOG( @"no better potential position found" );
+    NSLog( @"no better potential position found" );
     return NO;
 }
 
@@ -154,7 +153,7 @@
     int x = pos.x / sParameters[kParamPotentialFieldTileSizeI].intValue;
     int y = pos.y / sParameters[kParamPotentialFieldTileSizeI].intValue;
 
-    CCLOG( @"finding min threat position for: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
+    NSLog( @"finding min threat position for: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
 
     // the data array
     float * data = [self.enemiesLayer getData];
@@ -164,7 +163,7 @@
     // current value
     float current = data[ y * width + x ];
 
-    CCLOG( @"current potential: %.1f", current );
+    NSLog( @"current potential: %.1f", current );
 
     // set up deltas for all positions that are around
     int around[16] = {
@@ -179,7 +178,7 @@
     };
 
     float bestValue = current;
-    int bestX, bestY;
+    int bestX = 0, bestY = 0;
     BOOL bestFound = NO;
 
     // check all the 8 positions around
@@ -198,12 +197,12 @@
                 bestFound = YES;
             }
 
-            CCLOG( @"checking %d %d = %.1f", tmpX, tmpY, value );
+            NSLog( @"checking %d %d = %.1f", tmpX, tmpY, value );
         }
     }
 
     if ( bestFound ) {
-        CCLOG( @"min found: %d %d, potential: %.1f", bestX, bestY, bestValue );
+        NSLog( @"min found: %d %d, potential: %.1f", bestX, bestY, bestValue );
         int tileSize = sParameters[kParamPotentialFieldTileSizeI].intValue;
 
         // the result is in the middle of the result tile
@@ -213,7 +212,7 @@
     }
 
     // nothing found
-    CCLOG( @"no better potential position found" );
+    NSLog( @"no better potential position found" );
     return NO;
 }
 
@@ -223,7 +222,7 @@
     int x = pos.x / sParameters[kParamPotentialFieldTileSizeI].intValue;
     int y = pos.y / sParameters[kParamPotentialFieldTileSizeI].intValue;
 
-    CCLOG( @"finding threat level for position: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
+    NSLog( @"finding threat level for position: %.0f %.0f (%d %d)", pos.x, pos.y, x, y );
 
     // threat value
     float * data = [self.enemiesLayer getData];
@@ -232,33 +231,7 @@
     // scaled threat
     *scaledThreat = *absThreat / self.enemiesLayer.max;
 
-    CCLOG( @"finding threat level for position: %.0f %.0f (%d %d). Absolute: %.1f, scaled: %.1f", pos.x, pos.y, x, y, *absThreat, *scaledThreat );
-}
-
-
-- (void) showDebugInfo {
-    if ( ! sPotentialFieldDebugging ) {
-        return;
-    }
-
-    int x = 20;
-    int y = 100;
-
-    for ( PotentialFieldLayer * layer in self.layers ) {
-        [layer updateDebugSprite];
-
-        layer.sprite.anchorPoint = ccp( 0, 0 );
-        layer.sprite.position = ccp( x, y );
-        [[Globals sharedInstance].gameLayer addChild:layer.sprite z:kAIDebugZ];
-
-        x += layer.sprite.boundingBox.size.width + 20;
-    }
-
-    // finally the combined layer
-    [self.combined updateDebugSprite];
-    self.combined.sprite.anchorPoint = ccp( 0, 0 );
-    self.combined.sprite.position = ccp( x, y );
-    [[Globals sharedInstance].gameLayer addChild:self.combined.sprite z:kAIDebugZ];
+    NSLog( @"finding threat level for position: %.0f %.0f (%d %d). Absolute: %.1f, scaled: %.1f", pos.x, pos.y, x, y, *absThreat, *scaledThreat );
 }
 
 

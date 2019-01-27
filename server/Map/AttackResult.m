@@ -44,7 +44,7 @@
         self.target.men -= self.casualties;
     }
     
-    CCLOG( @"%@ lost %d men, now %d left, destroyed: %@", self.target, self.casualties, self.target.men, (self.messageType & kDefenderDestroyed ? @"yes" : @"no") );
+    NSLog( @"%@ lost %d men, now %d left, destroyed: %@", self.target, self.casualties, self.target.men, (self.messageType & kDefenderDestroyed ? @"yes" : @"no") );
 
     // deliver morale changes
     self.target.morale   -= self.targetMoraleChange;
@@ -64,7 +64,7 @@
     }
 
     // add in some bodies
-    [[Globals sharedInstance].mapLayer addBodies:self.casualties around:self.target];
+    [[Globals sharedInstance].map addBodies:self.casualties around:self.target];
 
     if ( self.routMission ) { // && [Globals sharedInstance].gameType == kSinglePlayerGame ) {
         // if the target routs then that's the target's new mission. this gets set for multiplayer games too so that
@@ -112,7 +112,7 @@
     // if we got no message then make sure nothing get shown
     if ( [text isEqualToString:@""] ) {
         // no text to show, so we're done here
-        CCLOG( @"no text to show, we're done" );
+        NSLog( @"no text to show, we're done" );
         return;
     }
 
@@ -152,7 +152,7 @@
     // that the label gets positioned right near the target. this means that it will not be placed near any edge or
     // similar
     if ( ! CGRectContainsPoint( mapRect, defenderPos ) ) {
-        mapRect = CGRectMake( 0, 0, [Globals sharedInstance].mapLayer.mapWidth, [Globals sharedInstance].mapLayer.mapHeight );
+        mapRect = CGRectMake( 0, 0, [Globals sharedInstance].map.mapWidth, [Globals sharedInstance].map.mapHeight );
     }
 
     CGPoint result;
@@ -198,10 +198,10 @@
     // position the elements according to what we found out
     self.position = result;
 
-    [[Globals sharedInstance].mapLayer addChild:self z:kCombatReportZ];
+    [[Globals sharedInstance].map addChild:self z:kCombatReportZ];
 
     // set a suitable scale as the map layer may be scaled and we want the results to always have the same size
-    self.scale = 1.0f / [Globals sharedInstance].mapLayer.scale;
+    self.scale = 1.0f / [Globals sharedInstance].map.scale;
 
     // show the label and background some seconds, fade out and then remove. Note that the removal is done by the background
     [self.label runAction:[CCSequence actions:

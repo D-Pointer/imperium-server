@@ -19,7 +19,6 @@
         self.type = kAdvanceMission;
         self.name = @"Advancing";
         self.preparingName = @"Preparing to advance";
-        self.color = sAdvanceLineColor;
         self.rotation = nil;
         self.started = NO;
         self.fatigueEffect = sParameters[kParamAdvanceFatigueEffectF].floatValue;
@@ -38,7 +37,6 @@
         self.name = @"Advancing";
         self.preparingName = @"Preparing to advance";
         self.endPoint = path.lastPosition;
-        self.color = sAdvanceLineColor;
         self.started = NO;
         self.fatigueEffect = sParameters[kParamAdvanceFatigueEffectF].floatValue;
     }

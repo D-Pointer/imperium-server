@@ -1,5 +1,8 @@
 // Structure representing a 
 // doubly-linked list node.
+
+#import <Foundation/Foundation.h>
+
 typedef struct ListNode ListNode;
 struct ListNode {
 	CGPoint value;

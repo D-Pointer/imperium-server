@@ -4,7 +4,7 @@
 #import "DisorganizedMission.h"
 #import "Unit.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "AttackVisualization.h"
 
 
@@ -65,12 +65,12 @@
         return kCompleted;
     }
 
-    CCLOG( @"melee %@ -> %@", self.unit.name, self.targetUnit.name );
+    NSLog( @"melee %@ -> %@", self.unit.name, self.targetUnit.name );
 
     // is the target too far away?
     if ( ccpDistance( self.unit.position, self.targetUnit.position ) > sParameters[kParamMeleeMaxDistanceF].floatValue ) {
         // we're done
-        CCLOG( @"target too far away, melee done");
+        NSLog( @"target too far away, melee done");
         return kCompleted;        
     }
 
@@ -80,7 +80,7 @@
     // did the target die or retreat?
     if ( self.targetUnit.destroyed || [self.targetUnit isCurrentMission:kRetreatMission] ) {
         // the attacker is now disorganized too
-        CCLOG( @"target destroyed, attacker not retreating, setting to disorganized" );
+        NSLog( @"target destroyed, attacker not retreating, setting to disorganized" );
         self.unit.mission = [DisorganizedMission new];
 
         // note that we return "in progress" here, otherwise the engine thinks the new disorganized mission is the
@@ -97,8 +97,8 @@
     float attackerStrength = [self getMeleeStrengthFor:attacker];
     float defenderStrength = [self getMeleeStrengthFor:defender];
 
-    CCLOG( @"attacker strength: %.1f", attackerStrength );
-    CCLOG( @"defender strength: %.1f", defenderStrength );
+    NSLog( @"attacker strength: %.1f", attackerStrength );
+    NSLog( @"defender strength: %.1f", defenderStrength );
 
     // deliver casualties
     int defenderStartMen = defender.men;
@@ -140,13 +140,13 @@
         // is the defender not in command?
         if ( ! defender.inCommand ) {
             percentageLost *= sParameters[kParamMoraleLossNotInCommandF].floatValue;
-            CCLOG( @"not in command, increasing morale loss: %.1f%%", percentageLost );
+            NSLog( @"not in command, increasing morale loss: %.1f%%", percentageLost );
         }
 
         // is the defender disorganized or retreating?
         if ( [defender isCurrentMission:kDisorganizedMission] || [defender isCurrentMission:kRetreatMission] || [defender isCurrentMission:kRoutMission] ) {
             percentageLost *= sParameters[kParamMoraleLossDisorganizedF].floatValue;
-            CCLOG( @"disorganized, increasing morale loss: %.1f%%", percentageLost );
+            NSLog( @"disorganized, increasing morale loss: %.1f%%", percentageLost );
         }
 
         // should the unit retreat? never retreat in the tutorial
@@ -158,7 +158,7 @@
         }
     }
 
-    CCLOG( @"casualties: %d, routs: %@", defenderCasualties, (defenderRouts ? @"yes" : @"no" ) );
+    NSLog( @"casualties: %d, routs: %@", defenderCasualties, (defenderRouts ? @"yes" : @"no" ) );
 
     // record when the last attack was. this means that when a unit retreats then the attacker can not immediately fire upon it
     attacker.lastFired = [Globals sharedInstance].clock.currentTime;
@@ -168,7 +168,7 @@
     if ( defender.men > 0 && defenderRouts ) {
         // retreat the defender
         if ( ( routMission = [CombatMission routUnit:defender]) == nil ) {
-            CCLOG( @"could not find a retreat position!" );
+            NSLog( @"could not find a retreat position!" );
         }
     }
 
@@ -271,7 +271,7 @@
         *retreatProbability = 0.3f;
     }
 
-    CCLOG( @"ratio: %.2f -> %d max casualties, %.2f retreat probability", ratio, *maxCasualties, *retreatProbability );
+    NSLog( @"ratio: %.2f -> %d max casualties, %.2f retreat probability", ratio, *maxCasualties, *retreatProbability );
 }
 
 @end

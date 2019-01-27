@@ -2,7 +2,7 @@
 #import "PathFinder.h"
 #import "Globals.h"
 #import "PathNode.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "TerrainModifiers.h"
 #import "Scenario.h"
 
@@ -33,8 +33,8 @@
         terrains = data;
 
         // map size in tiles
-        mapWidth  = [Globals sharedInstance].mapLayer.mapWidth / sParameters[kParamPathMapTileSizeI].intValue;
-        mapHeight = [Globals sharedInstance].mapLayer.mapHeight / sParameters[kParamPathMapTileSizeI].intValue;
+        mapWidth  = [Globals sharedInstance].map.mapWidth / sParameters[kParamPathMapTileSizeI].intValue;
+        mapHeight = [Globals sharedInstance].map.mapHeight / sParameters[kParamPathMapTileSizeI].intValue;
 
         // number of positions
         positions = mapWidth * mapHeight;
@@ -42,18 +42,18 @@
         // an array with flags set for closed hexes
         closed = (Byte *)malloc( positions * sizeof(Byte) );
 
-        CCLOG( @"created a %d x %d navigation map, total bytes: %d", mapWidth, mapHeight, positions );
+        NSLog( @"created a %d x %d navigation map, total bytes: %d", mapWidth, mapHeight, positions );
 
         // get the nav file
 //        NSString * navFilename = [[Globals sharedInstance].scenario.filename stringByReplacingOccurrencesOfString:@".map" withString:@".nav"];
 //
-//        CCLOG( @"loading navigation data from: %@", navFilename );
+//        NSLog( @"loading navigation data from: %@", navFilename );
 //
 //        // an array with terrain types
 //        NSError * error = nil;
 //        NSData * terrainData = [NSData dataWithContentsOfFile:navFilename options:NSDataReadingUncached error:&error];
 //        if ( error ) {
-//            CCLOG( @"failed to read navigation data: %@", error.localizedDescription );
+//            NSLog( @"failed to read navigation data: %@", error.localizedDescription );
 //            return nil;
 //        }
 //
@@ -115,13 +115,13 @@
 
         // is this the destination?
         if ( node->pos.x == destinationPos.x && node->pos.y == destinationPos.y ) {
-            CCLOG( @"destination found, total cost: %1f", node->total );
+            NSLog( @"destination found, total cost: %1f", node->total );
              NSMutableArray * result = [ NSMutableArray new];
 
             // assemble the final path by traversing back from the destination along the "before" links
             PathNode * loop = node;
             while ( loop != nil ) {
-                //CCLOG( @"%d %d", loop->pos.x, loop->pos.y );
+                //NSLog( @"%d %d", loop->pos.x, loop->pos.y );
 
                 // convert the path map pos to a full coordinate
                 CGPoint tmpPos = { loop->pos.x * tileSize, loop->pos.y * tileSize };
@@ -257,8 +257,8 @@
     // return the seconds it take to travel the distance
     float estimate = distance * movementModifier;
 
-    //CCLOG( @"estimate from %d,%d -> %d,%d, distance: %d, estimate: %d", sourcePos->x, sourcePos->y, destinationPos->x, destinationPos->y, distance, estimate );
-    //CCLOG( @"estimate from %d,%d -> %d,%d, index: %d, terrain: %d, distance: %d, estimate: %.1f", sourcePos->x, sourcePos->y, destinationPos->x, destinationPos->y, index, terrain, distance, estimate );
+    //NSLog( @"estimate from %d,%d -> %d,%d, distance: %d, estimate: %d", sourcePos->x, sourcePos->y, destinationPos->x, destinationPos->y, distance, estimate );
+    //NSLog( @"estimate from %d,%d -> %d,%d, index: %d, terrain: %d, distance: %d, estimate: %.1f", sourcePos->x, sourcePos->y, destinationPos->x, destinationPos->y, index, terrain, distance, estimate );
     return estimate;
 }
 
@@ -273,7 +273,7 @@
     // movement modifier
     float cost = getTerrainPathFindingCost( unit, terrain );
 
-    //CCLOG( @"cost to enter %d at %d, %d = %.0f", terrain, position->x, position->y, cost );
+    //NSLog( @"cost to enter %d at %d, %d = %.0f", terrain, position->x, position->y, cost );
     return cost;
 }
 
@@ -303,7 +303,7 @@
 
         CCSprite * sprite = [CCSprite spriteWithSpriteFrameName:@"CannonBullet.png"];
         sprite.position = position;
-        [[Globals sharedInstance].mapLayer addChild:sprite z:kBulletZ];
+        [[Globals sharedInstance].map addChild:sprite z:kBulletZ];
     }
 }
 

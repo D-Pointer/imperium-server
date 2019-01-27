@@ -32,7 +32,7 @@
             offset = saveInt8ToBuffer( unit.mission.type & 0xff, buffer, offset );
         }
 
-        //CCLOG( @"packet length: %d", offset );
+        //NSLog( @"packet length: %d", offset );
 
         // finally wrap the buffer in a NSData
         self.data = [NSData dataWithBytesNoCopy:buffer length:offset freeWhenDone:NO];

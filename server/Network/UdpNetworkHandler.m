@@ -96,13 +96,13 @@
 
 
 - (void) dealloc {
-    CCLOG( @"in" );
+    NSLog( @"in" );
 }
 
 
 - (void) disconnect {
     if (self.udpSocket) {
-        CCLOG( @"disconnecting UDP socket" );
+        NSLog( @"disconnecting UDP socket" );
 
         // no more ping updates
         [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
@@ -167,14 +167,14 @@
 
 
 - (void) sendUdpPacket:(UdpPacket *)packet {
-    CCLOG( @"sending packet %@", packet );
+    NSLog( @"sending packet %@", packet );
     [self.udpSocket sendData:packet.data toHost:self.server port:self.port withTimeout:-1 tag:0];
 
     // start receiving when we send the first packet
     if (!self.receivingStarted) {
         NSError *error = nil;
         if (![self.udpSocket beginReceiving:&error]) {
-            CCLOG( @"failed to begin receiving on UDP socket: %@", error );
+            NSLog( @"failed to begin receiving on UDP socket: %@", error );
         }
 
         self.receivingStarted = YES;
@@ -191,7 +191,7 @@
     // copy data
     unsigned char packetType = bytes[0];
 
-    //CCLOG( @"received packet: %@, size: %d bytes", [UdpPacket name:packetType], data.length );
+    //NSLog( @"received packet: %@, size: %d bytes", [UdpPacket name:packetType], data.length );
 
     // skip packet type
     bytes++;
@@ -211,7 +211,7 @@
 
         default:
             // unknown packet
-            CCLOG( @"unknown packet: %@ (%d)", [UdpPacket name:packetType], packetType );
+            NSLog( @"unknown packet: %@ (%d)", [UdpPacket name:packetType], packetType );
             break;
     }
 }
@@ -226,7 +226,7 @@
     if ( ! self.actionStarted ) {
         self.actionStarted = YES;
 
-        CCLOG( @"game action started" );
+        NSLog( @"game action started" );
         // prepare the game layer
         [[Globals sharedInstance].gameLayer startOnlineGame];
 
@@ -252,7 +252,7 @@
 
     // duration in milliseconds
     double milliseconds = ((double) (now - then)) / CLOCKS_PER_SEC * 1000.0;
-    CCLOG( @"roundtrip time to server: %.0f ms", milliseconds );
+    NSLog( @"roundtrip time to server: %.0f ms", milliseconds );
 
     if (self.delegate && [self.delegate respondsToSelector:@selector( serverPongReceived: )]) {
         [self.delegate serverPongReceived:milliseconds];
@@ -284,7 +284,7 @@
         // a combat packet of some form, have we already received this packet?
         for ( unsigned int index = 0; index < SAVED_FIRE_PACKETS; ++index ) {
             if (lastCombatPackets[index] == packetId) {
-                CCLOG( @"duplicate packet %@ with id %d received, ignoring", [UdpPacket subName:subType], packetId );
+                NSLog( @"duplicate packet %@ with id %d received, ignoring", [UdpPacket subName:subType], packetId );
                 return;
             }
         }
@@ -295,7 +295,7 @@
     else {
         // a non combat packet, is it too old?
         if (packetId <= lastReceivedPacketId[subType]) {
-            CCLOG( @"old non fire packet %d for type %@ received, last handled is %d", packetId, [UdpPacket subName:subType], lastReceivedPacketId[subType] );
+            NSLog( @"old non fire packet %d for type %@ received, last handled is %d", packetId, [UdpPacket subName:subType], lastReceivedPacketId[subType] );
             return;
         }
     }
@@ -303,7 +303,7 @@
     // new last received packet id
     lastReceivedPacketId[subType] = packetId;
 
-    CCLOG( @"last handled packet of type %@ is %d, skipped: %d, late: %d", [UdpPacket subName:subType], packetId, skippedPackets, latePackets );
+    NSLog( @"last handled packet of type %@ is %d, skipped: %d, late: %d", [UdpPacket subName:subType], packetId, skippedPackets, latePackets );
 
     switch (subType) {
         case kMissionPacket:
@@ -348,7 +348,7 @@
     // number of units
     unsigned char unitCount = data[offset++];
 
-    CCLOG( @"received missions for %d enemy units", unitCount );
+    NSLog( @"received missions for %d enemy units", unitCount );
 
     for (unsigned int index = 0; index < unitCount; ++index) {
         // unit id
@@ -360,13 +360,13 @@
         // find the unit
         Unit *unit = [self getEnemyUnit:unitId];
         if (unit == nil) {
-            CCLOG( @"***** received mission %d for unknown unit %d *****", missionType, unitId );
+            NSLog( @"***** received mission %d for unknown unit %d *****", missionType, unitId );
             return;
         }
 
         // create the mission
         unit.mission = [self createMission:missionType];
-        //CCLOG( @"received mission %@ for %@", unit.mission, unit );
+        //NSLog( @"received mission %@ for %@", unit.mission, unit );
     }
 }
 
@@ -382,7 +382,7 @@
     // number of units
     unsigned char unitCount = data[offset++];
 
-    CCLOG( @"received stats for %d enemy units", unitCount );
+    NSLog( @"received stats for %d enemy units", unitCount );
 
     for (unsigned int index = 0; index < unitCount; ++index) {
         // unit id
@@ -404,11 +404,11 @@
         // find the affected unit
         Unit *unit = [self getEnemyUnit:unitId];
         if (unit == nil) {
-            CCLOG( @"***** received unit stats for unknown unit %d *****", unitId );
+            NSLog( @"***** received unit stats for unknown unit %d *****", unitId );
             return;
         }
 
-        //CCLOG( @"received stats for unit: %@, men %d, mode: %d, mission: %d, morale: %.1f, fatigue: %.1f, pos: %.0f, %.0f, rotation: %.1f",
+        //NSLog( @"received stats for unit: %@, men %d, mode: %d, mission: %d, morale: %.1f, fatigue: %.1f, pos: %.0f, %.0f, rotation: %.1f",
         //        unit, men, mode, missionType, morale, fatigue, x, y, rotation );
 
         unit.men = men;
@@ -442,7 +442,7 @@
     unsigned char count = data[offset++];
 
     Unit *attacker = [self getEnemyUnit:attackerId];
-    CCLOG( @"%@ (%d) fires at %.0f, %.0f", attacker, attackerId, hitX, hitY );
+    NSLog( @"%@ (%d) fires at %.0f, %.0f", attacker, attackerId, hitX, hitY );
 
     // any casualties at all? if 0 then this is a smoke thing
     if ( count > 0 ) {
@@ -458,17 +458,17 @@
             // find the own unit that was hit
             Unit *target = [self getOwnUnit:targetId];
             if (!target) {
-                CCLOG( @"target %d not found, simulator issue? ignoring", targetId );
+                NSLog( @"target %d not found, simulator issue? ignoring", targetId );
                 continue;
             }
 
-            CCLOG( @"target %@ loses %d men, message: %d, target morale: %.1f", target, casualties, messageType, targetMoraleChange );
+            NSLog( @"target %@ loses %d men, message: %d, target morale: %.1f", target, casualties, messageType, targetMoraleChange );
 
             // does the unit rout?
             RoutMission *routMission = nil;
             if (messageType & kDefenderRouted && target.mission.type != kRoutMission) {
                 if ((routMission = [CombatMission routUnit:target]) == nil) {
-                    CCLOG( @"could not find a rout position!" );
+                    NSLog( @"could not find a rout position!" );
                 }
             }
 
@@ -502,14 +502,14 @@
 
     Unit *attacker = [self getEnemyUnit:attackerId];
     Unit *target = [self getOwnUnit:targetId];
-    CCLOG( @"%@ melees with %@, lost %d men", attacker, target, casualties );
+    NSLog( @"%@ melees with %@, lost %d men", attacker, target, casualties );
 
     // does the unit rout?
     RoutMission *routMission = nil;
     if (messageType & kDefenderRouted && target.mission.type != kRoutMission) {
-        CCLOG( @"target %@ routs", target );
+        NSLog( @"target %@ routs", target );
         if ((routMission = [CombatMission routUnit:target]) == nil) {
-            CCLOG( @"could not find a rout position!" );
+            NSLog( @"could not find a rout position!" );
         }
     }
 
@@ -532,7 +532,7 @@
     // find the unit
     Unit *unit = [self getOwnUnit:unitId];
     if (unit == nil) {
-        CCLOG( @"***** received mission %d for unknown unit %d *****", missionType, unitId );
+        NSLog( @"***** received mission %d for unknown unit %d *****", missionType, unitId );
         return;
     }
 
@@ -540,7 +540,7 @@
     if ( unit.mission.type != missionType ) {
         // create the mission
         unit.mission = [self createMission:missionType];
-        CCLOG( @"setting mission %@ for %@", unit.mission, unit );
+        NSLog( @"setting mission %@ for %@", unit.mission, unit );
     }
 }
 
@@ -548,7 +548,7 @@
 - (void) handlePlayerPing:(const UInt8 *)data {
     unsigned short offset = 0;
 
-    CCLOG( @"sending response to a player ping" );
+    NSLog( @"sending response to a player ping" );
 
     clock_t ms = readInt32FromBuffer( data, &offset );
     [self sendUdpPacket:[[PlayerPongPacket alloc] initWithTime:ms]];
@@ -564,7 +564,7 @@
 
     // duration in milliseconds
     double milliseconds = ((double) (now - then)) / CLOCKS_PER_SEC * 1000.0;
-    CCLOG( @"roundtrip time to player: %.0f ms", milliseconds );
+    NSLog( @"roundtrip time to player: %.0f ms", milliseconds );
 
     if (self.delegate && [self.delegate respondsToSelector:@selector( playerPongReceived: )]) {
         [self.delegate playerPongReceived:milliseconds];
@@ -581,12 +581,12 @@
     Globals * globals = [Globals sharedInstance];
     PlayerId enemyPlayerId = globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
 
-     NSMutableArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.mapLayer.smoke2 : globals.mapLayer.smoke1;
+     NSMutableArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.map.smoke2 : globals.map.smoke1;
 
     // add smoke if needed
     if ( enemySmoke.count < count ) {
         while ( enemySmoke.count < count ) {
-            [globals.mapLayer addSmoke:ccp(0, 0) forPlayer:enemyPlayerId];
+            [globals.map addSmoke:ccp(0, 0) forPlayer:enemyPlayerId];
         }
     }
 

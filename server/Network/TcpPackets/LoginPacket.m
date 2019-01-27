@@ -41,7 +41,7 @@
         // finally write in the total size at the start of the packet
         saveInt16ToBuffer( offset - sTcpPacketHeaderLength, buffer, 0 );
 
-        //CCLOG( @"packet length: %d, offset: %d", sTcpPacketHeaderLength + packetLength, offset );
+        //NSLog( @"packet length: %d, offset: %d", sTcpPacketHeaderLength + packetLength, offset );
 
         // finally wrap the buffer in a NSData
         self.data = [NSData dataWithBytesNoCopy:buffer length:offset];

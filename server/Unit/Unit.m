@@ -70,11 +70,11 @@
 
         // remove from any organization
         /*if ( self.organization ) {
-         CCLOG( @"unit destroyed, it's a member of %@", self.organization );
+         NSLog( @"unit destroyed, it's a member of %@", self.organization );
 
          // are we the hq for the organization?
          if ( self.organization.headquarter == self ) {
-         CCLOG( @"unit %@ is hq for organization %@, removing organization", self, self.organization );
+         NSLog( @"unit %@ is hq for organization %@, removing organization", self, self.organization );
 
          // yes, the entire organization is now destroyed. First remove the organization itself
          [[Globals sharedInstance].organizations removeObject:self.organization];
@@ -86,7 +86,7 @@
          }
          else {
          // we're just a member of it
-         CCLOG( @"removing unit %@ from organization %@", self, self.organization );
+         NSLog( @"removing unit %@ from organization %@", self, self.organization );
          [self.organization.unitDefinitions removeObject:self];
          self.organization = nil;
          }
@@ -663,7 +663,7 @@
 
 
 - (int) weaponCount {
-    //CCLOG(@"men: %d, required: %d, count: %d", self.men, self.weapon.menRequired, self.men / self.weapon.menRequired );
+    //NSLog(@"men: %d, required: %d, count: %d", self.men, self.weapon.menRequired, self.men / self.weapon.menRequired );
     return self.men / self.weapon.menRequired;
 }
 
@@ -677,7 +677,7 @@
 
     // never set a nil mission
     if (mission == nil) {
-        CCLOG( @"nil mission, setting to idle" );
+        NSLog( @"nil mission, setting to idle" );
         mission = [IdleMission new];
     }
 
@@ -687,11 +687,11 @@
         // to make sure it's not the magical "no delay set yet" value. this also makes cheats with setting a new same mission while the
         // command delay is ticking down impossible
         mission.commandDelay = _mission.commandDelay;
-        //CCLOG( @"setting mission without command delay: %@ for %@", mission, self );
+        //NSLog( @"setting mission without command delay: %@ for %@", mission, self );
     }
 
     _mission = mission;
-    CCLOG( @"setting mission: %@ for %@", mission, self );
+    NSLog( @"setting mission: %@ for %@", mission, self );
 
     // make sure the mission knows us too
     _mission.unit = self;

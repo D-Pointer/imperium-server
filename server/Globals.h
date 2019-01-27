@@ -9,41 +9,31 @@
 #import "Player.h"
 #import "PathFinder.h"
 #import "TcpNetworkHandler.h"
-#import "Settings.h"
 
 @class Scenario;
-@class AI;
-@class MapLayer;
 @class GameLayer;
-@class Tutorial;
 @class Engine;
-@class Input;
 @class LineOfSight;
 @class HostedGame;
 @class UdpNetworkHandler;
-@class ScenarioScript;
-@class GameCenter;
 @class Army;
 @class ParameterHandler;
+@class Map;
 
 @interface Globals : NSObject
 
 @property (nonatomic, assign) int              campaignId;
 @property (nonatomic, strong) Player *         player1;
 @property (nonatomic, strong) Player *         player2;
-@property (nonatomic, strong) Player *         localPlayer;
-@property (nonatomic, assign) GameType         gameType;
 @property (nonatomic, strong)  NSMutableArray *        units;
-@property (nonatomic, weak)    NSMutableArray *        localUnits;
 @property (nonatomic, strong)  NSMutableArray *        unitsPlayer1;
 @property (nonatomic, strong)  NSMutableArray *        unitsPlayer2;
 @property (nonatomic, strong)  NSMutableArray *        objectives;
 @property (nonatomic, strong)  NSMutableArray *        organizations;
+@property (nonatomic, strong)  NSMutableArray *        smoke;
 @property (nonatomic, strong) Scenario *       scenario;
-@property (nonatomic, strong) ScenarioScript * scenarioScript;
+@property (nonatomic, strong) Map *            map;
 @property (nonatomic, strong) Clock *          clock;
-@property (nonatomic, strong) MapLayer *       mapLayer;
-@property (nonatomic, weak)   GameLayer *      gameLayer;
 @property (nonatomic, strong) Engine *         engine;
 @property (nonatomic, strong) LineOfSight *    lineOfSight;
 
@@ -53,10 +43,6 @@
 @property (nonatomic, strong) TcpNetworkHandler *  tcpConnection;
 @property (nonatomic, strong) UdpNetworkHandler *  udpConnection;
 @property (nonatomic, strong) ParameterHandler *   parameterHandler;
-
-// all available scenarios and a downloader
-@property (nonatomic, strong)  NSMutableArray *            scenarios;
-@property (nonatomic, strong)  NSMutableArray *            multiplayerScenarios;
 
 // online data
 @property (nonatomic, strong) HostedGame *         onlineGame;

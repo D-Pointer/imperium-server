@@ -1,5 +1,5 @@
 
-#import "MapLayer.h"
+#import "Map.h"
 #import "PolygonNode.h"
 #import "Definitions.h"
 #import "Unit.h"
@@ -10,7 +10,7 @@
 #import "Smoke.h"
 
 
-@implementation MapLayer
+@implementation Map
 
 - (id) init {
 
@@ -28,7 +28,7 @@
 
 
 - (void) dealloc {
-    CCLOG( @"in" );
+    NSLog( @"in" );
 }
 
 
@@ -65,7 +65,7 @@
     // no terrains yet
     int terrains[ kNoTerrain ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    MapLayer * map = [Globals sharedInstance].mapLayer;
+    MapLayer * map = [Globals sharedInstance].map;
 
     // directly under the unit
     terrains[ [map getTerrainAt:unit.position] ] = 2;
@@ -187,7 +187,7 @@
         }
     }
 
-    //CCLOG( @"found %d collisions", collisions.count );
+    //NSLog( @"found %d collisions", collisions.count );
 
     // convert all the positions to meters, now they are 0..1
     for ( HitPosition * hit in collisions ) {

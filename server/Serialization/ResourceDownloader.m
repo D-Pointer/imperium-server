@@ -45,7 +45,7 @@
 
 
 - (void) downloadResources {
-    CCLOG( @"downloading game resources from iCloud, last downloaded version: %ld", (long)self.localVersion );
+    NSLog( @"downloading game resources from iCloud, last downloaded version: %ld", (long)self.localVersion );
 
     // query all users stash records from the public database. In reality there should be only one
     NSPredicate * predicate = [NSPredicate predicateWithFormat:@"Version > %d", self.localVersion];
@@ -77,7 +77,7 @@
         NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
         [defaults setInteger:self.localVersion forKey:LOCAL_VERSION_KEY];
 
-        CCLOG( @"resources downloaded" );
+        NSLog( @"resources downloaded" );
         [self.delegate resourcesDownloaded];
     }];
 }
@@ -90,7 +90,7 @@
     CKAsset * asset = [resource objectForKey:@"Data"];
     NSURL * sourceUrl = asset.fileURL;
 
-    CCLOG( @"handling resource: %@, version: %@", filename, version );
+    NSLog( @"handling resource: %@, version: %@", filename, version );
 
     // preprend the resource directory
     NSString * fullPath = [self.resourceDir stringByAppendingPathComponent:filename];
@@ -104,12 +104,12 @@
                                                    attributes:nil
                                                         error:&error];
         if (error != nil) {
-            CCLOG( @"error creating resource directory %@: %@", directory, error);
+            NSLog( @"error creating resource directory %@: %@", directory, error);
             [self.delegate resourcesFailedWithError:error];
             return -1;
         }
 
-        CCLOG( @"created resource directory: %@", directory );
+        NSLog( @"created resource directory: %@", directory );
     }
 
 
@@ -119,7 +119,7 @@
         NSData * compressed = [NSData dataWithContentsOfURL:sourceUrl];
         NSData * uncompressed = [compressed gzipInflate];
         if ( uncompressed == nil ) {
-            CCLOG( @"failed to uncompress %@", filename );
+            NSLog( @"failed to uncompress %@", filename );
             [Answers logCustomEventWithName:@"Resource uncompression failed"
                            customAttributes:@{ @"name" : filename }];
             return -1;
@@ -128,10 +128,10 @@
             error = nil;
             [uncompressed writeToFile:fullPath options:NSDataWritingAtomic error:&error];
             if (error != nil) {
-                CCLOG( @"error writing uncompressed data to file %@: %@", fullPath, error);
+                NSLog( @"error writing uncompressed data to file %@: %@", fullPath, error);
             }
             else {
-                CCLOG( @"saved uncompressed data to file: %@, version: %@", filename, version );
+                NSLog( @"saved uncompressed data to file: %@, version: %@", filename, version );
             }
         }
     }
@@ -142,11 +142,11 @@
         NSData * contents = [NSData dataWithContentsOfURL:sourceUrl];
         [contents writeToFile:fullPath options:NSDataWritingAtomic error:&error];
         if (error != nil) {
-            CCLOG( @"error writing file %@: %@", filename, error);
+            NSLog( @"error writing file %@: %@", filename, error);
             return -1;
         }
         else {
-            CCLOG( @"saved file: %@, version: %@", filename, version );
+            NSLog( @"saved file: %@, version: %@", filename, version );
         }
     }
 

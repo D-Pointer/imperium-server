@@ -47,7 +47,6 @@
 		6F1441F421FA3AC600AE55DE /* LineOfSight.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F3921FA3AC500AE55DE /* LineOfSight.m */; };
 		6F1441F521FA3AC600AE55DE /* LineOfSightData.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F3A21FA3AC500AE55DE /* LineOfSightData.m */; };
 		6F1441F621FA3AC600AE55DE /* Engine.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F3B21FA3AC500AE55DE /* Engine.m */; };
-		6F1441F721FA3AC600AE55DE /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F3D21FA3AC500AE55DE /* Utils.m */; };
 		6F1441F821FA3AC600AE55DE /* ResultLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F4121FA3AC500AE55DE /* ResultLayer.m */; };
 		6F1441F921FA3AC600AE55DE /* TerrainLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F4221FA3AC500AE55DE /* TerrainLayer.m */; };
 		6F1441FA21FA3AC600AE55DE /* PotentialField.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F4421FA3AC500AE55DE /* PotentialField.m */; };
@@ -59,7 +58,6 @@
 		6F14420021FA3AC600AE55DE /* AI.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5121FA3AC500AE55DE /* AI.m */; };
 		6F14420121FA3AC600AE55DE /* PathFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5321FA3AC500AE55DE /* PathFinder.m */; };
 		6F14420221FA3AC600AE55DE /* PathNodePriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */; };
-		6F14420321FA3AC600AE55DE /* Path.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5921FA3AC500AE55DE /* Path.m */; };
 		6F14420421FA3AC600AE55DE /* InfluenceMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5C21FA3AC500AE55DE /* InfluenceMap.m */; };
 		6F14420521FA3AC600AE55DE /* InfluenceMapNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5E21FA3AC500AE55DE /* InfluenceMapNode.m */; };
 		6F14420621FA3AC600AE55DE /* GoalMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F6321FA3AC500AE55DE /* GoalMap.m */; };
@@ -71,7 +69,6 @@
 		6F14420C21FA3AC600AE55DE /* MapBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F6B21FA3AC500AE55DE /* MapBase.m */; };
 		6F14420D21FA3AC600AE55DE /* UnitStrengthMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F6C21FA3AC500AE55DE /* UnitStrengthMap.m */; };
 		6F14420E21FA3AC600AE55DE /* InfluenceMapContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F6D21FA3AC500AE55DE /* InfluenceMapContainer.m */; };
-		6F1442CD21FA3AC600AE55DE /* Settings.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14410E21FA3AC500AE55DE /* Settings.m */; };
 		6F1442CE21FA3AC600AE55DE /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14410F21FA3AC500AE55DE /* Player.m */; };
 		6F1442CF21FA3AC600AE55DE /* ParameterHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14411121FA3AC500AE55DE /* ParameterHandler.m */; };
 		6F1442DA21FA3AC600AE55DE /* Clock.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14412B21FA3AC500AE55DE /* Clock.m */; };
@@ -111,12 +108,14 @@
 		6F14431321FA3AC600AE55DE /* VertexList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BB21FA3AC600AE55DE /* VertexList.m */; };
 		6F14431421FA3AC600AE55DE /* HitPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BC21FA3AC600AE55DE /* HitPosition.m */; };
 		6F14431521FA3AC600AE55DE /* Triangularizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BE21FA3AC600AE55DE /* Triangularizer.m */; };
-		6F14431721FA3AC600AE55DE /* MapLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441C421FA3AC600AE55DE /* MapLayer.m */; };
+		6F14431721FA3AC600AE55DE /* Map.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441C421FA3AC600AE55DE /* Map.m */; };
 		6F14431921FA3AC600AE55DE /* AttackResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441C621FA3AC600AE55DE /* AttackResult.m */; };
 		6F14431B21FA3AC600AE55DE /* Objective.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441C921FA3AC600AE55DE /* Objective.m */; };
 		6F14431C21FA3AC600AE55DE /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441CA21FA3AC600AE55DE /* Message.m */; };
 		6F14431D21FA3AC600AE55DE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441CC21FA3AC600AE55DE /* main.m */; };
 		6F14431E21FA3AC600AE55DE /* ParameterDefinitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441CD21FA3AC600AE55DE /* ParameterDefinitions.m */; };
+		6F14432221FE16F100AE55DE /* Smoke.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14432121FE16F100AE55DE /* Smoke.m */; };
+		6F14432721FE18B600AE55DE /* CGPointExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14432521FE18B600AE55DE /* CGPointExtension.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -170,7 +169,6 @@
 		6F143F0B21FA3AC400AE55DE /* Definitions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Definitions.m; sourceTree = "<group>"; };
 		6F143F0C21FA3AC400AE55DE /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
 		6F143F0D21FA3AC400AE55DE /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Globals.h; sourceTree = "<group>"; };
-		6F143F0E21FA3AC400AE55DE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		6F143F1021FA3AC400AE55DE /* AreaFireMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AreaFireMission.m; sourceTree = "<group>"; };
 		6F143F1221FA3AC400AE55DE /* RoutMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoutMission.h; sourceTree = "<group>"; };
 		6F143F1321FA3AC400AE55DE /* FireMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FireMission.m; sourceTree = "<group>"; };
@@ -213,7 +211,6 @@
 		6F143F3A21FA3AC500AE55DE /* LineOfSightData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineOfSightData.m; sourceTree = "<group>"; };
 		6F143F3B21FA3AC500AE55DE /* Engine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Engine.m; sourceTree = "<group>"; };
 		6F143F3C21FA3AC500AE55DE /* LineOfSight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineOfSight.h; sourceTree = "<group>"; };
-		6F143F3D21FA3AC500AE55DE /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		6F143F3E21FA3AC500AE55DE /* ParameterHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParameterHandler.h; sourceTree = "<group>"; };
 		6F143F4121FA3AC500AE55DE /* ResultLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultLayer.m; sourceTree = "<group>"; };
 		6F143F4221FA3AC500AE55DE /* TerrainLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainLayer.m; sourceTree = "<group>"; };
@@ -234,11 +231,9 @@
 		6F143F5121FA3AC500AE55DE /* AI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AI.m; sourceTree = "<group>"; };
 		6F143F5321FA3AC500AE55DE /* PathFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathFinder.m; sourceTree = "<group>"; };
 		6F143F5421FA3AC500AE55DE /* PathNodePriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathNodePriorityQueue.h; sourceTree = "<group>"; };
-		6F143F5521FA3AC500AE55DE /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
 		6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathNodePriorityQueue.m; sourceTree = "<group>"; };
 		6F143F5721FA3AC500AE55DE /* PathNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathNode.h; sourceTree = "<group>"; };
 		6F143F5821FA3AC500AE55DE /* PathFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathFinder.h; sourceTree = "<group>"; };
-		6F143F5921FA3AC500AE55DE /* Path.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Path.m; sourceTree = "<group>"; };
 		6F143F5B21FA3AC500AE55DE /* FrontlineMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontlineMap.h; sourceTree = "<group>"; };
 		6F143F5C21FA3AC500AE55DE /* InfluenceMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfluenceMap.m; sourceTree = "<group>"; };
 		6F143F5D21FA3AC500AE55DE /* TensionMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TensionMap.h; sourceTree = "<group>"; };
@@ -261,7 +256,6 @@
 		6F143F6E21FA3AC500AE55DE /* VulnerabilityMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VulnerabilityMap.h; sourceTree = "<group>"; };
 		6F143F6F21FA3AC500AE55DE /* ResultMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultMap.h; sourceTree = "<group>"; };
 		6F143F7021FA3AC500AE55DE /* GoalMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoalMap.h; sourceTree = "<group>"; };
-		6F14410E21FA3AC500AE55DE /* Settings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Settings.m; sourceTree = "<group>"; };
 		6F14410F21FA3AC500AE55DE /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
 		6F14411021FA3AC500AE55DE /* ScoreCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoreCounter.h; sourceTree = "<group>"; };
 		6F14411121FA3AC500AE55DE /* ParameterHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParameterHandler.m; sourceTree = "<group>"; };
@@ -340,20 +334,23 @@
 		6F1441B221FA3AC600AE55DE /* Objective.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Objective.h; sourceTree = "<group>"; };
 		6F1441B421FA3AC600AE55DE /* House.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = House.m; sourceTree = "<group>"; };
 		6F1441B521FA3AC600AE55DE /* AttackResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttackResult.h; sourceTree = "<group>"; };
-		6F1441B721FA3AC600AE55DE /* MapLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapLayer.h; sourceTree = "<group>"; };
+		6F1441B721FA3AC600AE55DE /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		6F1441B821FA3AC600AE55DE /* BaseTerrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTerrain.m; sourceTree = "<group>"; };
 		6F1441BB21FA3AC600AE55DE /* VertexList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VertexList.m; sourceTree = "<group>"; };
 		6F1441BC21FA3AC600AE55DE /* HitPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitPosition.m; sourceTree = "<group>"; };
 		6F1441BE21FA3AC600AE55DE /* Triangularizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Triangularizer.m; sourceTree = "<group>"; };
 		6F1441C321FA3AC600AE55DE /* BaseTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTerrain.h; sourceTree = "<group>"; };
-		6F1441C421FA3AC600AE55DE /* MapLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapLayer.m; sourceTree = "<group>"; };
+		6F1441C421FA3AC600AE55DE /* Map.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Map.m; sourceTree = "<group>"; };
 		6F1441C621FA3AC600AE55DE /* AttackResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttackResult.m; sourceTree = "<group>"; };
 		6F1441C721FA3AC600AE55DE /* House.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = House.h; sourceTree = "<group>"; };
 		6F1441C921FA3AC600AE55DE /* Objective.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Objective.m; sourceTree = "<group>"; };
 		6F1441CA21FA3AC600AE55DE /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		6F1441CB21FA3AC600AE55DE /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		6F1441CC21FA3AC600AE55DE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6F1441CD21FA3AC600AE55DE /* ParameterDefinitions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParameterDefinitions.m; sourceTree = "<group>"; };
+		6F14432121FE16F100AE55DE /* Smoke.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Smoke.m; sourceTree = "<group>"; };
+		6F14432321FE174D00AE55DE /* Smoke.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Smoke.h; sourceTree = "<group>"; };
+		6F14432521FE18B600AE55DE /* CGPointExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGPointExtension.m; sourceTree = "<group>"; };
+		6F14432621FE18B600AE55DE /* CGPointExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGPointExtension.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -370,11 +367,11 @@
 		6F143ED421FA3A3200AE55DE = {
 			isa = PBXGroup;
 			children = (
-				6F143EDE21FA3A3200AE55DE /* Products */,
 				6F143F3F21FA3AC500AE55DE /* AI */,
 				6F14415221FA3AC500AE55DE /* Definitions.h */,
 				6F143F0B21FA3AC400AE55DE /* Definitions.m */,
 				6F143F3621FA3AC500AE55DE /* Engine */,
+				6F14432421FE18B600AE55DE /* Extensions */,
 				6F14411321FA3AC500AE55DE /* Game */,
 				6F143F0D21FA3AC400AE55DE /* Globals.h */,
 				6F143EE721FA3AC400AE55DE /* Globals.m */,
@@ -388,16 +385,12 @@
 				6F14411121FA3AC500AE55DE /* ParameterHandler.m */,
 				6F143F0C21FA3AC400AE55DE /* Player.h */,
 				6F14410F21FA3AC500AE55DE /* Player.m */,
-				6F14415321FA3AC500AE55DE /* Projectfiles */,
+				6F143EDE21FA3A3200AE55DE /* Products */,
 				6F143EE921FA3AC400AE55DE /* Scenario */,
 				6F14411021FA3AC500AE55DE /* ScoreCounter.h */,
 				6F143EE821FA3AC400AE55DE /* ScoreCounter.m */,
 				6F14414321FA3AC500AE55DE /* Serialization */,
-				6F1441CB21FA3AC600AE55DE /* Settings.h */,
-				6F14410E21FA3AC500AE55DE /* Settings.m */,
 				6F143EFE21FA3AC400AE55DE /* Unit */,
-				6F143F0E21FA3AC400AE55DE /* Utils.h */,
-				6F143F3D21FA3AC500AE55DE /* Utils.m */,
 			);
 			sourceTree = "<group>";
 		};
@@ -439,18 +432,18 @@
 		6F143EFE21FA3AC400AE55DE /* Unit */ = {
 			isa = PBXGroup;
 			children = (
-				6F143EFF21FA3AC400AE55DE /* UnitDefinition.h */,
-				6F143F0021FA3AC400AE55DE /* Weapon.m */,
-				6F143F0121FA3AC400AE55DE /* Organization.h */,
-				6F143F0221FA3AC400AE55DE /* Path.h */,
-				6F143F0321FA3AC400AE55DE /* Army.m */,
-				6F143F0421FA3AC400AE55DE /* Unit.h */,
-				6F143F0521FA3AC400AE55DE /* Weapon.h */,
-				6F143F0621FA3AC400AE55DE /* UnitDefinition.m */,
-				6F143F0721FA3AC400AE55DE /* Path.m */,
-				6F143F0821FA3AC400AE55DE /* Organization.m */,
 				6F143F0921FA3AC400AE55DE /* Army.h */,
+				6F143F0321FA3AC400AE55DE /* Army.m */,
+				6F143F0121FA3AC400AE55DE /* Organization.h */,
+				6F143F0821FA3AC400AE55DE /* Organization.m */,
+				6F143F0221FA3AC400AE55DE /* Path.h */,
+				6F143F0721FA3AC400AE55DE /* Path.m */,
+				6F143F0421FA3AC400AE55DE /* Unit.h */,
 				6F143F0A21FA3AC400AE55DE /* Unit.m */,
+				6F143EFF21FA3AC400AE55DE /* UnitDefinition.h */,
+				6F143F0621FA3AC400AE55DE /* UnitDefinition.m */,
+				6F143F0521FA3AC400AE55DE /* Weapon.h */,
+				6F143F0021FA3AC400AE55DE /* Weapon.m */,
 			);
 			path = Unit;
 			sourceTree = "<group>";
@@ -550,11 +543,9 @@
 			children = (
 				6F143F5321FA3AC500AE55DE /* PathFinder.m */,
 				6F143F5421FA3AC500AE55DE /* PathNodePriorityQueue.h */,
-				6F143F5521FA3AC500AE55DE /* Path.h */,
 				6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */,
 				6F143F5721FA3AC500AE55DE /* PathNode.h */,
 				6F143F5821FA3AC500AE55DE /* PathFinder.h */,
-				6F143F5921FA3AC500AE55DE /* Path.m */,
 			);
 			path = PathFinder;
 			sourceTree = "<group>";
@@ -618,109 +609,6 @@
 			path = Serialization;
 			sourceTree = "<group>";
 		};
-		6F14415321FA3AC500AE55DE /* Projectfiles */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415421FA3AC500AE55DE /* Serialization */,
-				6F14415521FA3AC500AE55DE /* Map */,
-				6F14415621FA3AC500AE55DE /* AI */,
-			);
-			path = Projectfiles;
-			sourceTree = "<group>";
-		};
-		6F14415421FA3AC500AE55DE /* Serialization */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Serialization;
-			sourceTree = "<group>";
-		};
-		6F14415521FA3AC500AE55DE /* Map */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Map;
-			sourceTree = "<group>";
-		};
-		6F14415621FA3AC500AE55DE /* AI */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415721FA3AC500AE55DE /* StateMachine */,
-				6F14415921FA3AC500AE55DE /* RuleSystem */,
-				6F14415C21FA3AC500AE55DE /* BehaviorTree */,
-				6F14415F21FA3AC500AE55DE /* RuleSystemOld */,
-			);
-			path = AI;
-			sourceTree = "<group>";
-		};
-		6F14415721FA3AC500AE55DE /* StateMachine */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415821FA3AC500AE55DE /* Info */,
-			);
-			path = StateMachine;
-			sourceTree = "<group>";
-		};
-		6F14415821FA3AC500AE55DE /* Info */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Info;
-			sourceTree = "<group>";
-		};
-		6F14415921FA3AC500AE55DE /* RuleSystem */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415A21FA3AC500AE55DE /* State-old */,
-				6F14415B21FA3AC500AE55DE /* Rules */,
-			);
-			path = RuleSystem;
-			sourceTree = "<group>";
-		};
-		6F14415A21FA3AC500AE55DE /* State-old */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "State-old";
-			sourceTree = "<group>";
-		};
-		6F14415B21FA3AC500AE55DE /* Rules */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Rules;
-			sourceTree = "<group>";
-		};
-		6F14415C21FA3AC500AE55DE /* BehaviorTree */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415D21FA3AC500AE55DE /* Nodes */,
-			);
-			path = BehaviorTree;
-			sourceTree = "<group>";
-		};
-		6F14415D21FA3AC500AE55DE /* Nodes */ = {
-			isa = PBXGroup;
-			children = (
-				6F14415E21FA3AC500AE55DE /* Conditions */,
-			);
-			path = Nodes;
-			sourceTree = "<group>";
-		};
-		6F14415E21FA3AC500AE55DE /* Conditions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Conditions;
-			sourceTree = "<group>";
-		};
-		6F14415F21FA3AC500AE55DE /* RuleSystemOld */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = RuleSystemOld;
-			sourceTree = "<group>";
-		};
 		6F14416021FA3AC500AE55DE /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -740,26 +628,26 @@
 		6F14416221FA3AC500AE55DE /* UdpPackets */ = {
 			isa = PBXGroup;
 			children = (
-				6F14416321FA3AC500AE55DE /* PlayerPingPacket.m */,
-				6F14416421FA3AC500AE55DE /* MissionPacket.h */,
-				6F14416521FA3AC500AE55DE /* PlayerPongPacket.m */,
-				6F14416621FA3AC500AE55DE /* UnitStatsPacket.m */,
-				6F14416721FA3AC500AE55DE /* SetMissionPacket.h */,
-				6F14416821FA3AC500AE55DE /* SmokePacket.h */,
-				6F14416921FA3AC500AE55DE /* MeleePacket.m */,
 				6F14416A21FA3AC500AE55DE /* FirePacket.h */,
-				6F14416B21FA3AC500AE55DE /* UdpPacket.h */,
-				6F14416C21FA3AC500AE55DE /* ServerPingPacket.h */,
+				6F14417421FA3AC500AE55DE /* FirePacket.m */,
+				6F14416F21FA3AC500AE55DE /* MeleePacket.h */,
+				6F14416921FA3AC500AE55DE /* MeleePacket.m */,
+				6F14416421FA3AC500AE55DE /* MissionPacket.h */,
 				6F14416D21FA3AC500AE55DE /* MissionPacket.m */,
 				6F14416E21FA3AC500AE55DE /* PlayerPingPacket.h */,
-				6F14416F21FA3AC500AE55DE /* MeleePacket.h */,
-				6F14417021FA3AC500AE55DE /* SmokePacket.m */,
-				6F14417121FA3AC500AE55DE /* SetMissionPacket.m */,
-				6F14417221FA3AC500AE55DE /* UnitStatsPacket.h */,
+				6F14416321FA3AC500AE55DE /* PlayerPingPacket.m */,
 				6F14417321FA3AC500AE55DE /* PlayerPongPacket.h */,
-				6F14417421FA3AC500AE55DE /* FirePacket.m */,
+				6F14416521FA3AC500AE55DE /* PlayerPongPacket.m */,
+				6F14416C21FA3AC500AE55DE /* ServerPingPacket.h */,
 				6F14417521FA3AC500AE55DE /* ServerPingPacket.m */,
+				6F14416721FA3AC500AE55DE /* SetMissionPacket.h */,
+				6F14417121FA3AC500AE55DE /* SetMissionPacket.m */,
+				6F14416821FA3AC500AE55DE /* SmokePacket.h */,
+				6F14417021FA3AC500AE55DE /* SmokePacket.m */,
+				6F14416B21FA3AC500AE55DE /* UdpPacket.h */,
 				6F14417621FA3AC500AE55DE /* UdpPacket.m */,
+				6F14417221FA3AC500AE55DE /* UnitStatsPacket.h */,
+				6F14416621FA3AC500AE55DE /* UnitStatsPacket.m */,
 			);
 			path = UdpPackets;
 			sourceTree = "<group>";
@@ -802,12 +690,14 @@
 				6F1441BC21FA3AC600AE55DE /* HitPosition.m */,
 				6F1441C721FA3AC600AE55DE /* House.h */,
 				6F1441B421FA3AC600AE55DE /* House.m */,
-				6F1441B721FA3AC600AE55DE /* MapLayer.h */,
-				6F1441C421FA3AC600AE55DE /* MapLayer.m */,
+				6F1441B721FA3AC600AE55DE /* Map.h */,
+				6F1441C421FA3AC600AE55DE /* Map.m */,
 				6F1441B121FA3AC600AE55DE /* Message.h */,
 				6F1441CA21FA3AC600AE55DE /* Message.m */,
 				6F1441B221FA3AC600AE55DE /* Objective.h */,
 				6F1441C921FA3AC600AE55DE /* Objective.m */,
+				6F14432321FE174D00AE55DE /* Smoke.h */,
+				6F14432121FE16F100AE55DE /* Smoke.m */,
 				6F14419B21FA3AC600AE55DE /* Terrains */,
 				6F14419721FA3AC600AE55DE /* Triangularizer.h */,
 				6F1441BE21FA3AC600AE55DE /* Triangularizer.m */,
@@ -825,6 +715,15 @@
 				6F1441A221FA3AC600AE55DE /* TerrainModifiers.h */,
 			);
 			path = Terrains;
+			sourceTree = "<group>";
+		};
+		6F14432421FE18B600AE55DE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6F14432521FE18B600AE55DE /* CGPointExtension.m */,
+				6F14432621FE18B600AE55DE /* CGPointExtension.h */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -904,6 +803,7 @@
 				6F1441ED21FA3AC600AE55DE /* AssaultMission.m in Sources */,
 				6F1441E621FA3AC600AE55DE /* Mission.m in Sources */,
 				6F1441EB21FA3AC600AE55DE /* AdvanceMission.m in Sources */,
+				6F14432221FE16F100AE55DE /* Smoke.m in Sources */,
 				6F14430021FA3AC600AE55DE /* JoinPacket.m in Sources */,
 				6F14420221FA3AC600AE55DE /* PathNodePriorityQueue.m in Sources */,
 				6F1442FA21FA3AC600AE55DE /* TcpNetworkHandler.m in Sources */,
@@ -954,7 +854,7 @@
 				6F14420021FA3AC600AE55DE /* AI.m in Sources */,
 				6F1441D621FA3AC600AE55DE /* MultiplayerTimeCondition.m in Sources */,
 				6F14420A21FA3AC600AE55DE /* TensionMap.m in Sources */,
-				6F14431721FA3AC600AE55DE /* MapLayer.m in Sources */,
+				6F14431721FA3AC600AE55DE /* Map.m in Sources */,
 				6F1442F221FA3AC600AE55DE /* MissionPacket.m in Sources */,
 				6F14420121FA3AC600AE55DE /* PathFinder.m in Sources */,
 				6F1442EF21FA3AC600AE55DE /* PlayerPongPacket.m in Sources */,
@@ -968,12 +868,11 @@
 				6F1442E921FA3AC600AE55DE /* ScenarioReader.m in Sources */,
 				6F1441D021FA3AC600AE55DE /* VictoryCondition.m in Sources */,
 				6F1441FB21FA3AC600AE55DE /* FrontLayer.m in Sources */,
-				6F1441F721FA3AC600AE55DE /* Utils.m in Sources */,
+				6F14432721FE18B600AE55DE /* CGPointExtension.m in Sources */,
 				6F14420621FA3AC600AE55DE /* GoalMap.m in Sources */,
 				6F14430221FA3AC600AE55DE /* KeepAlivePacket.m in Sources */,
 				6F1441F921FA3AC600AE55DE /* TerrainLayer.m in Sources */,
 				6F1441F121FA3AC600AE55DE /* MoveFastMission.m in Sources */,
-				6F14420321FA3AC600AE55DE /* Path.m in Sources */,
 				6F1441DD21FA3AC600AE55DE /* Path.m in Sources */,
 				6F1441F521FA3AC600AE55DE /* LineOfSightData.m in Sources */,
 				6F14420D21FA3AC600AE55DE /* UnitStrengthMap.m in Sources */,
@@ -985,7 +884,6 @@
 				6F14431921FA3AC600AE55DE /* AttackResult.m in Sources */,
 				6F14420821FA3AC600AE55DE /* ResultMap.m in Sources */,
 				6F1441F321FA3AC600AE55DE /* DisorganizedMission.m in Sources */,
-				6F1442CD21FA3AC600AE55DE /* Settings.m in Sources */,
 				6F1442E721FA3AC600AE55DE /* NSData+Compression.m in Sources */,
 				6F14430421FA3AC600AE55DE /* TcpPacket.m in Sources */,
 				6F1441EE21FA3AC600AE55DE /* RetreatMission.m in Sources */,

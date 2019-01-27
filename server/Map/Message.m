@@ -2,7 +2,7 @@
 #import "Message.h"
 #import "Unit.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 
 @interface Message ()
 
@@ -32,7 +32,7 @@
         self.unit    = unit;
         self.message = message;
         
-        CCLOG( @"unit: %@, message: %d", self.unit, self.message );
+        NSLog( @"unit: %@, message: %d", self.unit, self.message );
     }
     
     return self;    
@@ -68,7 +68,7 @@
             break;
    }
      
-    CCLOG( @"%@", [message_str stringByReplacingOccurrencesOfString:@"\n" withString:@" "] );
+    NSLog( @"%@", [message_str stringByReplacingOccurrencesOfString:@"\n" withString:@" "] );
     }
 
 /*

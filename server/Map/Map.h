@@ -7,12 +7,11 @@
 @class PolygonNode;
 @class House;
 
-@interface MapLayer : NSObject
+@interface Map : NSObject
 
 @property (nonatomic)         int                      mapWidth;
 @property (nonatomic)         int                      mapHeight;
 @property (nonatomic, strong)  NSMutableArray *                polygons;
-@property (nonatomic, strong) PolygonNode *            baseGrass;
 
 
 - (void) reset;

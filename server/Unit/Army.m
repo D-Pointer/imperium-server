@@ -2,7 +2,7 @@
 #import "Definitions.h"
 #import "Globals.h"
 #import "UnitDefinition.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "MissionVisualizer.h"
 #import "Scenario.h"
 
@@ -25,7 +25,7 @@
 
 
 + (void) loadArmies {
-    CCLOG( @"loading armies" );
+    NSLog( @"loading armies" );
 
     Globals *globals = [Globals sharedInstance];
 
@@ -45,7 +45,7 @@
 
             if (typeData == nil) {
                 // no more units for this army
-                CCLOG( @"army %lu has %lu units", (unsigned long)armyIndex, (unsigned long)unitIndex );
+                NSLog( @"army %lu has %lu units", (unsigned long)armyIndex, (unsigned long)unitIndex );
                 break;
             }
 
@@ -192,7 +192,7 @@
                     break;
 
                 default:
-                    CCLOG( @"invalid unit type: %d", unitDefType );
+                    NSLog( @"invalid unit type: %d", unitDefType );
                     NSAssert( NO, @"invalid unit type" );
             }
 
@@ -211,7 +211,7 @@
 
             // add mission visualizers
             unit.missionVisualizer = [[MissionVisualizer alloc] initWithUnit:unit];
-            [[Globals sharedInstance].mapLayer addChild:unit.missionVisualizer z:kMissionVisualizerZ];
+            [[Globals sharedInstance].map addChild:unit.missionVisualizer z:kMissionVisualizerZ];
 
             // set the position and facing
             [self findStartingPositionFor:unit fromPositions:startPositions];
@@ -220,9 +220,9 @@
             [unit updateIcon];
 
             // add to map
-            [globals.mapLayer addChild:unit z:kUnitZ];
+            [globals.map addChild:unit z:kUnitZ];
             if (unit.unitTypeIcon) {
-                [[Globals sharedInstance].mapLayer addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
+                [[Globals sharedInstance].map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
             }
 
             // and save for later
@@ -236,7 +236,7 @@
                 [globals.unitsPlayer2 addObject:unit];
             }
 
-            CCLOG( @"created unit %@", unit );
+            NSLog( @"created unit %@", unit );
         }
     }
 }
@@ -275,7 +275,7 @@
     }
 
     // face the map center
-    CGPoint mapCenter = ccp( globals.mapLayer.mapWidth / 2, globals.mapLayer.mapHeight / 2 );
+    CGPoint mapCenter = ccp( globals.map.mapWidth / 2, globals.map.mapHeight / 2 );
     unit.rotation = CC_RADIANS_TO_DEGREES( ccpAngleSigned( ccpSub( mapCenter, unit.position ), ccp( 0, 1 ) ) );
 }
 

@@ -94,7 +94,7 @@
         }
     }
 
-    CCLOG( @"high: %f", self.max );
+    NSLog( @"high: %f", self.max );
 
     // set up the colors
     for ( int y = 0; y < self.height; ++y ) {

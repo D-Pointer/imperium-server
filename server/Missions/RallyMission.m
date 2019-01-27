@@ -11,7 +11,6 @@
         self.type          = kRallyMission;
         self.name          = @"Rallying unit";
         self.preparingName = @"Preparing to rally unit";
-        self.color         = sRallyLineColor;
         self.fatigueEffect = sParameters[kParamRallyFatigueEffectF].floatValue;
 
         // set later
@@ -28,7 +27,6 @@
         self.name          = [NSString stringWithFormat:@"Rallying %@", target.name];
         self.preparingName = [NSString stringWithFormat:@"Preparing to rally %@", target.name];
         self.endPoint      = target.position;
-        self.color         = sRallyLineColor;
         self.targetUnit    = target;
         self.fatigueEffect = sParameters[kParamRallyFatigueEffectF].floatValue;
     }

@@ -1,4 +1,3 @@
-#import "GCDAsyncUdpSocket.h"
 #import "Definitions.h"
 #import "UdpPacket.h"
 
@@ -15,7 +14,7 @@
 @end
 
 
-@interface UdpNetworkHandler : NSObject <GCDAsyncUdpSocketDelegate>
+@interface UdpNetworkHandler : NSObject
 
 - (instancetype) initWithServer:(NSString *)server port:(unsigned short)port delegate:(id<UdpNetworkHandlerDelegate>)delegate;
 

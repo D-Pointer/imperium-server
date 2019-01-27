@@ -5,18 +5,16 @@
 @interface Player ()
 
 @property (nonatomic, readwrite, assign) PlayerId   playerId;
-@property (nonatomic, readwrite, assign) PlayerType type;
 
 @end
 
 
 @implementation Player
 
-- (id) initWithId:(PlayerId)playerId type:(PlayerType)type {
+- (id) initWithId:(PlayerId)playerId {
     self = [super init];
     if (self) {
         self.playerId = playerId;
-        self.type     = type;
 
         // default name
         self.name = @"Unknown";

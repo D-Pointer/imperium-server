@@ -19,7 +19,7 @@
 //    NSString *parametersPath = [NSString stringWithFormat:@"%@/Engine/Parameters.txt", paths[0]];
 
     NSString * name = @"/Engine/Parameters.txt";
-    CCLOG( @"reading game parameters from: %@", name );
+    NSLog( @"reading game parameters from: %@", name );
 
     // do we have any parameters?
     // read everything from text
@@ -27,7 +27,7 @@
 //    [NSString stringWithContentsOfFile:parametersPath
 //                                                   encoding:NSUTF8StringEncoding error:nil];
     if ( contents == nil ) {
-        CCLOG( @"failed to load parameters from: %@", name );
+        NSLog( @"failed to load parameters from: %@", name );
         return NO;
     }
 
@@ -38,7 +38,7 @@
         NSString * line = lines[ index];
 
         if (line.length == 0) {
-            CCLOG( @"invalid empty line %d", index );
+            NSLog( @"invalid empty line %d", index );
             return NO;
         }
 
@@ -48,7 +48,7 @@
 
         // normal parameter line
         if (parts.count != 2) {
-            CCLOG( @"invalid parameters line: %d: parts: %lu, %@", index, (unsigned long)parts.count, trimmedLine );
+            NSLog( @"invalid parameters line: %d: parts: %lu, %@", index, (unsigned long)parts.count, trimmedLine );
             continue;
         }
 
@@ -72,15 +72,15 @@
                 break;
 
             default:
-                CCLOG( @"invalid parameter type: %@", name );
+                NSLog( @"invalid parameter type: %@", name );
         }
     }
 
     for ( int index = 0; index < kParameterCount; ++index ) {
-        CCLOG( @"%d %.1f %d", index, sParameters[index].floatValue, sParameters[index].intValue );
+        NSLog( @"%d %.1f %d", index, sParameters[index].floatValue, sParameters[index].intValue );
     }
 
-    CCLOG( @"parsed parameters" );
+    NSLog( @"parsed parameters" );
     return YES;
 }
 

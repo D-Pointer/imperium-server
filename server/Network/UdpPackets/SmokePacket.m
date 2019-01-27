@@ -2,7 +2,7 @@
 #import "SmokePacket.h"
 #import "Smoke.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 
 @implementation SmokePacket
 
@@ -43,7 +43,7 @@
             }
         }
 
-        CCLOG( @"sending %d smoke data, offset: %d", count, offset );
+        NSLog( @"sending %d smoke data, offset: %d", count, offset );
         
         // finally add in the smoke count at the saved count offset
         saveInt16ToBuffer( count, buffer, countOffset );

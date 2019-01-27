@@ -2,10 +2,8 @@
 #import "Objective.h"
 #import "Globals.h"
 #import "Unit.h"
-#import "Utils.h"
-#import "MapLayer.h"
+#import "CGPointExtension.h"
 
-@i
 @implementation Objective
 
 - (NSString *) description {
@@ -49,46 +47,27 @@
         if ( near[ kPlayer1 ] && near[ kPlayer2 ] ) {
             // contested
             objective.state = kContested;
-            CCLOG( @"%@ contested", objective.title );
+            NSLog( @"%@ contested", objective.title );
         }
         else if ( near[ kPlayer1 ] ) {
             objective.state = kOwnerPlayer1;
-            CCLOG( @"%@ owned by player 1", objective.title );
+            NSLog( @"%@ owned by player 1", objective.title );
         }
         else if ( near[ kPlayer2 ] ) {
             objective.state = kOwnerPlayer2;
-            CCLOG( @"%@ owned by player 2", objective.title );
+            NSLog( @"%@ owned by player 2", objective.title );
         }
         else {
             // neutral
             objective.state = kNeutral;
-            CCLOG( @"%@ neutral", objective.title );
+            NSLog( @"%@ neutral", objective.title );
         }
     }
 }
 
 
-- (void) setTitle:(NSString *)title {
-    _title = title;
-
-    if ( self.titleLabel != nil ) {
-        [self.titleLabel removeFromParent];
-        self.titleLabel = nil;
-    }
-
-    // show the objective title under the sprite
-    self.titleLabel = [CCLabelBMFont labelWithString:@"" fntFile:@"ObjectiveNameFont.fnt"];
-    [Utils showString:self.title onLabel:self.titleLabel withMaxLength:100];
-    self.titleLabel.anchorPoint = ccp( 0.5, 0.5 );
-
-    // this requires that the position is set before the title
-    self.titleLabel.position = ccp( self.position.x, self.position.y - 30 );
-    [[Globals sharedInstance].mapLayer addChild:self.titleLabel z:kObjectiveTitleZ];
-}
-
-
 + (Objective *) create {
-    Objective * objective = [Objective spriteWithSpriteFrameName:@"ObjectiveNeutral.png"];
+    Objective * objective = [Objective new];
     objective.objectiveId = -1;
     objective.state = kNeutral;
 

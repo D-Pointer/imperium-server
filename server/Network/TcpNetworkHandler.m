@@ -17,7 +17,7 @@
 
 #import "UdpNetworkHandler.h"
 #import "LineOfSight.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "NetworkUtils.h"
 
 #import "FireMission.h"
@@ -73,7 +73,7 @@
             int fd = [self.tcpSocket socketFD];
             int on = 1;
             if (setsockopt( fd, IPPROTO_TCP, TCP_NODELAY, (char *) &on, sizeof( on ) ) == -1) {
-                CCLOG( @"error disabling delay for TCP socket" );
+                NSLog( @"error disabling delay for TCP socket" );
             }
         }];
     }
@@ -83,16 +83,16 @@
 
 
 - (void) dealloc {
-    CCLOG( @"in" );
+    NSLog( @"in" );
 }
 
 
 - (void) registerDelegate:(id <OnlineGamesDelegate>)delegate {
     if (![self.delegates containsObject:delegate]) {
         [self.delegates addObject:delegate];
-        CCLOG( @"registering delegate %@, now: %lu", delegate, (unsigned long)self.delegates.count );
+        NSLog( @"registering delegate %@, now: %lu", delegate, (unsigned long)self.delegates.count );
         for (id <OnlineGamesDelegate> tmp in self.delegates) {
-            CCLOG( @"delegate %@", tmp );
+            NSLog( @"delegate %@", tmp );
         }
     }
 }
@@ -101,7 +101,7 @@
 - (void) deregisterDelegate:(id <OnlineGamesDelegate>)delegate {
     if ([self.delegates containsObject:delegate]) {
         [self.delegates removeObject:delegate];
-        CCLOG( @"deregistering delegate %@, now: %lu", delegate, (unsigned long)self.delegates.count );
+        NSLog( @"deregistering delegate %@, now: %lu", delegate, (unsigned long)self.delegates.count );
     }
 }
 
@@ -112,12 +112,12 @@
     self.announcedGameId = UINT_MAX;
     self.currentGame = nil;
 
-    CCLOG( @"connecting to %@:%d", sServerHost, sServerPort);
+    NSLog( @"connecting to %@:%d", sServerHost, sServerPort);
 
     NSError *err = nil;
     if (![self.tcpSocket connectToHost:sServerHost onPort:sServerPort withTimeout:5 error:&err]) {
         // If there was an error, it's likely something like "already connected" or "no delegate set"
-        CCLOG( @"failed to connect: %@", err );
+        NSLog( @"failed to connect: %@", err );
         return NO;
     }
 
@@ -126,7 +126,7 @@
 
 
 - (void) disconnect {
-    CCLOG( @"disconnecting" );
+    NSLog( @"disconnecting" );
     if (self.tcpSocket) {
         [self.tcpSocket disconnect];
         self.tcpSocket = nil;
@@ -147,7 +147,7 @@
 
 
 - (void) sendKeepAlive {
-    //CCLOG( @"sending keepalive" );
+    //NSLog( @"sending keepalive" );
     [self writePacket:[KeepAlivePacket new]];
 }
 
@@ -161,39 +161,39 @@
 
 
 - (void) announceScenario:(Scenario *)scenario {
-    CCLOG( @"announcing scenario: %@", scenario );
+    NSLog( @"announcing scenario: %@", scenario );
     [self writePacket:[[AnnouncePacket alloc] initWithScenario:scenario]];
 }
 
 
 - (void) joinGame:(HostedGame *)game {
-    CCLOG( @"joining game: %@", game );
+    NSLog( @"joining game: %@", game );
     self.currentGame = game;
     [self writePacket:[[JoinPacket alloc] initWithGame:game]];
 }
 
 
 - (void) leaveGame {
-    CCLOG( @"leaving game" );
+    NSLog( @"leaving game" );
     self.announcedGameId = UINT_MAX;
     [self writePacket:[LeavePacket new]];
 }
 
 
 - (void) sendUnits {
-    CCLOG( @"sending units packet" );
+    NSLog( @"sending units packet" );
     [self writePacket:[SetupUnitsPacket new]];
 }
 
 
 - (void) sendWind {
-    CCLOG( @"sending wind packet" );
+    NSLog( @"sending wind packet" );
     [self writePacket:[WindPacket new]];
 }
 
 
 - (void) readyToStart {
-    CCLOG( @"sending ready to start game indication" );
+    NSLog( @"sending ready to start game indication" );
     [self writePacket:[ReadyToStartPacket new]];
 }
 
@@ -204,7 +204,7 @@
 
 
 - (void) writePacket:(TcpPacket *)packet {
-    CCLOG( @"writing packet: %@", packet );
+    NSLog( @"writing packet: %@", packet );
 
     // do the real write
     [self.tcpSocket writeData:packet.data withTimeout:-1 tag:0];
@@ -215,12 +215,12 @@
 #pragma mark - TCP socket delegate
 
 - (void) socket:(GCDAsyncSocket *)sender didConnectToHost:(NSString *)host port:(UInt16)port {
-    CCLOG( @"connected ok to %@:%d", host, port );
+    NSLog( @"connected ok to %@:%d", host, port );
     self.isConnected = YES;
 
     // check and possibly start TLS
     if (sUnsecureOnline) {
-        CCLOG( @"skipping TLS and going insecure!" );
+        NSLog( @"skipping TLS and going insecure!" );
         [self socketDidSecure:sender];
     }
     else {
@@ -233,12 +233,12 @@
 
 
 - (void) socketDidSecure:(GCDAsyncSocket *)sender {
-    CCLOG( @"TLS now enabled" );
+    NSLog( @"TLS now enabled" );
 
     // just inform the delegate, there is no extra data
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
     for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
-        CCLOG( @"delegate %@", delegate );
+        NSLog( @"delegate %@", delegate );
         if (delegate && [delegate respondsToSelector:@selector( connectedOk )]) {
             [delegate connectedOk];
         }
@@ -250,7 +250,7 @@
 
 
 - (void) socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)error {
-    CCLOG( @"disconnected from server" );
+    NSLog( @"disconnected from server" );
 
     self.isConnected = NO;
 
@@ -258,11 +258,11 @@
     [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
 
     if (error) {
-        CCLOG( @"error: %@", error );
+        NSLog( @"error: %@", error );
         NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
         for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
             if (delegate && [delegate respondsToSelector:@selector( connectionFailed )]) {
-                CCLOG( @"failed to connect: %@", error );
+                NSLog( @"failed to connect: %@", error );
                 [delegate connectionFailed];
             }
         }
@@ -292,7 +292,7 @@
     // copy data
     unsigned short payloadLength = readInt16FromBuffer( data, &offset );
 
-    CCLOG( @"payload length: %d", payloadLength );
+    NSLog( @"payload length: %d", payloadLength );
 
     // any payload?
     if (payloadLength == 0) {
@@ -309,7 +309,7 @@
 - (void) handlePayload:(const UInt8 *)data length:(unsigned long)length {
     unsigned short offset = 0;
     TcpNetworkPacketType packetType = (TcpNetworkPacketType) readInt16FromBuffer( data, &offset );
-    CCLOG( @"packet type: %@", [TcpPacket name:packetType] );
+    NSLog( @"packet type: %@", [TcpPacket name:packetType] );
 
     switch ( packetType) {
         case kLoginOkPacket:
@@ -372,7 +372,7 @@
             break;
 
         default:
-            CCLOG( @"unhandled packet type: %@", [TcpPacket name:packetType] );
+            NSLog( @"unhandled packet type: %@", [TcpPacket name:packetType] );
             break;
     }
 
@@ -382,12 +382,12 @@
 
 
 - (void) handleLoginOk {
-    CCLOG( @"logged in ok" );
+    NSLog( @"logged in ok" );
 
     // just inform the delegate, there is no extra data
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
     for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
-        CCLOG( @"delegate %@", delegate );
+        NSLog( @"delegate %@", delegate );
         if (delegate && [delegate respondsToSelector:@selector( loginOk )]) {
             [delegate loginOk];
         }
@@ -433,7 +433,7 @@
     // get the game id
     self.announcedGameId = readInt32FromBuffer( data, &offset );
 
-    CCLOG( @"game announced ok, game id: %d", self.announcedGameId );
+    NSLog( @"game announced ok, game id: %d", self.announcedGameId );
 
     // just inform the deletegate, there is no extra data
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
@@ -448,7 +448,7 @@
 - (void) handleGameAdded:(const UInt8 *)data {
     // if we have announced a game ok then we don't care about any other games
 //    if (self.announcedGameId != UINT_MAX) {
-//        CCLOG( @"we've announced a game, ignoring other announced game" );
+//        NSLog( @"we've announced a game, ignoring other announced game" );
 //        return;
 //    }
 
@@ -465,7 +465,7 @@
     for (HostedGame *game in self.games) {
         if (game.gameId == gameId) {
             // we already have this game
-            CCLOG( @"we've already received game with id %d, ignoring this version", gameId );
+            NSLog( @"we've already received game with id %d, ignoring this version", gameId );
             return;
         }
     }
@@ -489,7 +489,7 @@
     }
 
     [self.games addObject:game];
-    CCLOG( @"received game: %@, games now: %lu", game, (unsigned long)self.games.count );
+    NSLog( @"received game: %@, games now: %lu", game, (unsigned long)self.games.count );
 
     // just inform the deletegate, there is no extra data
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
@@ -517,11 +517,11 @@
     // make a string from it
     NSString *opponentName = [NSString stringWithUTF8String:nameBuffer];
 
-    CCLOG( @"game joined ok, opponent: %@, UDP port: %d", opponentName, udpPort );
+    NSLog( @"game joined ok, opponent: %@, UDP port: %d", opponentName, udpPort );
 
     // did we announce the game?
     if (self.currentGame.gameId != self.announcedGameId ) {
-        CCLOG( @"we joined an announced game %@", self.currentGame );
+        NSLog( @"we joined an announced game %@", self.currentGame );
 
         // we're always player 2 in a game we join
         self.currentGame.localPlayerId = kPlayer2;
@@ -530,7 +530,7 @@
         // someone joined a game we announced, we're always player 1 in a game we host
         self.currentGame.localPlayerId = kPlayer1;
         self.currentGame.opponentName = opponentName;
-        CCLOG( @"player joined our game %@", self.currentGame );
+        NSLog( @"player joined our game %@", self.currentGame );
     }
 
     // save the UDP port
@@ -569,7 +569,7 @@
     // do we have a current game and is it ours?
     if (self.currentGame && self.currentGame.gameId == gameId) {
         // our game was removed, this just means it's no longer publicly announced
-        CCLOG( @"our game is no longer publicly announced" );
+        NSLog( @"our game is no longer publicly announced" );
         removed = self.currentGame;
         self.currentGame = nil;
     }
@@ -584,12 +584,12 @@
     }
 
     if (!removed) {
-        CCLOG( @"did not find removed game with id: %d", gameId );
+        NSLog( @"did not find removed game with id: %d", gameId );
         return;
     }
 
     [self.games removeObject:removed];
-    CCLOG( @"game removed: %@", removed );
+    NSLog( @"game removed: %@", removed );
 
     // just inform the delegate, there is no extra data
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
@@ -637,13 +637,13 @@
 - (void) handleGameEndedPacket {
     // this is sent by the server when the game ends, either from having ended normally or due to the other
     // player disconnecting
-    CCLOG( @"game ended received from server" );
+    NSLog( @"game ended received from server" );
 
     // stop the engine
     [[Globals sharedInstance].engine stop];
 
     if ([Globals sharedInstance].udpConnection) {
-        CCLOG( @"shutting down UDP connection" );
+        NSLog( @"shutting down UDP connection" );
         [[Globals sharedInstance].udpConnection disconnect];
         [Globals sharedInstance].udpConnection = nil;
     }
@@ -651,7 +651,7 @@
     // inform the delegates
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
     for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
-        CCLOG( @"delegate: %@", delegate );
+        NSLog( @"delegate: %@", delegate );
         if (delegate && [delegate respondsToSelector:@selector( gameEnded )]) {
             [delegate gameEnded];
         }
@@ -660,14 +660,14 @@
 
 
 - (void) handleSetupUnits:(const UInt8 *)data {
-    CCLOG( @"handling setting up enemy units" );
+    NSLog( @"handling setting up enemy units" );
 
     Globals *globals = [Globals sharedInstance];
 
     unsigned short offset = 0;
     unsigned char unitCount = data[offset++];
 
-    CCLOG( @"units: %d", (int) unitCount );
+    NSLog( @"units: %d", (int) unitCount );
     char nameBuffer[256];
 
     // id of the enemy
@@ -764,10 +764,10 @@
         unit.mission.unit = unit;
 
         // add to map
-        [globals.mapLayer addChild:unit z:kUnitZ];
+        [globals.map addChild:unit z:kUnitZ];
 
         if (unit.unitTypeIcon) {
-            [globals.mapLayer addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
+            [globals.map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
         }
 
         // and save for later
@@ -781,10 +781,10 @@
             [globals.unitsPlayer2 addObject:unit];
         }
 
-        CCLOG( @"created unit %@", unit );
+        NSLog( @"created unit %@", unit );
     }
 
-    CCLOG( @"total units %lu %lu %lu", (unsigned long)globals.unitsPlayer1.count, (unsigned long)globals.unitsPlayer2.count, (unsigned long)globals.units.count );
+    NSLog( @"total units %lu %lu %lu", (unsigned long)globals.unitsPlayer1.count, (unsigned long)globals.unitsPlayer2.count, (unsigned long)globals.units.count );
 
     // initial line of sight update now that we have all units
     globals.lineOfSight = [LineOfSight new];
@@ -793,7 +793,7 @@
     // inform the delegates
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
     for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
-        CCLOG( @"delegate: %@", delegate );
+        NSLog( @"delegate: %@", delegate );
         if (delegate && [delegate respondsToSelector:@selector( unitsReceived )]) {
             [delegate unitsReceived];
         }
@@ -807,13 +807,13 @@
 - (void) handleGameResult:(const UInt8 *)data {
     unsigned short offset = 0;
 
-    CCLOG( @"game has been completed" );
+    NSLog( @"game has been completed" );
 
     // stop the engine
     [[Globals sharedInstance].engine stop];
 
     if ([Globals sharedInstance].udpConnection) {
-        CCLOG( @"shutting down UDP connection" );
+        NSLog( @"shutting down UDP connection" );
         [[Globals sharedInstance].udpConnection disconnect];
         [Globals sharedInstance].udpConnection = nil;
     }
@@ -827,7 +827,7 @@
     unsigned short objectives1 = readInt16FromBuffer( data, &offset );
     unsigned short objectives2 = readInt16FromBuffer( data, &offset );
 
-    CCLOG( @"end type: %d, total: %d, %d, lost: %d, %d, objectives: %d, %d", endingType, totalMen1, totalMen2, lostMen1, lostMen2, objectives1, objectives2 );
+    NSLog( @"end type: %d, total: %d, %d, lost: %d, %d, objectives: %d, %d", endingType, totalMen1, totalMen2, lostMen1, lostMen2, objectives1, objectives2 );
 
     // save the ending type in the online game
     [Globals sharedInstance].onlineGame.endType = (MultiplayerEndType) endingType;
@@ -843,7 +843,7 @@
     // inform the delegates
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];
     for (id <OnlineGamesDelegate> delegate in copiedDelegates) {
-        CCLOG( @"delegate: %@", delegate );
+        NSLog( @"delegate: %@", delegate );
         if (delegate && [delegate respondsToSelector:@selector( gameCompleted )]) {
             [delegate gameCompleted];
         }
@@ -858,7 +858,7 @@
     scenario.windDirection = (float) readInt16FromBuffer( data, &offset ) / 10.0f;
     scenario.windStrength  = (float) readInt16FromBuffer( data, &offset ) / 10.0f;
 
-    CCLOG( @"received wind direction: %.1f, strength: %.1f", scenario.windDirection, scenario.windStrength );
+    NSLog( @"received wind direction: %.1f, strength: %.1f", scenario.windDirection, scenario.windStrength );
 }
 
 
@@ -869,7 +869,7 @@
     unsigned short offset = 0;
 
     self.playerCount = readInt16FromBuffer( data, &offset );
-    CCLOG( @"current server player count: %d", self.playerCount );
+    NSLog( @"current server player count: %d", self.playerCount );
 
     // inform the delegates
     NSSet *copiedDelegates = [NSSet setWithSet:self.delegates];

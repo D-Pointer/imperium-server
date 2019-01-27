@@ -61,7 +61,7 @@
         [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( runLineOfSight ) forTarget:self interval:sParameters[kParamLosUpdateIntervalF].floatValue paused:NO];
 
         self.timerRunning = YES;
-        CCLOG( @"started timer" );
+        NSLog( @"started timer" );
 
         // also start the time clock
         [globals.clock start];
@@ -77,12 +77,12 @@
         [[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( simulate ) forTarget:self];
 	[[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( runLineOfSight ) forTarget:self];
 
-        CCLOG( @"stopped simulation timer" );
+        NSLog( @"stopped simulation timer" );
 
         if ([Globals sharedInstance].gameType == kSinglePlayerGame) {
 
             self.timerRunning = NO;
-            CCLOG( @"stopped AI timer" );
+            NSLog( @"stopped AI timer" );
         }
 
         // let the world know that the simulation has changed state
@@ -93,7 +93,7 @@
 
 - (void) runLineOfSight {
     Globals *globals = [Globals sharedInstance];
-    //CCLOG( @"running line of sight" );
+    //NSLog( @"running line of sight" );
 
     dispatch_async( dispatch_get_main_queue(), ^(void) {
 //        dispatch_async( losQueue, ^(void) {
@@ -115,8 +115,8 @@
 
     clock_t startTime = clock();
 
-    CCLOG( @"-----------------------------------------------------------------------------------------------------------------" );
-    CCLOG( @"simulating for time: %.1f, update: %d", elapsedTime, self.updateCounter );
+    NSLog( @"-----------------------------------------------------------------------------------------------------------------" );
+    NSLog( @"simulating for time: %.1f, update: %d", elapsedTime, self.updateCounter );
 
     // always check the command status of all units
     [self checkCommandStatus];
@@ -133,23 +133,15 @@
     // update smoke
     [self updateSmoke];
 
-    // execute the scenario script if we have one
-    if ( sRunScripts && globals.scenarioScript) {
-        [globals.scenarioScript runScript];
-    }
-
     // set the objective owners
     if (self.lastObjectiveUpdate < 0 || elapsedTime >= self.lastObjectiveUpdate + sParameters[kParamObjectiveOwnerUpdateIntervalF].floatValue) {
         [Objective updateOwnerForAllObjectives];
         self.lastObjectiveUpdate = elapsedTime;
     }
 
-    // send multiplayer missions
-    if (globals.gameType == kMultiplayerGame) {
-        CCLOG( @"sending missions for %lu local units", (unsigned long)globals.localUnits.count );
-        [globals.udpConnection sendUnitStats:globals.localUnits];
-        [globals.udpConnection sendMissions:globals.localUnits];
-    }
+    NSLog( @"sending missions for %lu units", (unsigned long)globals.units.count );
+    [globals.udpConnection sendUnitStats:globals.units];
+    [globals.udpConnection sendMissions:globals.units];
 
     // let the world know that the simulation is now done and things may have changed
     [[NSNotificationCenter defaultCenter] postNotificationName:sNotificationEngineSimulationDone object:nil];
@@ -168,14 +160,8 @@
             // update the final scores
             [globals.scores calculateFinalScores];
 
-            // and tell the game layer
-            [globals.gameLayer gameAboutToEnd];
-
-            // for multiplayer games where we are player 1 we also send out a game over packet
-            if (globals.gameType == kMultiplayerGame && globals.localPlayer.playerId == kPlayer1) {
-                CCLOG( @"sending an end game packet" );
-                [globals.tcpConnection endGame];
-            }
+            NSLog( @"sending an end game packet" );
+            [globals.tcpConnection endGame];
         }
     }
     else {
@@ -183,7 +169,7 @@
         if (globals.localPlayer.playerId == kPlayer1) {
             ScenarioState state = globals.scenario.state;
             if (state != kGameInProgress) {
-                CCLOG( @"****** game entered lingering state ******" );
+                NSLog( @"****** game entered lingering state ******" );
 
                 // do a few more updates
                 self.gameEndLingerUpdates = sParameters[kParamGameEndLingerUpdatesI].intValue;
@@ -193,26 +179,15 @@
 
     clock_t endTime = clock();
     double duration = ((double) (endTime - startTime)) / CLOCKS_PER_SEC * 1000.0;
-    CCLOG( @"engine update took %.0f ms", duration );
+    NSLog( @"engine update took %.0f ms", duration );
 }
 
 
 - (void) executeMissions {
     Globals *globals = [Globals sharedInstance];
 
-    // get the units that we're simulating for this turn. For multiplayer games we only simulate for the local player
-    // as the other party simulates its own units
-     NSMutableArray *units;
-    if (globals.gameType == kMultiplayerGame) {
-        units = globals.localUnits;
-    }
-    else {
-        // normal 1 player game, use all units
-        units = globals.units;
-    }
-
     // run all unit's missions
-    for (Unit *unit in units) {
+    for (Unit *unit in globals.units) {
         // destroyed?
         if (unit.destroyed) {
             continue;
@@ -228,7 +203,7 @@
         // is the unit still waiting for the mission to start?
         if (unit.mission != nil && unit.mission.commandDelay > 0) {
             // yes, so wait more
-            CCLOG( @"delay for %@: %.1f", unit, unit.mission.commandDelay );
+            NSLog( @"delay for %@: %.1f", unit, unit.mission.commandDelay );
             unit.mission.commandDelay -= globals.clock.lastElapsedTime;
 
             // don't execute yet
@@ -237,7 +212,7 @@
 
         // run the mission
         if ([unit.mission execute] == kCompleted) {
-            CCLOG( @"completed a %@", unit.mission.name );
+            NSLog( @"completed a %@", unit.mission.name );
             unit.mission = nil;
         }
     }
@@ -251,7 +226,7 @@
     if (target) {
         // does it already fire at that unit?
         if (attacker.mission.type != kFireMission || ((FireMission *) attacker.mission).targetUnit != target) {
-            CCLOG( @"unit %@ firing at %@", attacker.name, target.name );
+            NSLog( @"unit %@ firing at %@", attacker.name, target.name );
             attacker.mission = [[FireMission alloc] initWithTarget:target];
         }
     }
@@ -259,7 +234,7 @@
 
 
 - (Unit *) findTarget:(Unit *)attacker onlyInsideArc:(BOOL)onlyInsideArc {
-    //CCLOG( @"finding a target for unit %@", attacker.name );
+    //NSLog( @"finding a target for unit %@", attacker.name );
 
     // no auto firing enable?
     if (attacker.autoFireEnabled == NO) {
@@ -335,7 +310,7 @@
             if (ccpDistance( assault.path.lastPosition, attacker.position ) < sParameters[kParamMaxDistanceFromAssaultEndPointF].floatValue) {
                 // they are assaulting toward us
                 distance *= 0.3;
-                CCLOG( @"bonus for assault" );
+                NSLog( @"bonus for assault" );
             }
         }
         else if (target.mission.type == kAdvanceMission) {
@@ -343,7 +318,7 @@
             if (advance.targetUnit == attacker) {
                 // they are advancing on us
                 distance *= 0.5;
-                CCLOG( @"bonus for advance" );
+                NSLog( @"bonus for advance" );
             }
         }
 
@@ -391,7 +366,7 @@
 
 
 - (void) updateFatigueAndMorale {
-    //CCLOG( @"updating fatigue and morale" );
+    //NSLog( @"updating fatigue and morale" );
 
     float elapsedTime = [Globals sharedInstance].clock.lastElapsedTime;
     float effect;
@@ -461,10 +436,10 @@
     PlayerId localPlayerId = globals.localPlayer.playerId;
 
     // update all smoke with our delta
-    for ( Smoke * smoke  in globals.mapLayer.smoke1 ) {
+    for ( Smoke * smoke  in globals.map.smoke1 ) {
         // our smoke in a multiplayer game OR single player game?
         if ( (multiplayer && smoke.creator == localPlayerId) || !multiplayer ) {
-            //CCLOG( @"updating: %@", smoke );
+            //NSLog( @"updating: %@", smoke );
             if ( [smoke update:delta] ) {
                 [removed addObject:smoke];
             }
@@ -474,10 +449,10 @@
         }
     }
 
-    for ( Smoke * smoke  in globals.mapLayer.smoke2 ) {
+    for ( Smoke * smoke  in globals.map.smoke2 ) {
         // our smoke in a multiplayer game OR single player game?
         if ( (multiplayer && smoke.creator == localPlayerId) || !multiplayer ) {
-            //CCLOG( @"updating: %@", smoke );
+            //NSLog( @"updating: %@", smoke );
             if ( [smoke update:delta] ) {
                 [removed addObject:smoke];
             }
@@ -487,13 +462,13 @@
         }
     }
 
-//    for ( Smoke * smoke = globals.mapLayer.smoke; smoke != nil; smoke = smoke.next ) {
+//    for ( Smoke * smoke = globals.map.smoke; smoke != nil; smoke = smoke.next ) {
 //        if ( ! smoke.visible ) {
 //            // remove this smoke
-//            if ( smoke == globals.mapLayer.smoke ) {
+//            if ( smoke == globals.map.smoke ) {
 //                // first in the list
-//                globals.mapLayer.smoke = smoke.next;
-//                globals.mapLayer.smoke.prev = nil;
+//                globals.map.smoke = smoke.next;
+//                globals.map.smoke.prev = nil;
 //                smoke.next = nil;
 //            }
 //            else if ( smoke.next == nil ) {
@@ -511,17 +486,17 @@
         [smoke removeFromParentAndCleanup:YES];
 
         if ( smoke.creator == kPlayer1 ) {
-            [globals.mapLayer.smoke1 removeObject:smoke];
+            [globals.map.smoke1 removeObject:smoke];
         }
         else {
-            [globals.mapLayer.smoke2 removeObject:smoke];
+            [globals.map.smoke2 removeObject:smoke];
         }
     }
 
-     NSMutableArray * localSmoke = localPlayerId == kPlayer1 ? globals.mapLayer.smoke1 : globals.mapLayer.smoke2;
+     NSMutableArray * localSmoke = localPlayerId == kPlayer1 ? globals.map.smoke1 : globals.map.smoke2;
 
     if ( localSmoke.count > 0 && multiplayer ) {
-        CCLOG( @"sending data for %lu smoke", (unsigned long)localSmoke.count );
+        NSLog( @"sending data for %lu smoke", (unsigned long)localSmoke.count );
         [globals.udpConnection sendSmoke:localSmoke];
     }
 }
@@ -530,7 +505,7 @@
 - (void) checkForMelee {
     Globals *globals = [Globals sharedInstance];
 
-    //CCLOG( @"checking for melee units" );
+    //NSLog( @"checking for melee units" );
      NSMutableArray *units1 = globals.unitsPlayer1;
      NSMutableArray *units2 = globals.unitsPlayer2;
 
@@ -549,7 +524,7 @@
             // check the distance
             if (ccpDistance( unit1.position, unit2.position ) < sParameters[kParamMeleeMaxDistanceF].floatValue) {
                 // close enough for a melee
-                CCLOG( @"%@ meleeing with %@", unit1.name, unit2.name );
+                NSLog( @"%@ meleeing with %@", unit1.name, unit2.name );
                 unit1.mission = [[MeleeMission alloc] initWithTarget:unit2];
                 unit2.mission = [[MeleeMission alloc] initWithTarget:unit1];
 

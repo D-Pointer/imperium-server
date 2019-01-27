@@ -63,8 +63,8 @@
         [data appendString:[unit save]];
     }
 
-    CCLOG( @"game data: %@", data );
-    CCLOG( @"string size: %lu", (unsigned long)data.length );
+    NSLog( @"game data: %@", data );
+    NSLog( @"string size: %lu", (unsigned long)data.length );
 
     return data;
 }
@@ -84,7 +84,7 @@
 
     // precautions, we don't load if the version is higher than our
     if ( fileVersion > ourVersion ) {
-        CCLOG( @"loaded data has higher version! %u vs %u", fileVersion, ourVersion );
+        NSLog( @"loaded data has higher version! %u vs %u", fileVersion, ourVersion );
         return NO;
     }
 
@@ -176,7 +176,7 @@
     // create and set the mission
     unit.mission = [GameSerializer createMissionFrom:parts forUnit:unit];
 
-    CCLOG( @"adding %@ to %@", unit.mission, unit );
+    NSLog( @"adding %@ to %@", unit.mission, unit );
 
     // refresh any visualized missions
     if ( unit.missionVisualizer ) {
@@ -197,7 +197,7 @@
 
     // loop all lines
     for ( NSString * line in [data componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] ) {
-        //CCLOG( @"line: '%@'", line );
+        //NSLog( @"line: '%@'", line );
 
         NSArray* parts = [line componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString * type = [parts objectAtIndex:0];
@@ -206,7 +206,7 @@
         if ( [type isEqualToString:@"d"] ) {
             if ( ! [self parseMetaDataFrom:parts] ) {
                 // failed to parse
-                CCLOG( @"failed to parse meta data" );
+                NSLog( @"failed to parse meta data" );
                 return NO;
             }
         }
@@ -241,7 +241,7 @@
 
             // found it?
             if ( currentUnit == nil ) {
-                CCLOG( @"unit %d not found!", unitId );
+                NSLog( @"unit %d not found!", unitId );
                 return NO;
             }
 
@@ -261,7 +261,7 @@
             NSAssert( currentUnit != nil, @"No current unit" );
             if ( ! [self parseMissionFrom:parts forUnit:currentUnit] ) {
                 // failed to parse
-                CCLOG( @"failed to parse mission" );
+                NSLog( @"failed to parse mission" );
                 return NO;
             }
         }
@@ -282,19 +282,19 @@
 
 
 + (BOOL) saveGame:(NSString *)name {
-    CCLOG( @"saving to %@", name );
+    NSLog( @"saving to %@", name );
     
     // pack all the game data into a compressed buffer
     NSString * data = [self createGameData];
     return [ResourceHandler saveData:data toResource:name];
 //    NSString * fullPathToFile = [GameSerializer createFileName:name];
 //
-//    CCLOG( @"save file name: %@", fullPathToFile );
+//    NSLog( @"save file name: %@", fullPathToFile );
 //
 //    // save it.
 //    if ( ! [data writeToFile:fullPathToFile atomically:YES encoding:NSUTF8StringEncoding error:nil] ) {
 //        // failed to save
-//        CCLOG( @"failed to save" );
+//        NSLog( @"failed to save" );
 //        return NO;
 //    }
 //
@@ -303,7 +303,7 @@
 
 
 + (BOOL) loadGame:(NSString *)name {
-    CCLOG( @"loading from %@", name );
+    NSLog( @"loading from %@", name );
 
     // read everything from text
     NSString * data = [ResourceHandler loadResource:name];
@@ -320,7 +320,7 @@
     return [ResourceHandler hasResource:name];
 //    NSString * fullPathToFile = [GameSerializer createFileName:name];
 //
-//    CCLOG( @"checking for saved game: %@", fullPathToFile );
+//    NSLog( @"checking for saved game: %@", fullPathToFile );
 //
 //    // does it exist?
 //    return [[NSFileManager defaultManager] fileExistsAtPath:fullPathToFile];
@@ -332,7 +332,7 @@
 //    // precautions
 //    if ( ! [GameSerializer hasSavedGame:name] ) {
 //        // no such file
-//        CCLOG( @"no such file, nothing to delete" );
+//        NSLog( @"no such file, nothing to delete" );
 //        return;
 //    }
 //
@@ -342,10 +342,10 @@
 //    // does it exist?
 //    if ( ! [[NSFileManager defaultManager] removeItemAtPath:fullPathToFile error:&error] ) {
 //        // failed to delete
-//        CCLOG( @"failed to remove %@, error: %@", fullPathToFile, [error localizedDescription] );
+//        NSLog( @"failed to remove %@, error: %@", fullPathToFile, [error localizedDescription] );
 //    }
 //    else {
-//        CCLOG( @"removed %@", fullPathToFile );
+//        NSLog( @"removed %@", fullPathToFile );
 //    }
 }
 

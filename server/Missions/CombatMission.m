@@ -4,7 +4,7 @@
 #import "RetreatMission.h"
 #import "Unit.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Map.h"
 #import "TerrainModifiers.h"
 #import "AttackVisualization.h"
 #import "AttackResult.h"
@@ -16,7 +16,7 @@
 - (void) fireAtTarget:(CGPoint)target withUnit:(Unit *)attacker targetSeen:(BOOL)seen {
     NSAssert( attacker, @"null attacker" );
 
-    CCLOG( @"***** %@ fires at %.1f %.1f", attacker, target.x, target.y );
+    NSLog( @"***** %@ fires at %.1f %.1f", attacker, target.x, target.y );
 
     Weapon * weapon = attacker.weapon;
     float distanceToTarget = ccpDistance( attacker.position, target );
@@ -25,12 +25,12 @@
     // firepower theoretically exits the muzzles
     float baseFirepower = attacker.weaponCount * weapon.firepower;
     
-    CCLOG( @"weapon type: %@", weapon.name );
-    CCLOG( @"base strength: %.1f", baseFirepower );
+    NSLog( @"weapon type: %@", weapon.name );
+    NSLog( @"base strength: %.1f", baseFirepower );
 
     // modify for range
     float rangeModifier = [weapon getFirepowerModifierForRange:distanceToTarget];
-    CCLOG( @"range modifier: %.1f", rangeModifier );
+    NSLog( @"range modifier: %.1f", rangeModifier );
 
     // FUTURE: leader bonus
     float leaderModifier = 1.0f;
@@ -38,7 +38,7 @@
     // ammo modifier
     float ammoModifier = attacker.weapon.ammo <= 0 ? 0.3f : 1.0f;
 
-    CCLOG( @"ammo: %d, modifier: %.1f", attacker.weapon.ammo, ammoModifier );
+    NSLog( @"ammo: %d, modifier: %.1f", attacker.weapon.ammo, ammoModifier );
 
     // experience
     float experienceModifier = 1.0f;
@@ -49,7 +49,7 @@
         case kElite: experienceModifier   = 1.0f; break;
     }
 
-    CCLOG( @"experience modifier: %.1f", experienceModifier );
+    NSLog( @"experience modifier: %.1f", experienceModifier );
 
     // morale. everything under 70 gets interpolated so that 0 -> 0.2 and 70 -> 1.0
     float moraleModifier = 1.0f;
@@ -57,7 +57,7 @@
         // interpolate
         moraleModifier = 0.2f + (attacker.morale / 70.0f) * 0.8f;
     }
-    CCLOG( @"morale modifier: %.1f", moraleModifier );
+    NSLog( @"morale modifier: %.1f", moraleModifier );
 
     // fatigue. everything over 50 gets interpolated so that up to 50 no effect and then 50 -> 1.0 and 100 -> 0.5
     float fatigueModifier = 1.0f;
@@ -66,7 +66,7 @@
         fatigueModifier = 1.0f - (attacker.fatigue - 50) / 100.0f;
     }
 
-    CCLOG( @"fatigue modifier: %.1f", fatigueModifier );
+    NSLog( @"fatigue modifier: %.1f", fatigueModifier );
 
     // cavalry units are weaker
     float unitTypeModifier = 1.0f;
@@ -87,15 +87,15 @@
         case kArtillery:
             unitTypeModifier = 1.0f;
     }
-    CCLOG( @"unit type modifier: %.1f", unitTypeModifier );
+    NSLog( @"unit type modifier: %.1f", unitTypeModifier );
 
     CGPoint attackerPos = attacker.position;
 
     // attacker terrain modifier
-    TerrainType attackerTerrainType = [[Globals sharedInstance].mapLayer getTerrainAt:attackerPos];
+    TerrainType attackerTerrainType = [[Globals sharedInstance].map getTerrainAt:attackerPos];
     float attackerTerrainModifier = getTerrainOffensiveModifier( attacker, attackerTerrainType );
 
-    CCLOG( @"attacker terrain: %.1f", attackerTerrainModifier );
+    NSLog( @"attacker terrain: %.1f", attackerTerrainModifier );
 
     // attacker mission type modifier
     float missionTypeModifier = 1.0f;
@@ -103,39 +103,39 @@
         missionTypeModifier = 0.7f;
     }
 
-    CCLOG( @"mission type modifier: %.1f", missionTypeModifier );
+    NSLog( @"mission type modifier: %.1f", missionTypeModifier );
 
     // some randomness: 0.8-1.0
     float randomModifier = 0.8f + CCRANDOM_0_1() * 0.2f;
-    CCLOG( @"random: %.2f", randomModifier );
+    NSLog( @"random: %.2f", randomModifier );
 
     // all modifiers that affect the total power that the firing unit shoots out
     float strengthModifiers = rangeModifier * leaderModifier * fatigueModifier * ammoModifier * experienceModifier * moraleModifier *
     unitTypeModifier * attackerTerrainModifier * missionTypeModifier * randomModifier;
 
-    CCLOG( @"total modifier: %.2f", strengthModifiers );
+    NSLog( @"total modifier: %.2f", strengthModifiers );
 
     // the total firing strength
     float firepower = baseFirepower * strengthModifiers;
 
-    CCLOG( @"final strength: %.1f", firepower );
+    NSLog( @"final strength: %.1f", firepower );
 
     // scatter ******************************************************************************************************************************************************
 
     // accuracy modifier for the range. this removes most of the efficiency
     float scatterDistance = [attacker.weapon getScatterForRange:distanceToTarget];
-    CCLOG( @"distance to target: %.0f m", distanceToTarget );
-    CCLOG( @"scatter: %.0f m", scatterDistance );
+    NSLog( @"distance to target: %.0f m", distanceToTarget );
+    NSLog( @"scatter: %.0f m", scatterDistance );
 
     // does the attacker see the target? if not we're dealing with indirect fire and the accuracy is worse
     if ( ! seen ) {
         scatterDistance *= 1.5;
-        CCLOG( @"indirect fire, scatter: %.0f m", scatterDistance );
+        NSLog( @"indirect fire, scatter: %.0f m", scatterDistance );
     }
 
     // the scatter is random too, sometimes it will simply hit bullseye
     scatterDistance *= CCRANDOM_0_1();
-    CCLOG( @"randomized scatter: %.2f m", scatterDistance );
+    NSLog( @"randomized scatter: %.2f m", scatterDistance );
 
     // scatter is reduced by experience
     switch ( attacker.experience ) {
@@ -145,15 +145,15 @@
         case kElite: scatterDistance *= 0.5f; break;
     }
 
-    CCLOG( @"experienced scatter: %.2f m", scatterDistance );
+    NSLog( @"experienced scatter: %.2f m", scatterDistance );
 
     // a final hit position scattered somewhere around the position we were aiming for
     float angle = (float)(CCRANDOM_0_1() * M_PI * 2);
     CGPoint hitPosition = ccp( target.x + cosf( angle ) * scatterDistance,
                               target.y + sinf( angle ) * scatterDistance );
 
-    CCLOG( @"target position: %.0f, %.0f", target.x, target.y );
-    CCLOG( @"hit position: %.0f, %.0f", hitPosition.x, hitPosition.y );
+    NSLog( @"target position: %.0f, %.0f", target.x, target.y );
+    NSLog( @"hit position: %.0f, %.0f", hitPosition.x, hitPosition.y );
 
      NSMutableArray * allCasualties = [ NSMutableArray array];
      NSMutableArray * hitUnits = [ NSMutableArray array];
@@ -168,7 +168,7 @@
         // close enough to get hit?
         float distance = ccpDistance( possibleTarget.position, hitPosition );
         if ( distance < 30 ) {
-            CCLOG( @"unit %@ is hit, distance: %.1f m", possibleTarget, distance );
+            NSLog( @"unit %@ is hit, distance: %.1f m", possibleTarget, distance );
             [hitUnits addObject:possibleTarget];
         }
     }
@@ -178,13 +178,13 @@
         float distance = ccpDistance( hitUnit.position, hitPosition );
 
         // terrain under the target unit
-        TerrainType targetTerrainType = [[Globals sharedInstance].mapLayer getTerrainAt:hitUnit.position];
+        TerrainType targetTerrainType = [[Globals sharedInstance].map getTerrainAt:hitUnit.position];
         float targetTerrainModifier = getTerrainDefensiveModifier( targetTerrainType );
-        CCLOG( @"terrain modifier: %.1f", targetTerrainModifier );
+        NSLog( @"terrain modifier: %.1f", targetTerrainModifier );
 
         // how far from the center point of the fire is the target?
         float distanceModifier = 1.0f - distance / 30.0f;
-        CCLOG( @"distance modifier: %.1f", distanceModifier );
+        NSLog( @"distance modifier: %.1f", distanceModifier );
 
         // final casualties for this unit. the firepower is divided equally among all hit units
         int casualties = (int)((firepower / hitUnits.count) * distanceModifier * targetTerrainModifier);
@@ -193,18 +193,18 @@
         // does it rout? do this before delivering the casulaties below to get an exact percentage of killed
         float percentageLost = (float)casualties / (float)hitUnit.men * 100;
 
-        CCLOG( @"casualties: %d of %d (%.1f%%)", casualties, hitUnit.men, percentageLost);
+        NSLog( @"casualties: %d of %d (%.1f%%)", casualties, hitUnit.men, percentageLost);
 
         // is the defender not in command?
         if ( ! hitUnit.inCommand ) {
             percentageLost *= sParameters[kParamMoraleLossNotInCommandF].floatValue;
-            CCLOG( @"not in command, increasing morale loss: %.1f%%", percentageLost );
+            NSLog( @"not in command, increasing morale loss: %.1f%%", percentageLost );
         }
 
         // is the defender disorganized?
         if ( [hitUnit isCurrentMission:kDisorganizedMission] ) {
             percentageLost *= sParameters[kParamMoraleLossDisorganizedF].floatValue;
-            CCLOG( @"disorganized, increasing morale loss: %.1f%%", percentageLost );
+            NSLog( @"disorganized, increasing morale loss: %.1f%%", percentageLost );
         }
 
         // if the attacker is artillery then the morale loss is bigger
@@ -215,7 +215,7 @@
         // is the defender outflanked?
         if ( [hitUnit isOutflankedFromPos:attacker.position] ) {
             percentageLost *= sParameters[kParamOutflankingMoraleModifierF].floatValue;
-            CCLOG( @"target outflanked, increased morale loss" );
+            NSLog( @"target outflanked, increased morale loss" );
         }
 
         // should the unit rout?
@@ -227,7 +227,7 @@
         }
 
         if ( defenderRouts ) {
-            CCLOG( @"percentage lost: %.1f, morale: %.1f => defender routs", percentageLost, hitUnit.morale );
+            NSLog( @"percentage lost: %.1f, morale: %.1f => defender routs", percentageLost, hitUnit.morale );
         }
 
         RoutMission * routMission = nil;
@@ -236,7 +236,7 @@
         if ( hitUnit.men > casualties && defenderRouts && hitUnit.mission.type != kRoutMission) {
             // retreat the defender
             if ( ( routMission = [CombatMission routUnit:hitUnit]) == nil ) {
-                CCLOG( @"could not find a rout position!" );
+                NSLog( @"could not find a rout position!" );
             }
         }
 
@@ -245,25 +245,25 @@
             // destroyed it
             [allCasualties addObject:[[AttackResult alloc] initWithMessage:kDefenderDestroyed withAttacker:attacker forTarget:hitUnit casualties:casualties routMission:routMission
                                                         targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDestroyEnemyF].floatValue]];
-            CCLOG( @"%@ has been destroyed!", hitUnit.name );
+            NSLog( @"%@ has been destroyed!", hitUnit.name );
         }
         else if ( casualties > 0 ) {
             if ( defenderRouts ) {
                 // lost men but still alive and routing
                 [allCasualties addObject:[[AttackResult alloc] initWithMessage:kDefenderLostMen | kDefenderRouted withAttacker:attacker forTarget:hitUnit casualties:casualties
                                                                    routMission:routMission targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostRoutEnemyF].floatValue]];
-                CCLOG( @"%@ lost %d men and routing", hitUnit.name, casualties );
+                NSLog( @"%@ lost %d men and routing", hitUnit.name, casualties );
             }
             else {
                 // lost men but still alive and not routing
                 [allCasualties addObject:[[AttackResult alloc] initWithMessage:kDefenderLostMen withAttacker:attacker forTarget:hitUnit casualties:casualties
                                                                    routMission:routMission targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDamageEnemyF].floatValue]];
-                CCLOG( @"%@ lost %d men", hitUnit.name, casualties );
+                NSLog( @"%@ lost %d men", hitUnit.name, casualties );
             }
         }
     }
 
-    CCLOG( @"created %lu attack results", (unsigned long)allCasualties.count );
+    NSLog( @"created %lu attack results", (unsigned long)allCasualties.count );
 
     // finally set up the attack visualization
     [self createAttackVisualizationForAttacker:attacker casualties:allCasualties hitPosition:hitPosition];
@@ -277,24 +277,24 @@
 
 
 - (float) getMeleeStrengthFor:(Unit *)attacker {
-    CCLOG( @"attacker: %@", attacker.name);
+    NSLog( @"attacker: %@", attacker.name);
 
     float modeModifier = [self getModeModifierFor:attacker];
-    CCLOG( @"mode modifier: %f", modeModifier );
+    NSLog( @"mode modifier: %f", modeModifier );
 
     // is the defender outflanked?
     float outflankingModifier = 1.0f;
     if ( [self.targetUnit isOutflankedFromPos:attacker.position] ) {
         outflankingModifier = 1.5;
     }
-    CCLOG( @"outflanking modifier: %.1f", outflankingModifier );
+    NSLog( @"outflanking modifier: %.1f", outflankingModifier );
 
     // cavalry has a melee bonus
     float unitTypeModifier = 1.0f;
     if ( attacker.type == kCavalry && attacker.mode == kFormation ) {
         unitTypeModifier = 1.5f;
     }
-    CCLOG( @"unit type modifier: %.1f", unitTypeModifier );
+    NSLog( @"unit type modifier: %.1f", unitTypeModifier );
 
 
     // experience
@@ -306,7 +306,7 @@
         case kElite: experienceModifier   = 1.0f; break;
     }
 
-    CCLOG( @"experience modifier: %.1f", experienceModifier );
+    NSLog( @"experience modifier: %.1f", experienceModifier );
 
     // morale. everything under 70 gets interpolated so that 0 -> 0.5 and 70 -> 1.0
     float moraleModifier = 1.0f;
@@ -314,7 +314,7 @@
         // interpolate
         moraleModifier = 0.5f + (attacker.morale / 70.0) * 0.5f;
     }
-    CCLOG( @"morale modifier: %.1f", moraleModifier );
+    NSLog( @"morale modifier: %.1f", moraleModifier );
 
     // fatigue. everything over 50 gets interpolated so that up to 50 no effect and then 50 -> 1.0 and 100 -> 0.5
     float fatigueModifier = 1.0f;
@@ -323,7 +323,7 @@
         fatigueModifier = 1.0f - (attacker.fatigue - 50) / 100.0f;
     }
 
-    CCLOG( @"fatigue modifier: %.1f", fatigueModifier );
+    NSLog( @"fatigue modifier: %.1f", fatigueModifier );
 
     // FUTURE: leader bonus
     float leaderModifier = 1.0f;
@@ -331,19 +331,19 @@
     // final combat strength modifiers
     float modifiers = modeModifier * outflankingModifier * unitTypeModifier * leaderModifier * fatigueModifier * experienceModifier;
 
-    CCLOG( @"total modifiers: %f", modifiers );
+    NSLog( @"total modifiers: %f", modifiers );
 
     // clamp the values to be 0.2 .. 2.0
     modifiers = clampf( modifiers, 0.2, 2.0 );
 
-    CCLOG( @"clamped modifiers: %f", modifiers );
+    NSLog( @"clamped modifiers: %f", modifiers );
 
     // base modifier starts always as the number of men
     float baseFirepower = attacker.men;
     float finalStrength = baseFirepower * modifiers;
 
-    CCLOG( @"base strength: %f", baseFirepower );
-    CCLOG( @"final strength: %f", finalStrength );
+    NSLog( @"base strength: %f", baseFirepower );
+    NSLog( @"final strength: %f", finalStrength );
 
     return finalStrength;
 }
@@ -379,11 +379,11 @@
 + (RoutMission *) routUnit:(Unit *)router {
     // is it already retreating?
     if ( router.mission.type == kRoutMission ) {
-        CCLOG( @"%@ is already retreating, not adding same mission", router.name );
+        NSLog( @"%@ is already retreating, not adding same mission", router.name );
         return nil;
     }
 
-    CCLOG( @"routing %@", router.name );
+    NSLog( @"routing %@", router.name );
 
     // these angles are added to the rotation backwards to try to find a suitable place to move to
     int angles[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40, 50, -50, 60, -60, 70, -70 };
@@ -398,7 +398,7 @@
             CGPoint routPos = ccpAdd( router.position, direction );
 
             // is the position still inside the map?
-            if ( [[Globals sharedInstance].mapLayer isInsideMap:routPos] ) {
+            if ( [[Globals sharedInstance].map isInsideMap:routPos] ) {
                 // still inside, so retreat there
                 Path * path = [Path new];
                 [path addPosition:routPos];
@@ -406,9 +406,9 @@
 
                 // TODO: use path finder to find a path instead of having just one position
 
-                CCLOG( @"from: %.1f, %.1f", router.position.x, router.position.y );
-                CCLOG( @"to:   %.1f, %.1f", routPos.x, routPos.y );
-                CCLOG( @"dir:  %.1f, %.1f", direction.x, direction.y );
+                NSLog( @"from: %.1f, %.1f", router.position.x, router.position.y );
+                NSLog( @"to:   %.1f, %.1f", routPos.x, routPos.y );
+                NSLog( @"dir:  %.1f, %.1f", direction.x, direction.y );
 
                 // and we're done
                 return rout;
@@ -416,7 +416,7 @@
         }
     }
 
-    CCLOG( @"no routing position found for %@", router.name );
+    NSLog( @"no routing position found for %@", router.name );
     return nil;
 }
 
@@ -452,20 +452,20 @@
 
     // destroyed outright?
     if (destroyed) {
-        CCLOG( @"defender destroyed" );
+        NSLog( @"defender destroyed" );
         result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderDestroyed withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
                                     targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDestroyEnemyF].floatValue];
     }
     else if (menLost > 0) {
         // rout?
         if (routMission) {
-            CCLOG( @"defender retreats" );
+            NSLog( @"defender retreats" );
             result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen | kDefenderRouted withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
                                         targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostRoutEnemyF].floatValue];
         }
         else {
             // only lost some men, does not retreat
-            CCLOG( @"defender lost men" );
+            NSLog( @"defender lost men" );
             result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
                                         targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDamageEnemyF].floatValue];
         }
@@ -473,7 +473,7 @@
 
     if (result == nil) {
         // nothing to do
-        CCLOG( @"no melee visualization created" );
+        NSLog( @"no melee visualization created" );
         return;
     }
 

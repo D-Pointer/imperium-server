@@ -21,7 +21,6 @@
         self.type          = kRoutMission;
         self.name          = @"Routed";
         self.preparingName = @"Preparing to rout";
-        self.color         = sRoutLineColor;
 
         self.started          = NO;
         self.waitingForMorale = NO;
@@ -45,7 +44,6 @@
         self.name          = @"Routed";
         self.preparingName = @"Preparing to rout";
         self.endPoint      = path.lastPosition;
-        self.color         = sRoutLineColor;
 
         self.started = NO;
         self.waitingForMorale = NO;
@@ -82,14 +80,14 @@
 
     // are we waiting for the morale to be high enough?
     if ( self.waitingForMorale ) {
-        CCLOG( @"%@ waiting for morale to improve, now: %.1f", self.unit, self.unit.morale );
+        NSLog( @"%@ waiting for morale to improve, now: %.1f", self.unit, self.unit.morale );
 
         if ( self.unit.morale < sParameters[kParamMaxMoraleRoutedF].floatValue ) {
             // still routed
             return kInProgress;
         }
 
-        CCLOG( @"%@ morale ok, now disorganized", self.unit );
+        NSLog( @"%@ morale ok, now disorganized", self.unit );
 
         // morale is better, be disorganized for a while
         DisorganizedMission * disorganizedMission = [DisorganizedMission new];

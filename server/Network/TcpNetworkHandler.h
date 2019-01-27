@@ -40,7 +40,7 @@
 @end
 
 
-@interface TcpNetworkHandler : NSObject <GCDAsyncSocketDelegate, UdpNetworkHandlerDelegate>
+@interface TcpNetworkHandler : NSObject <UdpNetworkHandlerDelegate>
 
 @property (nonatomic, strong)   NSString *       onlineName;
 @property (nonatomic, readonly) NSMutableArray * games;

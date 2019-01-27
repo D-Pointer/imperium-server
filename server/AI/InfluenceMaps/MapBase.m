@@ -1,14 +1,12 @@
 
 #import "MapBase.h"
 #import "Globals.h"
-#import "MapLayer.h"
+#import "Scenario.h"
 
 @interface MapBase ()
 
 @property (nonatomic, readwrite) int width;
 @property (nonatomic, readwrite) int height;
-@property (nonatomic, readwrite) int textureWidth;
-@property (nonatomic, readwrite) int textureHeight;
 @property (nonatomic, readwrite) int tileSize;
 @property (nonatomic, readwrite) int tileScale;
 
@@ -24,19 +22,11 @@
         self.tileScale = 2;
 
         // size of the raw data array
-        self.width  = [Globals sharedInstance].mapLayer.mapWidth / self.tileSize;
-        self.height = [Globals sharedInstance].mapLayer.mapHeight / self.tileSize;
-
-        // the real pixel size of the texture that gets used. it's likely larger, a POT texture
-        self.textureWidth  = (int)ccNextPOT( self.width * self.tileScale );
-        self.textureHeight = (int)ccNextPOT( self.height * self.tileScale );
+        self.width  = [Globals sharedInstance].scenario.width / self.tileSize;
+        self.height = [Globals sharedInstance].scenario.height / self.tileSize;
 
         data = (float *)malloc( self.width * self.height * sizeof(float) );
-
-        unsigned int colorSize = self.textureWidth * self.textureHeight * sizeof(ccColor4B);
-        colors = (ccColor4B *)malloc( colorSize );
-        memset( colors, 0xff, colorSize );
-        CCLOG( @"scale: %d, %d %d -> %d %d, bytes: %d", self.tileScale, self.width, self.height, self.textureWidth, self.textureHeight, colorSize );
+        NSLog( @"scale: %d, %d %d", self.tileScale, self.width, self.height);
 
         // reset all data to 0
         [self clear];
@@ -47,16 +37,11 @@
 
 
 - (void) dealloc {
-    CCLOG( @"in" );
+    NSLog( @"in" );
 
     if ( data ) {
         free( data );
         data = 0;
-    }
-
-    if ( colors ) {
-        free( colors );
-        colors = 0;
     }
 }
 
@@ -86,46 +71,6 @@
     if ( data[ index ] < self.min ) {
         self.min = data[ index ];
     }
-}
-
-
-- (void) setPixel:(ccColor4B)color x:(int)x y:(int)y {
-    int textureIndex = (y * self.tileScale) * self.textureWidth + x * self.tileScale;
-
-    // save the pixels
-    for ( int tmpY = 0; tmpY < self.tileScale; ++tmpY ) {
-        for ( int tmpX = 0; tmpX < self.tileScale; ++tmpX ) {
-            colors[ textureIndex + tmpX ] = color;
-        }
-
-        textureIndex += self.textureWidth;
-    }
-}
-
-
-- (CCSprite *) createSprite {
-    // create the raw texture from the color data
-    CCTexture2D * texture = [[CCTexture2D alloc] initWithData:colors
-                                                  pixelFormat:kCCTexture2DPixelFormat_RGBA8888
-                                                   pixelsWide:self.textureWidth
-                                                   pixelsHigh:self.textureHeight
-                                                  contentSize:CGSizeMake(self.width * self.tileScale, self.height * self.tileScale)];
-    [texture generateMipmap];
-
-    //    ccTexParams texParams = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
-    //    [self.texture setTexParameters:&texParams];
-    //    [self.texture setAliasTexParameters];
-    //    [self.texture setAntiAliasTexParameters];
-    // DEBUG
-
-    // create a sprite from the the texture data
-    CCSprite * sprite = [CCSprite spriteWithTexture:texture];
-    sprite.flipY = YES;
-    
-    //sprite.blendFunc = (ccBlendFunc){ CC_BLEND_SRC, CC_BLEND_DST };
-    //sprite.color = ccc3(255, 255, 255);
-    
-    return sprite;
 }
 
 

@@ -12,14 +12,14 @@
 + (NSString *) loadResource:(NSString *)name {
     NSString * resourcePath = [ResourceHandler createPath:name];
 
-    CCLOG( @"loading resource: %@", name );
-    CCLOG( @"path: %@", resourcePath );
+    NSLog( @"loading resource: %@", name );
+    NSLog( @"path: %@", resourcePath );
 
     // read everything and split into lines
     NSError * error;
     NSString * contents = [NSString stringWithContentsOfFile:resourcePath encoding:NSUTF8StringEncoding error:&error];
     if ( error != nil ) {
-        CCLOG( @"failed to read resource : %@", [error localizedDescription] );
+        NSLog( @"failed to read resource : %@", [error localizedDescription] );
         return nil;
     }
 
@@ -33,7 +33,7 @@
     NSError * error;
     [data writeToFile:resourcePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     if ( error != nil ) {
-        CCLOG( @"failed to save resource: %@", [error localizedDescription] );
+        NSLog( @"failed to save resource: %@", [error localizedDescription] );
         return NO;
     }
 
@@ -49,7 +49,7 @@
     // does it exist?
     if ( ! [[NSFileManager defaultManager] removeItemAtPath:resourcePath error:&error] ) {
         // failed to delete
-        CCLOG( @"failed to remove %@, error: %@", name, [error localizedDescription] );
+        NSLog( @"failed to remove %@, error: %@", name, [error localizedDescription] );
         return NO;
     }
 

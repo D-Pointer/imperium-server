@@ -1,8 +1,8 @@
 
 
 #import "Globals.h"
-#import "AI.h"
-#import "MapLayer.h"
+#import "Smoke.h"
+#import "Map.h"
 #import "GameLayer.h"
 #import "Engine.h"
 #import "GameInput.h"
@@ -21,34 +21,21 @@
         self.unitsPlayer2  = [ NSMutableArray array];
         self.objectives    = [ NSMutableArray array];
         self.organizations = [ NSMutableArray array];
-        self.scenarios     = [ NSMutableArray array];
-        self.multiplayerScenarios = [ NSMutableArray array];
-        self.selection     = [Selection new];
+        self.smoke         = [ NSMutableArray array];
         self.scores        = [ScoreCounter new];
-        self.audio         = [Audio new];
         self.engine        = [Engine new];
-        self.input         = [GameInput new];
         self.parameterHandler = [ParameterHandler new];
 
         // set later
-        self.appDelegate   = nil;
         self.player1       = nil;
         self.player2       = nil;
-        self.localPlayer   = nil;
-        self.gameType      = kSinglePlayerGame;
 
         // these are set by someone else
         self.clock       = nil;
         self.scenario    = nil;
-        self.scenarioScript = nil;
-        self.mapLayer    = nil;
-        self.gameLayer   = nil;
-        self.tutorial    = nil;
         self.pathFinder  = nil;
-        self.actionsMenu = nil;
         self.tcpConnection = nil;
         self.udpConnection = nil;
-        self.ai          = nil;
         self.lineOfSight = nil;
         self.onlineGame  = nil;
     }
@@ -71,39 +58,17 @@
 
 
 - (void) reset {
-    CCLOG( @"in" );
+    NSLog( @"in" );
     
     // reset game specific data
     self.player1        = nil;
     self.player2        = nil;
-    self.localPlayer    = nil;
     self.scenario       = nil;
-    self.scenarioScript = nil;
+    self.map            = nil;
     self.clock          = nil;
-    self.tutorial       = nil;
     self.pathFinder     = nil;
-    self.ai             = nil;
     self.lineOfSight    = nil;
     self.onlineGame     = nil;
-
-    // back at the setup phase
-    self.gameType = kSinglePlayerGame;
-
-    if ( self.actionsMenu ) {
-        [self.actionsMenu removeFromParentAndCleanup:YES];
-        self.actionsMenu = nil;
-    }
-
-    if ( self.mapLayer ) {
-        [self.mapLayer removeFromParentAndCleanup:YES];
-        self.mapLayer = nil;
-    }
-
-    if ( self.gameLayer ) {
-        [self.gameLayer reset];
-        [self.gameLayer removeFromParentAndCleanup:YES];
-        self.gameLayer = nil;
-    }
 
     // clear containers
     [self.units removeAllObjects];
@@ -111,16 +76,13 @@
     [self.unitsPlayer2 removeAllObjects];
     [self.objectives removeAllObjects];
     [self.organizations removeAllObjects];
-
-    // reset some data
-    [self.selection reset];
+    [self.smoke removeAllObjects];
 
     // new engine and input
     if ( self.engine ) {
         [self.engine stop];
     }
     self.engine = [Engine new];
-    self.input  = [GameInput new];
 
     // networking
     if ( self.udpConnection ) {

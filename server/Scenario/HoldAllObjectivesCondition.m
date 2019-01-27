@@ -19,7 +19,7 @@
 
 
 - (ScenarioState) check {
-    CCLOG( @"%.1f %d", [Globals sharedInstance].clock.elapsedTime, self.length );
+    NSLog( @"%.1f %d", [Globals sharedInstance].clock.elapsedTime, self.length );
 
     int held1 = 0;
     int held2 = 0;
@@ -37,7 +37,7 @@
         total++;
     }
 
-    CCLOG( @"total: %d, player 1 held: %d, player 2 held: %d", total, held1, held2 );
+    NSLog( @"total: %d, player 1 held: %d, player 2 held: %d", total, held1, held2 );
     
     float currentTime = [Globals sharedInstance].clock.currentTime;
 
@@ -46,11 +46,11 @@
         // player 1 holds all objectives, is this the first update?
         if ( self.startHold1 < 0 ) {
             // yes, so the holding time starts now
-            CCLOG( @"player 1 hold time starts" );
+            NSLog( @"player 1 hold time starts" );
             self.startHold1 = currentTime;
         }
         else {
-            CCLOG( @"player 1 hold time: %.1f", currentTime - self.startHold1 );
+            NSLog( @"player 1 hold time: %.1f", currentTime - self.startHold1 );
 
             // the player has held it for a while already, long enough?
             if ( currentTime - self.startHold1 > self.length ) {
@@ -72,11 +72,11 @@
         // player 2 holds all objectives, is this the first update?
         if ( self.startHold2 < 0 ) {
             // yes, so the holding time starts now
-            CCLOG( @"player 2 hold time starts" );
+            NSLog( @"player 2 hold time starts" );
             self.startHold2 = currentTime;
         }
         else {
-            CCLOG( @"player 2 hold time: %.1f", currentTime - self.startHold2 );
+            NSLog( @"player 2 hold time: %.1f", currentTime - self.startHold2 );
 
             // the player has held it for a while already, long enough?
             if ( currentTime - self.startHold2 > self.length ) {

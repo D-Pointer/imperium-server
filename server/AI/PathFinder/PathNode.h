@@ -1,6 +1,3 @@
-#ifndef PATHNODE_H
-#define PATHNODE_H
-
 
 
 typedef struct _position {
@@ -53,7 +50,7 @@ static PathNode * createPathNode (float costSoFar, float estimate, Position pos,
     //}
 
     //nodes++;
-    //CCLOG( @"nodes alive: %d", nodes );
+    //NSLog( @"nodes alive: %d", nodes );
 
     return node;
 }
@@ -78,7 +75,5 @@ static PathNode * createPathNode (float costSoFar, float estimate, Position pos,
     free( node );
 
     nodes--;
-    CCLOG( @"nodes alive: %d", nodes );
+    NSLog( @"nodes alive: %d", nodes );
 }*/
-
-#endif

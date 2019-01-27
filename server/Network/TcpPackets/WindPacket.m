@@ -11,7 +11,7 @@
         // save the type too
         self.type = kDataPacket;
 
-        CCLOG( @"sending wind data" );
+        NSLog( @"sending wind data" );
 
         // allocate the final buffer
         unsigned char *buffer = [self getBuffer];
@@ -33,7 +33,7 @@
         // finally write in the total size at position 2 right after the packet type
         saveInt16ToBuffer( offset - sTcpPacketHeaderLength, buffer, 2 );
 
-        //CCLOG( @"packet length: %d", offset );
+        //NSLog( @"packet length: %d", offset );
 
         // finally wrap the buffer in a NSData
         self.data = [NSData dataWithBytesNoCopy:buffer length:offset];

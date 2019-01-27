@@ -29,7 +29,7 @@
 
 
 - (void) dealloc {
-    CCLOG( @"in" );
+    NSLog( @"in" );
     self.headquarter = nil;
     self.units       = nil;
     self.objective   = nil;
@@ -71,7 +71,7 @@
     self.centerOfMass = ((Unit *)[self.units objectAtIndex:0]).position;
     float mass = self.headquarter.men;
 
-    CCLOG( @"start: %f, %f = %f", self.centerOfMass.x, self.centerOfMass.y, mass );
+    NSLog( @"start: %f, %f = %f", self.centerOfMass.x, self.centerOfMass.y, mass );
 
     // loop all other units (skip the first) and add them to the mass
     for ( unsigned int index = 1; index < self.units.count; ++index ) {
@@ -83,10 +83,10 @@
         self.centerOfMass = ccpLerp( self.centerOfMass, pos, men / (mass + men) );
         mass += men;
 
-        //CCLOG( @"start: %f, %f = %f  ->  %f %f = %f", pos.x, pos.y, men, center.x, center.y, mass );
+        //NSLog( @"start: %f, %f = %f  ->  %f %f = %f", pos.x, pos.y, men, center.x, center.y, mass );
     }
 
-    CCLOG( @"center of mass: %f, %f = %f", self.centerOfMass.x, self.centerOfMass.y, mass );
+    NSLog( @"center of mass: %f, %f = %f", self.centerOfMass.x, self.centerOfMass.y, mass );
 }
 
 
@@ -103,7 +103,7 @@
         for ( Unit * unit in self.units ) {
             // is it close enough for us to be engaged?
             if ( ccpDistance( unit.position, enemy.position ) < sParameters[kParamMaxAIEngagedDistanceF].floatValue ) {
-                CCLOG( @"%@ is engaged to enemy %@", unit, enemy );
+                NSLog( @"%@ is engaged to enemy %@", unit, enemy );
                 self.engaged = YES;
                 return;
             }

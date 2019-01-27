@@ -20,14 +20,14 @@
 
     // a player has lost if 75% of the men are lost
     if ( [scores getLostMen:kPlayer1] > [scores getTotalMen:kPlayer1] * (self.percentage / 100.0f) ) {
-        CCLOG( @"player 1 has lost > 75%% of the men, game ends" );
+        NSLog( @"player 1 has lost > 75%% of the men, game ends" );
         self.text = @"Scenario failed... Your army has taken too heavy casualties";
         self.winner = kPlayer2;
         return kGameFinished;
     }
 
     if ( [scores getLostMen:kPlayer2] > [scores getTotalMen:kPlayer2] * (self.percentage / 100.0f) ) {
-        CCLOG( @"player 2 has lost > 75%% of the men, game ends" );
+        NSLog( @"player 2 has lost > 75%% of the men, game ends" );
         self.text = @"Scenario completed! The Perseutian force has been destroyed";
         self.winner = kPlayer1;
         return kGameFinished;

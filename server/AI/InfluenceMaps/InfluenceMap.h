@@ -6,9 +6,9 @@
 
 }
 
-- (id) initWithAI:(UnitStrengthMap *)ai human:(UnitStrengthMap *)human;
+- (id) initWithPlayer1:(UnitStrengthMap *)player1 player2:(UnitStrengthMap *)player2;
 
-- (void) update;
+//- (void) update;
 
 
 @end

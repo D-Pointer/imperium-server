@@ -18,7 +18,6 @@
     if (self) {
         self.type = kRotateMission;
         self.name = @"Turning";
-        self.color = sRotateLineColor;
 
         // max deviation from the target angle
         maxDeviation = sParameters[kParamMaxTurnDeviationF].floatValue;
@@ -38,7 +37,6 @@
         self.name = @"Turning";
         self.preparingName = @"Preparing to turn";
         self.target = pos;
-        self.color = sRotateLineColor;
         self.endPoint = pos;
 
         // max deviation from the target angle

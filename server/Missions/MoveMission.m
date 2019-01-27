@@ -12,8 +12,7 @@
         self.type = kMoveMission;
         self.name = @"Moving";
         self.preparingName = @"Preparing to move";
-        self.color = sMoveLineColor;
-
+´
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamMoveFatigueEffectF].floatValue;
     }
@@ -30,7 +29,6 @@
         self.name = @"Moving";
         self.preparingName = @"Preparing to move";
         self.endPoint = path.lastPosition;
-        self.color = sMoveLineColor;
 
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamMoveFatigueEffectF].floatValue;
