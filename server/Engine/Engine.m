@@ -13,13 +13,11 @@
 #import "IdleMission.h"
 #import "AssaultMission.h"
 #import "AdvanceMission.h"
-#import "GameLayer.h"
 #import "ScenarioScript.h"
 #import "UdpNetworkHandler.h"
 
 @interface Engine () {
     dispatch_queue_t aiQueue;
-    //dispatch_queue_t losQueue;
 }
 
 @property (nonatomic, assign) BOOL timerRunning;
@@ -65,9 +63,6 @@
 
         // also start the time clock
         [globals.clock start];
-
-        // let the world know that the simulation has changed state
-        [[NSNotificationCenter defaultCenter] postNotificationName:sNotificationEngineStateChanged object:nil];
     }
 }
 
@@ -84,9 +79,6 @@
             self.timerRunning = NO;
             NSLog( @"stopped AI timer" );
         }
-
-        // let the world know that the simulation has changed state
-        [[NSNotificationCenter defaultCenter] postNotificationName:sNotificationEngineStateChanged object:nil];
     }
 }
 
@@ -143,9 +135,6 @@
     [globals.udpConnection sendUnitStats:globals.units];
     [globals.udpConnection sendMissions:globals.units];
 
-    // let the world know that the simulation is now done and things may have changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:sNotificationEngineSimulationDone object:nil];
-
     // show all normal messages that belongs to this step
     for (Message *message in self.messages) {
         [message execute];
@@ -166,14 +155,12 @@
     }
     else {
         // check for game over if 1 player game or we're player 1 and a multiplayer game
-        if (globals.localPlayer.playerId == kPlayer1) {
-            ScenarioState state = globals.scenario.state;
-            if (state != kGameInProgress) {
-                NSLog( @"****** game entered lingering state ******" );
+        ScenarioState state = globals.scenario.state;
+	if (state != kGameInProgress) {
+	    NSLog( @"****** game entered lingering state ******" );
 
-                // do a few more updates
-                self.gameEndLingerUpdates = sParameters[kParamGameEndLingerUpdatesI].intValue;
-            }
+	    // do a few more updates
+	    self.gameEndLingerUpdates = sParameters[kParamGameEndLingerUpdatesI].intValue;
         }
     }
 
@@ -196,7 +183,7 @@
         // firing or idle? we try to actively find better targets for units that are firing, for instance if something is assaulting
         // the unit then that should probably be a preferred target. Skip all AI units, they set their own targets. Also skip area fire as that area
         // has been set by the player for a reason
-        if (unit.owner == globals.localPlayer.playerId && [unit canFire] && ([unit isCurrentMission:kIdleMission] || [unit isCurrentMission:kFireMission])) {
+        if ( [unit canFire] && ([unit isCurrentMission:kIdleMission] || [unit isCurrentMission:kFireMission])) {
             [self findAndSetTarget:unit];
         }
 
@@ -413,7 +400,6 @@
 
         unit.fatigue += effect;
     }
-
 }
 
 
@@ -430,75 +416,22 @@
     // a delta for the angle, length based on the wind speed
     CGPoint delta = ccpMult( ccpForAngle( CC_DEGREES_TO_RADIANS( direction ) ), speed );
 
-    //unsigned int localSmokeCount = 0;
-
-    BOOL multiplayer = globals.gameType == kMultiplayerGame;
-    PlayerId localPlayerId = globals.localPlayer.playerId;
-
     // update all smoke with our delta
-    for ( Smoke * smoke  in globals.map.smoke1 ) {
-        // our smoke in a multiplayer game OR single player game?
-        if ( (multiplayer && smoke.creator == localPlayerId) || !multiplayer ) {
-            //NSLog( @"updating: %@", smoke );
-            if ( [smoke update:delta] ) {
-                [removed addObject:smoke];
-            }
-//            else {
-//                localSmokeCount++;
-//            }
-        }
+    for ( Smoke * smoke  in globals.smoke ) {
+        //NSLog( @"updating: %@", smoke );
+        if ( [smoke update:delta] ) {
+	    [removed addObject:smoke];
+	}
     }
-
-    for ( Smoke * smoke  in globals.map.smoke2 ) {
-        // our smoke in a multiplayer game OR single player game?
-        if ( (multiplayer && smoke.creator == localPlayerId) || !multiplayer ) {
-            //NSLog( @"updating: %@", smoke );
-            if ( [smoke update:delta] ) {
-                [removed addObject:smoke];
-            }
-//            else {
-//                localSmokeCount++;
-//            }
-        }
-    }
-
-//    for ( Smoke * smoke = globals.map.smoke; smoke != nil; smoke = smoke.next ) {
-//        if ( ! smoke.visible ) {
-//            // remove this smoke
-//            if ( smoke == globals.map.smoke ) {
-//                // first in the list
-//                globals.map.smoke = smoke.next;
-//                globals.map.smoke.prev = nil;
-//                smoke.next = nil;
-//            }
-//            else if ( smoke.next == nil ) {
-//                // last
-//                smoke.
-//            }
-//            else {
-//                // middle of the chain
-//            }
-//        }
-//    }
 
     // get rid of the faded out smoke
     for ( Smoke * smoke in removed ) {
         [smoke removeFromParentAndCleanup:YES];
-
-        if ( smoke.creator == kPlayer1 ) {
-            [globals.map.smoke1 removeObject:smoke];
-        }
-        else {
-            [globals.map.smoke2 removeObject:smoke];
-        }
+	[globals.smoke removeObject:smoke];
     }
 
-     NSMutableArray * localSmoke = localPlayerId == kPlayer1 ? globals.map.smoke1 : globals.map.smoke2;
-
-    if ( localSmoke.count > 0 && multiplayer ) {
-        NSLog( @"sending data for %lu smoke", (unsigned long)localSmoke.count );
-        [globals.udpConnection sendSmoke:localSmoke];
-    }
+    NSLog( @"sending data for %lu smoke", (unsigned long)globals.smoke.count );
+    [globals.udpConnection sendSmoke:globals.smoke];
 }
 
 
@@ -528,13 +461,9 @@
                 unit1.mission = [[MeleeMission alloc] initWithTarget:unit2];
                 unit2.mission = [[MeleeMission alloc] initWithTarget:unit1];
 
-                // for multiplayer games we need to send the mission to the opponent so that he/she knows for sure
-                // that the unit is now meleeing
-                if ([Globals sharedInstance].gameType == kMultiplayerGame) {
-                    // which unit is the remote unit?
-                    Unit *remoteUnit = unit1.owner == globals.localPlayer.playerId ? unit2 : unit1;
-                    [globals.udpConnection sendSetMission:kMeleeMission forUnit:remoteUnit];
-                }
+		// TODO: maybe assemble all missions for all units in one packet?
+		[globals.udpConnection sendSetMission:kMeleeMission forUnit:unit1];
+		[globals.udpConnection sendSetMission:kMeleeMission forUnit:unit2];
             }
         }
     }

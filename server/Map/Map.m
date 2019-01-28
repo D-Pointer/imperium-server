@@ -281,7 +281,8 @@
     }
 
     // check all smoke
-    if ( self.smoke1.count > 0 || self.smoke2.count > 0 ) {
+    NSArray * smoke = [Globals sharedInstance].smoke;
+    if ( self.smoke.count > 0 ) {
         // a rect that contains start and losEnd with a 20 m margin in all directions. We check to see if any of the
         // smoke is inside this rect before doing anything more advanced
         CGRect rect = CGRectMake( MIN( start.x, losEnd.x) - 20,
@@ -293,29 +294,7 @@
         const float maxSmokeRadiusSq = 15.0f * 15.0f;
 
         CGPoint hit;
-        for ( Smoke * smoke in self.smoke1 ) {
-            //for ( Smoke * smoke in self.smoke ) {
-            if ( CGRectContainsPoint( rect, smoke.position ) ) {
-                // this smoke is inside, it can potentially block los
-                if ( visualize ) {
-                    // get the squared distance from the smoke center to the line segment
-                    float sqDistance = [self squaredDistanceToPoint:smoke.position fromLineSegmentBetween:start and:losEnd hit:&hit];
-
-                    // is the smoke center close enough? The smoke opacity makes the radius smaller
-                    if ( sqDistance < maxSmokeRadiusSq * ((float)smoke.opacity / 255.0f ) ) {
-                        // can definitely not see, is the new breaking point closer?
-                        canSee = NO;
-                        if ( ccpDistanceSQ( start, hit ) < ccpDistanceSQ( start, losEnd ) ) {
-                            // yes, close LOS break
-                            losEnd = hit;
-                        }
-                    }
-                }
-            }
-        }
-
-        for ( Smoke * smoke in self.smoke2 ) {
-            //for ( Smoke * smoke in self.smoke ) {
+        for ( Smoke * smoke in self.smoke ) {
             if ( CGRectContainsPoint( rect, smoke.position ) ) {
                 // this smoke is inside, it can potentially block los
                 if ( visualize ) {

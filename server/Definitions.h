@@ -292,7 +292,6 @@ typedef enum {
 // globals used for notifications
 static NSString * const sNotificationScenarioSelected            = @"ScenarioSelected";
 static NSString * const sNotificationSelectedUnitMissionsChanged = @"SelectedUnitMissionsChanged";
-static NSString * const sNotificationEngineSimulationDone        = @"EngineSimulationDone";
 static NSString * const sNotificationEngineStateChanged          = @"EngineStateChanged";
 static NSString * const sNotificationSelectionChanged            = @"SelectionChanged";
 static NSString * const sNotificationQuitGame                    = @"GameQuit";
