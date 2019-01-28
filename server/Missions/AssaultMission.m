@@ -35,7 +35,6 @@
         self.name = @"Assaulting";
         self.preparingName = @"Preparing to assault";
         self.endPoint = path.lastPosition;
-        self.color = sAssaultLineColor;
         self.started = NO;
         self.fatigueEffect = sParameters[kParamAssaultFatigueEffectF].floatValue;
     }

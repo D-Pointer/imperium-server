@@ -57,7 +57,6 @@
 		6F1441FF21FA3AC600AE55DE /* ObjectivesLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5021FA3AC500AE55DE /* ObjectivesLayer.m */; };
 		6F14420021FA3AC600AE55DE /* AI.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5121FA3AC500AE55DE /* AI.m */; };
 		6F14420121FA3AC600AE55DE /* PathFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5321FA3AC500AE55DE /* PathFinder.m */; };
-		6F14420221FA3AC600AE55DE /* PathNodePriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */; };
 		6F14420421FA3AC600AE55DE /* InfluenceMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5C21FA3AC500AE55DE /* InfluenceMap.m */; };
 		6F14420521FA3AC600AE55DE /* InfluenceMapNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F5E21FA3AC500AE55DE /* InfluenceMapNode.m */; };
 		6F14420621FA3AC600AE55DE /* GoalMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F143F6321FA3AC500AE55DE /* GoalMap.m */; };
@@ -103,8 +102,6 @@
 		6F14430321FA3AC600AE55DE /* LeavePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14418F21FA3AC500AE55DE /* LeavePacket.m */; };
 		6F14430421FA3AC600AE55DE /* TcpPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14419021FA3AC500AE55DE /* TcpPacket.m */; };
 		6F14430C21FA3AC600AE55DE /* PolygonNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441A121FA3AC600AE55DE /* PolygonNode.m */; };
-		6F14431121FA3AC600AE55DE /* House.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441B421FA3AC600AE55DE /* House.m */; };
-		6F14431221FA3AC600AE55DE /* BaseTerrain.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441B821FA3AC600AE55DE /* BaseTerrain.m */; };
 		6F14431321FA3AC600AE55DE /* VertexList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BB21FA3AC600AE55DE /* VertexList.m */; };
 		6F14431421FA3AC600AE55DE /* HitPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BC21FA3AC600AE55DE /* HitPosition.m */; };
 		6F14431521FA3AC600AE55DE /* Triangularizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1441BE21FA3AC600AE55DE /* Triangularizer.m */; };
@@ -230,8 +227,6 @@
 		6F143F5021FA3AC500AE55DE /* ObjectivesLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjectivesLayer.m; sourceTree = "<group>"; };
 		6F143F5121FA3AC500AE55DE /* AI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AI.m; sourceTree = "<group>"; };
 		6F143F5321FA3AC500AE55DE /* PathFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathFinder.m; sourceTree = "<group>"; };
-		6F143F5421FA3AC500AE55DE /* PathNodePriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathNodePriorityQueue.h; sourceTree = "<group>"; };
-		6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathNodePriorityQueue.m; sourceTree = "<group>"; };
 		6F143F5721FA3AC500AE55DE /* PathNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathNode.h; sourceTree = "<group>"; };
 		6F143F5821FA3AC500AE55DE /* PathFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathFinder.h; sourceTree = "<group>"; };
 		6F143F5B21FA3AC500AE55DE /* FrontlineMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontlineMap.h; sourceTree = "<group>"; };
@@ -332,17 +327,13 @@
 		6F1441AC21FA3AC600AE55DE /* PolygonNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonNode.h; sourceTree = "<group>"; };
 		6F1441B121FA3AC600AE55DE /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		6F1441B221FA3AC600AE55DE /* Objective.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Objective.h; sourceTree = "<group>"; };
-		6F1441B421FA3AC600AE55DE /* House.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = House.m; sourceTree = "<group>"; };
 		6F1441B521FA3AC600AE55DE /* AttackResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttackResult.h; sourceTree = "<group>"; };
 		6F1441B721FA3AC600AE55DE /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
-		6F1441B821FA3AC600AE55DE /* BaseTerrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTerrain.m; sourceTree = "<group>"; };
 		6F1441BB21FA3AC600AE55DE /* VertexList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VertexList.m; sourceTree = "<group>"; };
 		6F1441BC21FA3AC600AE55DE /* HitPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitPosition.m; sourceTree = "<group>"; };
 		6F1441BE21FA3AC600AE55DE /* Triangularizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Triangularizer.m; sourceTree = "<group>"; };
-		6F1441C321FA3AC600AE55DE /* BaseTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTerrain.h; sourceTree = "<group>"; };
 		6F1441C421FA3AC600AE55DE /* Map.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Map.m; sourceTree = "<group>"; };
 		6F1441C621FA3AC600AE55DE /* AttackResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttackResult.m; sourceTree = "<group>"; };
-		6F1441C721FA3AC600AE55DE /* House.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = House.h; sourceTree = "<group>"; };
 		6F1441C921FA3AC600AE55DE /* Objective.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Objective.m; sourceTree = "<group>"; };
 		6F1441CA21FA3AC600AE55DE /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
 		6F1441CC21FA3AC600AE55DE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -542,8 +533,6 @@
 			isa = PBXGroup;
 			children = (
 				6F143F5321FA3AC500AE55DE /* PathFinder.m */,
-				6F143F5421FA3AC500AE55DE /* PathNodePriorityQueue.h */,
-				6F143F5621FA3AC500AE55DE /* PathNodePriorityQueue.m */,
 				6F143F5721FA3AC500AE55DE /* PathNode.h */,
 				6F143F5821FA3AC500AE55DE /* PathFinder.h */,
 			);
@@ -684,12 +673,8 @@
 			children = (
 				6F1441B521FA3AC600AE55DE /* AttackResult.h */,
 				6F1441C621FA3AC600AE55DE /* AttackResult.m */,
-				6F1441C321FA3AC600AE55DE /* BaseTerrain.h */,
-				6F1441B821FA3AC600AE55DE /* BaseTerrain.m */,
 				6F14419321FA3AC600AE55DE /* HitPosition.h */,
 				6F1441BC21FA3AC600AE55DE /* HitPosition.m */,
-				6F1441C721FA3AC600AE55DE /* House.h */,
-				6F1441B421FA3AC600AE55DE /* House.m */,
 				6F1441B721FA3AC600AE55DE /* Map.h */,
 				6F1441C421FA3AC600AE55DE /* Map.m */,
 				6F1441B121FA3AC600AE55DE /* Message.h */,
@@ -805,11 +790,9 @@
 				6F1441EB21FA3AC600AE55DE /* AdvanceMission.m in Sources */,
 				6F14432221FE16F100AE55DE /* Smoke.m in Sources */,
 				6F14430021FA3AC600AE55DE /* JoinPacket.m in Sources */,
-				6F14420221FA3AC600AE55DE /* PathNodePriorityQueue.m in Sources */,
 				6F1442FA21FA3AC600AE55DE /* TcpNetworkHandler.m in Sources */,
 				6F1442F121FA3AC600AE55DE /* MeleePacket.m in Sources */,
 				6F1442FE21FA3AC600AE55DE /* GameEndedPacket.m in Sources */,
-				6F14431121FA3AC600AE55DE /* House.m in Sources */,
 				6F1442FF21FA3AC600AE55DE /* SetupUnitsPacket.m in Sources */,
 				6F1442FB21FA3AC600AE55DE /* AnnouncePacket.m in Sources */,
 				6F1441F821FA3AC600AE55DE /* ResultLayer.m in Sources */,
@@ -839,7 +822,6 @@
 				6F1442F921FA3AC600AE55DE /* HostedGame.m in Sources */,
 				6F1442F821FA3AC600AE55DE /* UdpNetworkHandler.m in Sources */,
 				6F1441CE21FA3AC600AE55DE /* Globals.m in Sources */,
-				6F14431221FA3AC600AE55DE /* BaseTerrain.m in Sources */,
 				6F1442F321FA3AC600AE55DE /* SmokePacket.m in Sources */,
 				6F1441DB21FA3AC600AE55DE /* Army.m in Sources */,
 				6F1442F621FA3AC600AE55DE /* ServerPingPacket.m in Sources */,

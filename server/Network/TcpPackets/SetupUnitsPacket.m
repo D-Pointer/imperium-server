@@ -5,15 +5,13 @@
 
 @implementation SetupUnitsPacket
 
-- (instancetype) init {
+- (instancetype) initWithUnits:(NSArray *)units {
     self = [super init];
     if (self) {
         // save the type too
         self.type = kDataPacket;
 
-         NSMutableArray *localUnits = [Globals sharedInstance].localUnits;
-
-        NSLog( @"sending data for %lu units", (unsigned long)localUnits.count );
+        NSLog( @"sending data for %lu units", (unsigned long)units.count );
 
         // allocate the final buffer
         unsigned char *buffer = [self getBuffer];
@@ -29,10 +27,10 @@
         buffer[offset++] = kSetupUnitsPacket & 0xff;
 
         // unit count
-        buffer[offset++] = (unsigned char) (localUnits.count & 0xff);
+        buffer[offset++] = (unsigned char) (units.count & 0xff);
 
         // add in all units
-        for (Unit *unit in localUnits) {
+        for (Unit *unit in units) {
             // 4 x unsigned short
             offset = saveInt16ToBuffer( (unsigned short) unit.unitId, buffer, offset );
             offset = saveInt16ToBuffer( (unsigned short) (unit.position.x * 10), buffer, offset );

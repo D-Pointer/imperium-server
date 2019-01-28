@@ -71,7 +71,7 @@
                     data[ index ] += maxFirepower;
 
                     // new max value?
-                    self.max = max( self.max, data[ index ] );
+                    self.max = MAX( self.max, data[ index ] );
                 }
 
                 else {
@@ -90,7 +90,7 @@
                             data[ index ] += firepower;
 
                             // new max value?
-                            self.max = max( self.max, data[ index ] );
+                            self.max = MAX( self.max, data[ index ] );
                         }
                     }
                 }
@@ -99,17 +99,6 @@
     }
 
     NSLog( @"max: %f, min: %f", self.max, self.min );
-
-    // create the texture data. most influence will be white, least will be black
-    for ( int y = 0; y < self.height; ++y ) {
-        for ( int x = 0; x < self.width; ++x ) {
-            int dataIndex = y * self.width + x;
-
-            // a grayscale color
-            int color = ( data[ dataIndex ] / self.max * 255.0f );
-            [self setPixel:ccc4( color, color, color, 255 ) x:x y:y];
-        }
-    }
 }
 
 

@@ -16,12 +16,6 @@
         // initially only one unit here
         self.units = [ NSMutableArray new];
         [self.units addObject:hq];
-
-        // set up the AI stuff only for the second player
-        if ( self.owner == kPlayer2 ) {
-            // default to something not bad
-            self.order = kHold;
-        }
     }
 
     return self;

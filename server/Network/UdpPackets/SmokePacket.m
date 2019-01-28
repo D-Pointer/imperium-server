@@ -29,18 +29,14 @@
         // skip the count
         offset += sizeof( unsigned short );
 
-        PlayerId localPlayerId = [Globals sharedInstance].localPlayer.playerId;
-
         unsigned short count = 0;
 
         for ( Smoke * tmpSmoke in smoke ) {
             // our smoke? we only send smoke that we have created
-            if ( tmpSmoke.creator == localPlayerId ) {
-                offset = saveInt16ToBuffer( (unsigned short)(tmpSmoke.position.x * 10), buffer, offset );
-                offset = saveInt16ToBuffer( (unsigned short)(tmpSmoke.position.y * 10), buffer, offset );
-                offset = saveInt8ToBuffer( (unsigned char)tmpSmoke.opacity, buffer, offset );
-                count++;
-            }
+            offset = saveInt16ToBuffer( (unsigned short)(tmpSmoke.position.x * 10), buffer, offset );
+            offset = saveInt16ToBuffer( (unsigned short)(tmpSmoke.position.y * 10), buffer, offset );
+            offset = saveInt8ToBuffer( (unsigned char)tmpSmoke.opacity, buffer, offset );
+            count++;
         }
 
         NSLog( @"sending %d smoke data, offset: %d", count, offset );

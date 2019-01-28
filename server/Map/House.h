@@ -1,6 +1,0 @@
-
-
-
-@interface House : CCSprite
-
-@end

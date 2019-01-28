@@ -41,12 +41,6 @@
 }
 
 
-- (void) setMode:(UnitMode)mode {
-    _mode = mode;
-    self.iconDirty = YES;
-}
-
-
 - (void) setMen:(int)men {
     _men = men;
 
@@ -54,8 +48,6 @@
     
     // has it been destroyed?
     if (men <= 0) {
-        self.visible = NO;
-
         // no mission anymore
         self.mission = nil;
 
@@ -118,7 +110,7 @@
         rotation += 360.0f;
     }
 
-    [super setRotation:rotation];
+    _rotation = rotation;
 }
 
 
@@ -128,19 +120,14 @@
  * turns. This method is called every frame when rotating. Note that we use Y and not X, as both need to be set
  * before the markers can update, otherwise there's an internal consistency assertion.
  **/
-- (void) setRotationY:(float)rotationY {
-    [super setRotationY:rotationY];
-}
+//- (void) setRotationY:(float)rotationY {
+//    [super setRotationY:rotationY];
+//}
 
 
-- (void) setPosition:(CGPoint)position {
-    [super setPosition:position];
-}
-
-
-- (void) setVisible:(BOOL)visible {
-    [super setVisible:visible];
-}
+//- (void) setVisible:(BOOL)visible {
+//    [super setVisible:visible];
+//}
 
 
 - (NSString *) modeName {
@@ -545,16 +532,11 @@
 - (float) changeModeTime {
     // in seconds
 
-    // hardcoded fast time for tutorial
-    if ([Globals sharedInstance].tutorial) {
-        return 10;
-    }
-
     // are we in command?
     float inCommandFactor = self.inCommand ? 1.0f : 1.4f;
 
     // experience modifier
-    float experienceModifier = 1.0;f
+    float experienceModifier = 1.0;
     switch (self.experience) {
         case kGreen:
             experienceModifier = 1.2;
@@ -695,11 +677,6 @@
 
     // make sure the mission knows us too
     _mission.unit = self;
-
-    // refresh any visualized missions
-    if (self.missionVisualizer) {
-        [self.missionVisualizer refresh];
-    }
 }
 
 
@@ -759,33 +736,33 @@
     return NO;
 }
 
-
-- (void) smoothMoveTo:(CGPoint)position {
-    [self runAction:[CCMoveTo actionWithDuration:sParameters[kParamEngineUpdateIntervalF].floatValue - 0.05f position:position]];
-
-    // send to the other player too if this is a multiplayer game and the unit is local
-    if ([Globals sharedInstance].gameType == kMultiplayerGame && self.owner == [Globals sharedInstance].localPlayer.playerId) {
-        // create data with the unit id and target position
-        int unitId = self.unitId;
-        NSMutableData *data = [NSMutableData dataWithBytes:&unitId length:sizeof( unitId )];
-        [data appendData:[NSMutableData dataWithBytes:&position.x length:sizeof( CGFloat )]];
-        [data appendData:[NSMutableData dataWithBytes:&position.y length:sizeof( CGFloat )]];
-    }
-}
-
-
-- (void) smoothTurnTo:(float)facing {
-    [self runAction:[CCRotateTo actionWithDuration:sParameters[kParamEngineUpdateIntervalF].floatValue - 0.05f angle:facing]];
-
-    // send to the other player too if this is a multiplayer game and the unit is local. don't send for remote unitDefinitions
-    if ([Globals sharedInstance].gameType == kMultiplayerGame && self.owner == [Globals sharedInstance].localPlayer.playerId) {
-        // create data with the unit id and target facing
-        int unitId = self.unitId;
-        NSMutableData *data = [NSMutableData dataWithBytes:&unitId length:sizeof( unitId )];
-        [data appendData:[NSMutableData dataWithBytes:&facing length:sizeof( facing )]];
-    }
-}
-
+//
+//- (void) smoothMoveTo:(CGPoint)position {
+//    [self runAction:[CCMoveTo actionWithDuration:sParameters[kParamEngineUpdateIntervalF].floatValue - 0.05f position:position]];
+//
+//    // send to the other player too if this is a multiplayer game and the unit is local
+//    if ([Globals sharedInstance].gameType == kMultiplayerGame && self.owner == [Globals sharedInstance].localPlayer.playerId) {
+//        // create data with the unit id and target position
+//        int unitId = self.unitId;
+//        NSMutableData *data = [NSMutableData dataWithBytes:&unitId length:sizeof( unitId )];
+//        [data appendData:[NSMutableData dataWithBytes:&position.x length:sizeof( CGFloat )]];
+//        [data appendData:[NSMutableData dataWithBytes:&position.y length:sizeof( CGFloat )]];
+//    }
+//}
+//
+//
+//- (void) smoothTurnTo:(float)facing {
+//    [self runAction:[CCRotateTo actionWithDuration:sParameters[kParamEngineUpdateIntervalF].floatValue - 0.05f angle:facing]];
+//
+//    // send to the other player too if this is a multiplayer game and the unit is local. don't send for remote unitDefinitions
+//    if ([Globals sharedInstance].gameType == kMultiplayerGame && self.owner == [Globals sharedInstance].localPlayer.playerId) {
+//        // create data with the unit id and target facing
+//        int unitId = self.unitId;
+//        NSMutableData *data = [NSMutableData dataWithBytes:&unitId length:sizeof( unitId )];
+//        [data appendData:[NSMutableData dataWithBytes:&facing length:sizeof( facing )]];
+//    }
+//}
+//
 
 //- (BOOL) isHit:(CGPoint)pos {
 //    // find out the largest dimension of the sprite

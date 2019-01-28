@@ -6,13 +6,12 @@
 @interface Organization : NSObject
 
 @property (nonatomic, weak)   Unit *    headquarter;
-@property (nonatomic, strong)  NSMutableArray * units;
+@property (nonatomic, strong) NSMutableArray * units;
 @property (nonatomic, assign) PlayerId  owner;
 
 // extra AI data for an organization
 @property (nonatomic, assign) CGPoint                          centerOfMass;
 @property (nonatomic, assign) BOOL                             engaged;
-@property (nonatomic, assign) AIOrganizationOrder              order;
 @property (nonatomic, weak)   Objective *                      objective;
 
 - (id) initWithHeadquarter:(Unit *)hq;

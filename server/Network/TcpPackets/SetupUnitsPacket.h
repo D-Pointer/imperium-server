@@ -3,4 +3,6 @@
 
 @interface SetupUnitsPacket : TcpPacket
 
+- (instancetype) initWithUnits:(NSArray *)units;
+
 @end

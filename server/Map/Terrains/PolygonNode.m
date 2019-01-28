@@ -5,59 +5,51 @@
 
 @implementation PolygonNode
 
-- (id) initWithPolygon:( NSMutableArray *)vertices {
+//- (id) initWithPolygon:(NSArray *)vertices {
+//    self = [super init];
+//    if (self) {
+//        vertices_ = nil;
+//        originalVertices_ = nil;
+//
+//        // sane default values for the bounding helpers
+//        min_x = FLT_MAX;
+//        min_y = FLT_MAX;
+//        max_x = FLT_MIN;
+//        max_y = FLT_MIN;
+//
+//        // the number of original vertices in total
+//        original_count = vertices.count;
+//        vertex_count = vertices.count;
+//
+//        // always save the original vertices too
+//        originalVertices_ = malloc( vertices.count * sizeof( CGPoint ) );
+//
+//        for ( unsigned int index = 0; index < original_count; ++index ) {
+//            // copy the position into our own array
+//            CGPoint pos = [[vertices objectAtIndex:index] CGPointValue];
+//            originalVertices_[ index ].x = pos.x;
+//            originalVertices_[ index ].y = pos.y;
+//
+//            // handle bounding box
+//            min_x = min( min_x, pos.x );
+//            min_y = min( min_y, pos.y );
+//            max_x = max( max_x, pos.x );
+//            max_y = max( max_y, pos.y );
+//        }
+//
+//        boundingBox_ = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
+//    }
+//
+//    return self;
+//}
+
+
+- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type smoothing:(BOOL)smoothing {
     self = [super init];
     if (self) {
         vertices_ = nil;
         originalVertices_ = nil;
-
-        // sane default values for the bounding helpers
-        min_x = FLT_MAX;
-        min_y = FLT_MAX;
-        max_x = FLT_MIN;
-        max_y = FLT_MIN;
-
-        // the number of original vertices in total
-        original_count = vertices.count;
-        vertex_count = vertices.count;
-        
-        // always save the original vertices too
-        originalVertices_ = malloc( vertices.count * sizeof( ccVertex2F ) );
-
-        for ( unsigned int index = 0; index < original_count; ++index ) {
-            // copy the position into our own array
-            CGPoint pos = [[vertices objectAtIndex:index] CGPointValue];
-            originalVertices_[ index ].x = pos.x;
-            originalVertices_[ index ].y = pos.y;
-
-            // handle bounding box
-            min_x = min( min_x, pos.x );
-            min_y = min( min_y, pos.y );
-            max_x = max( max_x, pos.x );
-            max_y = max( max_y, pos.y );
-        }
-
-        // set a content size to match the bound
-        [self setContentSize:CGSizeMake( max_x - min_x, max_y - min_y )];
-
-        boundingBox_ = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
-
-        // setup the shaders to be used
-        [self setupShaders];
-
-        // use default z order
-        self.mapZ = kTerrainZ;
-    }
-    
-    return self;    
-}
-
-
-- (id) initWithPolygon:( NSMutableArray *)vertices smoothing:(BOOL)smoothing {
-    self = [super init];
-    if (self) {
-        vertices_ = nil;
-        originalVertices_ = nil;
+        _terrainType = type;
 
         // triangulate the polygon
          NSMutableArray * indices = [[[Triangularizer alloc] init] triangularize:vertices withSmoothing:smoothing];
@@ -74,11 +66,11 @@
         original_count = vertices.count;
         
         // always save the original vertices too
-        originalVertices_ = malloc( original_count * sizeof( ccVertex2F ) );
+        originalVertices_ = malloc( original_count * sizeof( CGPoint ) );
         
         for ( unsigned int index = 0; index < original_count; ++index ) {
             // copy the position into our own array
-            CGPoint pos = [[vertices objectAtIndex:index] CGPointValue];
+            CGPoint pos = [vertices[index] CGPointValue];
             originalVertices_[ index ].x = pos.x;
             originalVertices_[ index ].y = pos.y;
         }
@@ -111,12 +103,6 @@
         [self setContentSize:CGSizeMake( max_x - min_x, max_y - min_y )];
 
         boundingBox_ = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
-
-        // setup the shaders to be used
-        [self setupShaders];
-
-        // use default z order
-        self.mapZ = kTerrainZ;
     }
     
     return self;    

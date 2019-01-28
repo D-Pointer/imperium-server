@@ -100,7 +100,7 @@
         {  1, -1 } // down right
     };
 
-     NSMutableArray * open = [ NSMutableArray arrayWithCapacity:100];
+    NSMutableArray * open = [ NSMutableArray arrayWithCapacity:100];
 
     // no positions are closed when we start
     memset( closed, 0, positions );
@@ -294,17 +294,6 @@
     }
 
     return path;
-}
-
-
-- (void) debugResult:( NSMutableArray *)result {
-    for ( NSValue * value in result ) {
-        CGPoint position = [value CGPointValue];
-
-        CCSprite * sprite = [CCSprite spriteWithSpriteFrameName:@"CannonBullet.png"];
-        sprite.position = position;
-        [[Globals sharedInstance].map addChild:sprite z:kBulletZ];
-    }
 }
 
 @end

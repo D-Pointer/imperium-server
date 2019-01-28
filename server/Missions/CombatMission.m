@@ -6,7 +6,6 @@
 #import "Globals.h"
 #import "Map.h"
 #import "TerrainModifiers.h"
-#import "AttackVisualization.h"
 #import "AttackResult.h"
 #import "Engine.h"
 #import "UdpNetworkHandler.h"

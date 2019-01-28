@@ -1,18 +1,11 @@
 #import "MapReader.h"
 #import "Map.h"
-#import "DefaultPolygonNode.h"
-#import "ScatteredTrees.h"
-#import "Woods.h"
-#import "Rocky.h"
-#import "Water.h"
-#import "Field.h"
+#import "PolygonNode.h"
 #import "Unit.h"
 #import "House.h"
 #import "Globals.h"
-#import "MissionVisualizer.h"
 #import "Scenario.h"
 #import "Organization.h"
-#import "ScenarioScript.h"
 
 #import "TimeCondition.h"
 #import "CasualtiesCondition.h"
@@ -25,8 +18,8 @@
 
 @interface MapReader ()
 
-@property (nonatomic, strong)  NSMutableArray *polygons;
-@property (nonatomic, strong)  NSMutableArray *textures;
+@property (nonatomic, strong) NSMutableArray *polygons;
+@property (nonatomic, strong) NSMutableArray *textures;
 @property (nonatomic, strong) NSArray *fields;
 @property (nonatomic, strong) Scenario *scenario;
 @property (nonatomic, strong) PolygonNode *currentTerrain;
@@ -82,11 +75,6 @@
 
 - (void) parseTime:(NSArray *)parts {
     self.scenario.startTime = [parts[1] intValue] * 3600 + [parts[2] intValue] * 60;
-}
-
-
-- (void) parseScenarioType:(NSArray *)parts {
-    self.scenario.scenarioType = (ScenarioType) [parts[1] intValue];
 }
 
 
@@ -174,39 +162,22 @@
         [vertices addObject:[NSValue valueWithCGPoint:ccp( x, y )]];
     }
 
+    BOOL smoothing = YES;
+
     // create a polygon node and position it properly
-    if (terrain_type == kScatteredTrees) {
-        self.currentTerrain = [[ScatteredTrees alloc] initWithPolygon:vertices smoothing:NO];
-    }
-    else if (terrain_type == kWoods) {
-        self.currentTerrain = [[Woods alloc] initWithPolygon:vertices smoothing:NO];
-    }
-    else if (terrain_type == kRocky) {
-        self.currentTerrain = [[Rocky alloc] initWithPolygon:vertices smoothing:NO];
-    }
-    else if (terrain_type == kField) {
-        Field *field = [[Field alloc] initWithPolygon:vertices smoothing:NO];
-        field.texture = [self.fields objectAtIndex:random() % 2];
+    switch ( terrain_type ) {
+        case kScatteredTrees:
+        case kWoods:
+        case kRocky:
+        case kField:
+            smoothing = NO;
+            break;
 
-        // rotate and scale a bit
-        [field rotateTextureBy:-45 + CCRANDOM_0_1() * 90];
-        [field scaleTextureBy:1.0f + CCRANDOM_0_1()];
-        self.currentTerrain = field;
+        default:
+            smoothing = YES;
     }
-    else {
-        DefaultPolygonNode *defaultNode;
 
-        if (terrain_type == kRiver) {
-            defaultNode = [[Water alloc] initWithPolygon:vertices smoothing:YES];
-        }
-        else {
-            // not water
-            defaultNode = [[DefaultPolygonNode alloc] initWithPolygon:vertices smoothing:YES];
-        }
-
-        defaultNode.texture = [self.textures objectAtIndex:terrain_type];
-        self.currentTerrain = defaultNode;
-    }
+    self.currentTerrain = [[PolygonNode alloc] initWithPolygon:vertices smoothing:smoothing];
 
     // find a texture for the polygon
     self.currentTerrain.terrainType = terrain_type;

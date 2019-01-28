@@ -48,7 +48,6 @@
 - (MissionState) execute {
     // first time called?
     if ( ! self.started ) {
-        [[Globals sharedInstance].audio playSound:kAdvanceOrdered];
         self.started = YES;
     }
 

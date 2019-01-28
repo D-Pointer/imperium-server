@@ -1,8 +1,6 @@
 #include <netinet/tcp.h>
 #include <netinet/in.h>
 
-#import <Crashlytics/Answers.h>
-
 #import "TcpNetworkHandler.h"
 #import "Globals.h"
 #import "LoginPacket.h"

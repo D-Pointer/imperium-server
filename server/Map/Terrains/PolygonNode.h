@@ -2,12 +2,12 @@
 
 #import "Definitions.h"
 
-@interface PolygonNode : CCNode {
+@interface PolygonNode : NSObject {
     // data for the triangles. vertices are repeated as needed
-	ccVertex2F * vertices_;
+	CGPoint * vertices_;
 
     // original vertices in the order they were given
-    ccVertex2F * originalVertices_;
+    CGPoint * originalVertices_;
     NSUInteger original_count;
 
     // how many vertices
@@ -24,15 +24,8 @@
 
 
 @property (assign, nonatomic) TerrainType terrainType;
-@property (assign, nonatomic) MapLayerZ   mapZ;
 
-- (id) initWithPolygon:( NSMutableArray *)vertices smoothing:(BOOL)smoothing;
-
-- (id) initWithPolygon:( NSMutableArray *)vertices;
-
-- (void) setupShaders;
-
-//- (void) bindTextures;
+- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type smoothing:(BOOL)smoothing;
 
 - (BOOL) containsPoint:(CGPoint)point;
 
