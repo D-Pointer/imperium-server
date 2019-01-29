@@ -1,6 +1,4 @@
 
-#import <Crashlytics/Answers.h>
-
 #import "ScenarioIndexParser.h"
 #import "Scenario.h"
 
@@ -56,6 +54,7 @@
 
         else if ( [type isEqualToString:@"id"] ) {
             self.scenario.scenarioId = [parts[1] intValue];
+            self.scenario.filename = [NSString stringWithFormat:@"Scenarios/%d.map", self.scenario.scenarioId];
         }
 
         else if ( [type isEqualToString:@"depend"] ) {
@@ -67,19 +66,11 @@
         }
 
         else if ( [type isEqualToString:@"type"] ) {
-            [self parseScenarioType:parts];
-
-            // now set up the filename
-            if ( self.scenario.scenarioType == kMultiplayer ) {
-                self.scenario.filename = [NSString stringWithFormat:@"Scenarios/Multiplayer/%d.map", self.scenario.scenarioId];
-            }
-            else {
-                self.scenario.filename = [NSString stringWithFormat:@"Scenarios/Singleplayer/%d.map", self.scenario.scenarioId];
-            }
+            // ignore
         }
 
         else if ( [type isEqualToString:@"aihint"] ) {
-            [self parseAIHint:parts];
+            // ignore
         }
 
         else if ( [type isEqualToString:@"battlesize"] ) {
@@ -142,14 +133,14 @@
 }
 
 
-- (void) parseScenarioType:(NSArray *)parts {
-    self.scenario.scenarioType = (ScenarioType)[parts[1] intValue];
-}
+//- (void) parseScenarioType:(NSArray *)parts {
+//    self.scenario.scenarioType = (ScenarioType)[parts[1] intValue];
+//}
 
 
-- (void) parseAIHint:(NSArray *)parts {
-    self.scenario.aiHint = (AIHint)[parts[1] intValue];
-}
+//- (void) parseAIHint:(NSArray *)parts {
+//    self.scenario.aiHint = (AIHint)[parts[1] intValue];
+//}
 
 
 - (void) parseBattleSize:(NSArray *)parts {

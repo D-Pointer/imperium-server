@@ -4,11 +4,8 @@
 #import "Unit.h"
 #import "Globals.h"
 #import "Scenario.h"
-#import "GameLayer.h"
 #import "MapReader.h"
-#import "MissionVisualizer.h"
 #import "LineOfSight.h"
-#import "ResourceHandler.h"
 
 #import "FireMission.h"
 #import "RotateMission.h"
@@ -118,11 +115,11 @@
     globals.player1 = [[Player alloc] initWithId:kPlayer1 type:playerType1];
     globals.player2 = [[Player alloc] initWithId:kPlayer2 type:playerType2];
 
-    globals.localPlayer = localPlayerId == kPlayer1 ? globals.player1 : globals.player2;
+    //globals.localPlayer = localPlayerId == kPlayer1 ? globals.player1 : globals.player2;
 
     // *******************************************************************
     // create the real game scene
-    [[CCDirector sharedDirector] replaceScene:[GameLayer node]];
+    //[[CCDirector sharedDirector] replaceScene:[GameLayer node]];
 
     // load the rest of the map
     [[MapReader new] completeScenario:globals.scenario];
@@ -177,11 +174,6 @@
     unit.mission = [GameSerializer createMissionFrom:parts forUnit:unit];
 
     NSLog( @"adding %@ to %@", unit.mission, unit );
-
-    // refresh any visualized missions
-    if ( unit.missionVisualizer ) {
-        [unit.missionVisualizer refresh];
-    }
 
     // all ok
     return YES;
@@ -286,7 +278,8 @@
     
     // pack all the game data into a compressed buffer
     NSString * data = [self createGameData];
-    return [ResourceHandler saveData:data toResource:name];
+    return YES;
+    //return [ResourceHandler saveData:data toResource:name];
 //    NSString * fullPathToFile = [GameSerializer createFileName:name];
 //
 //    NSLog( @"save file name: %@", fullPathToFile );
@@ -306,7 +299,7 @@
     NSLog( @"loading from %@", name );
 
     // read everything from text
-    NSString * data = [ResourceHandler loadResource:name];
+    NSString * data = nil; //[ResourceHandler loadResource:name];
     if ( ! data ) {
         return NO;
     }
@@ -315,38 +308,15 @@
     return [self parseGameData:data];
 }
 
-
+/*
 + (BOOL) hasSavedGame:(NSString *)name {
     return [ResourceHandler hasResource:name];
-//    NSString * fullPathToFile = [GameSerializer createFileName:name];
-//
-//    NSLog( @"checking for saved game: %@", fullPathToFile );
-//
-//    // does it exist?
-//    return [[NSFileManager defaultManager] fileExistsAtPath:fullPathToFile];
 }
 
 
 + (void) deleteSavedGame:(NSString *)name {
     [ResourceHandler deleteResource:name];
-//    // precautions
-//    if ( ! [GameSerializer hasSavedGame:name] ) {
-//        // no such file
-//        NSLog( @"no such file, nothing to delete" );
-//        return;
-//    }
-//
-//    NSString * fullPathToFile = [GameSerializer createFileName:name];
-//    NSError * error = nil;
-//
-//    // does it exist?
-//    if ( ! [[NSFileManager defaultManager] removeItemAtPath:fullPathToFile error:&error] ) {
-//        // failed to delete
-//        NSLog( @"failed to remove %@, error: %@", fullPathToFile, [error localizedDescription] );
-//    }
-//    else {
-//        NSLog( @"removed %@", fullPathToFile );
-//    }
 }
+*/
 
 @end

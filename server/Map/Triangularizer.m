@@ -178,7 +178,7 @@ typedef enum PolygonWinding {
 }
 
 
-- (PolygonWinding) getWinding:( NSMutableArray *)originalVertices {
+- (PolygonWinding) getWinding:(NSMutableArray *)originalVertices {
     // see: http://chipmunk-physics.net/forum/viewtopic.php?f=1&t=109
     CGFloat accum = 0;
 

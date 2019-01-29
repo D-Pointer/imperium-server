@@ -3,13 +3,6 @@
 #import "Globals.h"
 #import "GameLayer.h"
 
-@interface AttackResult ()
-
-@property (nonatomic, strong) CCLabelBMFont *   label;
-@property (nonatomic, strong) CCSprite *        background;
-
-@end
-
 
 @implementation AttackResult
 

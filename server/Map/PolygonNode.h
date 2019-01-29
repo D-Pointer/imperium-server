@@ -3,15 +3,11 @@
 #import "Definitions.h"
 
 @interface PolygonNode : NSObject {
-    // data for the triangles. vertices are repeated as needed
-	CGPoint * vertices_;
-
     // original vertices in the order they were given
-    CGPoint * originalVertices_;
-    NSUInteger original_count;
+    CGPoint * vertices_;
 
     // how many vertices
-    NSUInteger vertex_count;
+    NSUInteger vertexCount;
 
     // bounding box helpers
     CGFloat min_x;

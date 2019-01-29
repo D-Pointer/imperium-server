@@ -2,7 +2,6 @@
 #import "Map.h"
 #import "PolygonNode.h"
 #import "Unit.h"
-#import "House.h"
 #import "Globals.h"
 #import "Scenario.h"
 #import "Organization.h"
@@ -19,12 +18,9 @@
 @interface MapReader ()
 
 @property (nonatomic, strong) NSMutableArray *polygons;
-@property (nonatomic, strong) NSMutableArray *textures;
-@property (nonatomic, strong) NSArray *fields;
 @property (nonatomic, strong) Scenario *scenario;
 @property (nonatomic, strong) PolygonNode *currentTerrain;
 @property (nonatomic, strong) NSMutableDictionary *headquarters;
-@property (nonatomic, assign) int aiUpdateCounter;
 
 - (void) createDefaultTerrain;
 
@@ -36,12 +32,7 @@
 - (id) init {
     if ((self = [super init])) {
         self.polygons = [ NSMutableArray new];
-        self.textures = [ NSMutableArray new];
-        self.fields = nil;
         self.headquarters = [NSMutableDictionary new];
-
-        // a counter/sequence for the AI updates
-        self.aiUpdateCounter = 0;
     }
 
     return self;
@@ -50,10 +41,7 @@
 
 - (void) dealloc {
     self.polygons = nil;
-    self.textures = nil;
-    self.fields = nil;
     self.scenario = nil;
-    self.currentTerrain = nil;
 }
 
 
@@ -75,11 +63,6 @@
 
 - (void) parseTime:(NSArray *)parts {
     self.scenario.startTime = [parts[1] intValue] * 3600 + [parts[2] intValue] * 60;
-}
-
-
-- (void) parseAIHint:(NSArray *)parts {
-    self.scenario.aiHint = (AIHint) [parts[1] intValue];
 }
 
 
@@ -140,7 +123,7 @@
     }
 
     else if ([type isEqualToString:@"tutorial"]) {
-        [self.scenario.victoryConditions addObject:[TutorialCondition new]];
+        // ignore
     }
     else {
         NSLog( @"unknown victory condition: %@", type );
@@ -150,7 +133,7 @@
 
 
 - (void) parseTerrain:(NSArray *)parts {
-    TerrainType terrain_type = [parts[1] intValue];
+    TerrainType terrainType = [parts[1] intValue];
 
     // result vertices
      NSMutableArray *vertices = [ NSMutableArray array];
@@ -165,7 +148,7 @@
     BOOL smoothing = YES;
 
     // create a polygon node and position it properly
-    switch ( terrain_type ) {
+    switch ( terrainType ) {
         case kScatteredTrees:
         case kWoods:
         case kRocky:
@@ -179,10 +162,8 @@
 
     self.currentTerrain = [[PolygonNode alloc] initWithPolygon:vertices smoothing:smoothing];
 
-    // find a texture for the polygon
-    self.currentTerrain.terrainType = terrain_type;
+    self.currentTerrain.terrainType = terrainType;
     self.currentTerrain.position = ccp( 0, 0 );
-    [[Globals sharedInstance].map addChild:self.currentTerrain z:self.currentTerrain.mapZ];
 
     // save for later too
     [[Globals sharedInstance].map.polygons addObject:self.currentTerrain];
@@ -249,25 +230,7 @@
     }
 
     // save for later
-    [[Globals sharedInstance].map addChild:unit z:kUnitZ];
     [[Globals sharedInstance].units addObject:unit];
-
-    // add a mission visualizer for the local human player's units
-    if ((owner == kPlayer1 && [Globals sharedInstance].player1.type == kLocalPlayer) || (owner == kPlayer2 && [Globals sharedInstance].player2.type == kLocalPlayer)) {
-        unit.missionVisualizer = [[MissionVisualizer alloc] initWithUnit:unit];
-        [[Globals sharedInstance].map addChild:unit.missionVisualizer z:kMissionVisualizerZ];
-    }
-    else {
-        // not own, hide by default so that the first LOS update starts from all hidden enemies
-        unit.visible = NO;
-
-        // could be an AI unit, so setup the counter too
-        unit.aiUpdateCounter = self.aiUpdateCounter++ % sParameters[kParamAiExecutionIntervalI].intValue;
-    }
-
-    if (unit.unitTypeIcon) {
-        [[Globals sharedInstance].map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
-    }
 
     // add to the right container too
     if (owner == kPlayer1) {
@@ -286,16 +249,7 @@
     float y = [parts[3] floatValue];
     float rotation = [parts[4] floatValue];
 
-    CCSprite *shadow = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"Houses/HouseShadow%d.png", type + 1]];
-    shadow.position = ccp( x + 2, y - 2 );
-    shadow.rotation = rotation;
-
-    House *house = [House spriteWithSpriteFrameName:[NSString stringWithFormat:@"Houses/House%d.png", type + 1]];
-    house.position = ccp( x, y );
-    house.rotation = rotation;
-
-    // add the house and shadow
-    [[Globals sharedInstance].map addHouse:house withShadow:shadow];
+    // TODO: what to do with houses?
 }
 
 
@@ -384,7 +338,6 @@
     // the ownership is later updated for all objectives at the same time
 
     // save for later
-    [[Globals sharedInstance].map addChild:objective z:kObjectiveZ];
     [[Globals sharedInstance].objectives addObject:objective];
 }
 
@@ -399,12 +352,8 @@
 
 
 - (void) createDefaultTerrain {
-    // get the normal- and heightmap filenames
-    //NSString * heightMapFilename = [[Globals sharedInstance].scenario.filename stringByReplacingOccurrencesOfString:@".map" withString:@".heightmap"];
-    //NSString * normalMapFilename = [[Globals sharedInstance].scenario.filename stringByReplacingOccurrencesOfString:@".map" withString:@"-normalmap.png"];
-
     // corners of the map
-     NSMutableArray *corners = [ NSMutableArray array];
+    NSMutableArray *corners = [ NSMutableArray array];
     [corners addObject:[NSValue valueWithCGPoint:ccp( 0, 0 )]];
     [corners addObject:[NSValue valueWithCGPoint:ccp( self.scenario.width, 0 )]];
     [corners addObject:[NSValue valueWithCGPoint:ccp( self.scenario.width, self.scenario.height )]];
@@ -413,14 +362,7 @@
     // create a polygon node that spans the whole map
     DefaultPolygonNode *baseGrass = [[DefaultPolygonNode alloc] initWithPolygon:corners smoothing:NO];
     baseGrass.terrainType = kGrass;
-    baseGrass.texture = [self.textures objectAtIndex:kGrass];
     baseGrass.position = ccp( 0, 0 );
-    [[Globals sharedInstance].map addChild:baseGrass z:kBackgroundZ];
-
-    // load the heightmap
-    //baseGrass.normalMap = [[CCTextureCache sharedTextureCache] addImage:normalMapFilename];
-    //NSAssert( baseGrass.normalMap, @"normal map is nil" );
-    //NSLog( @"loaded normal map" );
 
     // save for later too
     [Globals sharedInstance].map.baseGrass = baseGrass;
@@ -464,7 +406,7 @@
         }
 
         else if ([type isEqualToString:@"aihint"]) {
-            [self parseAIHint:parts];
+            // ignore
         }
 
         else if ([type isEqualToString:@"battlesize"]) {
@@ -567,28 +509,6 @@
     NSLog( @"completing: %@ from file: %@", scenario.title, scenario.filename );
 
     _scenario = scenario;
-
-    // load all textures
-    [self.textures addObject:nil]; // woods
-    [self.textures addObject:nil]; // field
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/grass.jpg"]];
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/sand2.jpg"]];
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/water.jpg"]];
-    [self.textures addObject:nil]; // roof
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/swamp.jpg"]];
-    [self.textures addObject:nil]; // rocky
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/beach.jpg"]];
-    [self.textures addObject:[[CCTextureCache sharedTextureCache] addImage:@"Terrains/ford.png"]];
-    [self.textures addObject:nil]; // scattered trees
-
-    // build mip maps for them all
-    for (CCTexture2D *texture in self.textures) {
-        [texture generateMipmap];
-    }
-
-    // fields have three variations
-    self.fields = @[[[CCTextureCache sharedTextureCache] addImage:@"Terrains/field1.jpg"],
-            [[CCTextureCache sharedTextureCache] addImage:@"Terrains/field2.jpg"]];
 
     // setup the default background. do this before all other polygons so that the terrain comes at the bottom of
     // the stack of polygons, otherwise terrain picking will always return the grass

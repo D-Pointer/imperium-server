@@ -8,6 +8,6 @@
 }
 
 
-- ( NSMutableArray *) triangularize:( NSMutableArray *)originalVertices withSmoothing:(BOOL)smooth;
+- ( NSMutableArray *) triangularize:(NSMutableArray *)originalVertices withSmoothing:(BOOL)smooth;
 
 @end
