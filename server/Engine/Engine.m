@@ -20,10 +20,10 @@
     dispatch_queue_t aiQueue;
 }
 
-@property (nonatomic, assign) BOOL timerRunning;
 @property (nonatomic, assign) float lastObjectiveUpdate;
 @property (nonatomic, assign) int gameEndLingerUpdates;
 @property (nonatomic, assign) unsigned int updateCounter;
+@property (nonatomic, strong) NSTimer * timer;
 
 @end
 
@@ -33,7 +33,7 @@
     self = [super init];
 
     if (self) {
-        self.timerRunning = NO;
+        self.timer = nil;
         self.lastObjectiveUpdate = -1;
         self.updateCounter = 0;
 
@@ -51,14 +51,12 @@
     Globals *globals = [Globals sharedInstance];
 
     // we should run the engine normally
-    if (!self.timerRunning) {
-      [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( simulate ) forTarget:self interval:sParameters[kParamEngineUpdateIntervalF].floatValue paused:NO];
-
-        // all games update LOS
-        //losQueue = dispatch_queue_create( "com.d-pointer.imperium.los", NULL );
-        [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( runLineOfSight ) forTarget:self interval:sParameters[kParamLosUpdateIntervalF].floatValue paused:NO];
-
-        self.timerRunning = YES;
+    if (!self.timer) {
+      self.timer = [NSTimer scheduledTimerWithTimeInterval:sParameters[kParamEngineUpdateIntervalF].floatValue
+						    target:self
+						  selector:@selector(simulate)
+						  userInfo:nil
+						   repeats:YES];
         NSLog( @"started timer" );
 
         // also start the time clock
@@ -68,17 +66,13 @@
 
 
 - (void) stop {
-    if (self.timerRunning) {
+    if (self.timer) {
+        [self.timer invalidate];
+	self.timer = nil;
         [[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( simulate ) forTarget:self];
-	[[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( runLineOfSight ) forTarget:self];
+	//[[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( runLineOfSight ) forTarget:self];
 
         NSLog( @"stopped simulation timer" );
-
-        if ([Globals sharedInstance].gameType == kSinglePlayerGame) {
-
-            self.timerRunning = NO;
-            NSLog( @"stopped AI timer" );
-        }
     }
 }
 
@@ -110,6 +104,8 @@
     NSLog( @"-----------------------------------------------------------------------------------------------------------------" );
     NSLog( @"simulating for time: %.1f, update: %d", elapsedTime, self.updateCounter );
 
+    // TODO: run line of signt
+    
     // always check the command status of all units
     [self checkCommandStatus];
 
