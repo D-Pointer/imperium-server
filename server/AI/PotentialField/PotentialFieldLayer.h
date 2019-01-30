@@ -29,6 +29,4 @@
 
 - (int) fromWorld:(float)value;
 
-- (void) updateDebugSprite;
-
 @end

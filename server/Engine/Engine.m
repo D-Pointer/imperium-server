@@ -414,8 +414,7 @@
 
     // get rid of the faded out smoke
     for ( Smoke * smoke in removed ) {
-        [smoke removeFromParentAndCleanup:YES];
-	[globals.smoke removeObject:smoke];
+        [globals.smoke removeObject:smoke];
     }
 
     NSLog( @"sending data for %lu smoke", (unsigned long)globals.smoke.count );

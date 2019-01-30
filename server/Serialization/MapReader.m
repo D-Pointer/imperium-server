@@ -1,3 +1,6 @@
+
+#import <UIKit/UIKit.h>
+
 #import "MapReader.h"
 #import "Map.h"
 #import "PolygonNode.h"
@@ -159,7 +162,7 @@
             smoothing = YES;
     }
 
-    self.currentTerrain = [[PolygonNode alloc] initWithPolygon:vertices smoothing:smoothing];
+    self.currentTerrain = [[PolygonNode alloc] initWithPolygon:vertices terrainType:terrainType];
 
     self.currentTerrain.terrainType = terrainType;
     self.currentTerrain.position = ccp( 0, 0 );
@@ -359,7 +362,7 @@
     [corners addObject:[NSValue valueWithCGPoint:ccp( 0, self.scenario.height )]];
 
     // create a polygon node that spans the whole map
-    DefaultPolygonNode *baseGrass = [[DefaultPolygonNode alloc] initWithPolygon:corners smoothing:NO];
+    PolygonNode *baseGrass = [[DefaultPolygonNode alloc] initWithPolygon:corners smoothing:NO];
     baseGrass.terrainType = kGrass;
     baseGrass.position = ccp( 0, 0 );
 

@@ -15,14 +15,14 @@
     CGFloat min_y;
     CGFloat max_x;
     CGFloat max_y;
-
-    CGRect boundingBox_;
 }
 
 
 @property (assign, nonatomic) TerrainType terrainType;
+@property (assign, nonatomic) CGPoint     position;
+@property (assign, nonatomic) CGRect      boundingBox;
 
-- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type smoothing:(BOOL)smoothing;
+- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type;
 
 - (BOOL) containsPoint:(CGPoint)point;
 

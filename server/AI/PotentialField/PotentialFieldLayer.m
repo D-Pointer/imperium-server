@@ -84,16 +84,6 @@
     // reset all data to 0
     memset( data, 0x00, self.dataSize );
 
-    if ( colors ) {
-        // the real pixel size of the texture that gets used. it's likely larger, a POT texture
-        int textureWidth  = (int)ccNextPOT( self.width * sParameters[kParamPotentialFieldPixelSizeI].intValue );
-        int textureHeight = (int)ccNextPOT( self.height * sParameters[kParamPotentialFieldPixelSizeI].intValue );
-
-        // allocate space for the colors
-        unsigned int colorSize = textureWidth * textureHeight * sizeof(ccColor4B);
-        memset( colors, 0x00, colorSize );
-    }
-
     //self.min = 0;
     self.max = 0;
 }
@@ -122,65 +112,6 @@
 
 - (int) fromWorld:(float)value {
     return (int)( value / (float)sParameters[kParamPotentialFieldTileSizeI].intValue );
-}
-
-
-- (void) updateDebugSprite {
-    NSLog( @"max: %.1f", self.max );
-
-    // any old sprite?
-    if ( self.sprite ) {
-        [self.sprite removeFromParentAndCleanup:YES];
-        self.sprite = nil;
-    }
-
-    // the real pixel size of the texture that gets used. it's likely larger, a POT texture
-    int textureWidth  = (int)ccNextPOT( self.width * sParameters[kParamPotentialFieldPixelSizeI].intValue );
-    int textureHeight = (int)ccNextPOT( self.height * sParameters[kParamPotentialFieldPixelSizeI].intValue );
-
-    //NSLog( @"texture size: %d x %d", textureWidth, textureHeight );
-
-    // allocate space for the colors
-    if ( colors == 0 ) {
-        unsigned int colorSize = textureWidth * textureHeight * sizeof(ccColor4B);
-        colors = (ccColor4B *)malloc( colorSize );
-        //NSLog( @"color size: %d", colorSize );
-    }
-
-    int pixelSize = sParameters[kParamPotentialFieldPixelSizeI].intValue;
-
-    // create the texture data. most potential will be white, least will be black
-    for ( int y = 0; y < self.height; ++y ) {
-        for ( int x = 0; x < self.width; ++x ) {
-            int dataIndex = y * self.width + x;
-
-            // a grayscale color
-            int color = data[ dataIndex ] / self.max * 255.0f;
-
-            int textureIndex = (y * pixelSize) * textureWidth + x * pixelSize;
-
-            // save the pixels. each field element will be sPotentialFieldPixelSize pixels wide and high
-            for ( int tmpY = 0; tmpY < pixelSize; ++tmpY ) {
-                for ( int tmpX = 0; tmpX < pixelSize; ++tmpX ) {
-                    colors[ textureIndex + tmpX ] = ccc4( color, color, color, 255 );
-                }
-
-                textureIndex += textureWidth;
-            }
-        }
-    }
-
-    // create the raw texture from the color data
-    CCTexture2D * texture = [[CCTexture2D alloc] initWithData:colors
-                                                  pixelFormat:kCCTexture2DPixelFormat_RGBA8888
-                                                   pixelsWide:textureWidth
-                                                   pixelsHigh:textureHeight
-                                                  contentSize:CGSizeMake( self.width * pixelSize, self.height * pixelSize )];
-    [texture generateMipmap];
-    
-    // create a sprite from the the texture data
-    self.sprite = [CCSprite spriteWithTexture:texture];
-    self.sprite.flipY = YES;
 }
 
 

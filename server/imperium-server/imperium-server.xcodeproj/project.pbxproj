@@ -15,19 +15,10 @@
 		6F1444372200B4AC00AE55DE /* AttackResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443632200B4AA00AE55DE /* AttackResult.m */; };
 		6F1444382200B4AC00AE55DE /* Objective.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443642200B4AA00AE55DE /* Objective.m */; };
 		6F1444392200B4AC00AE55DE /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443652200B4AA00AE55DE /* Message.m */; };
-		6F14443A2200B4AC00AE55DE /* ResultLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443682200B4AA00AE55DE /* ResultLayer.m */; };
-		6F14443B2200B4AC00AE55DE /* TerrainLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443692200B4AA00AE55DE /* TerrainLayer.m */; };
-		6F14443C2200B4AC00AE55DE /* PotentialField.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14436B2200B4AA00AE55DE /* PotentialField.m */; };
-		6F14443D2200B4AC00AE55DE /* FrontLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14436E2200B4AA00AE55DE /* FrontLayer.m */; };
-		6F14443E2200B4AC00AE55DE /* OwnUnitsLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */; };
-		6F14443F2200B4AC00AE55DE /* PotentialFieldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */; };
-		6F1444402200B4AC00AE55DE /* EnemyLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443752200B4AA00AE55DE /* EnemyLayer.m */; };
-		6F1444412200B4AC00AE55DE /* ObjectivesLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */; };
 		6F14444D2200B4AC00AE55DE /* CGPointExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443902200B4AB00AE55DE /* CGPointExtension.m */; };
 		6F14444E2200B4AC00AE55DE /* Definitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443942200B4AB00AE55DE /* Definitions.m */; };
 		6F14444F2200B4AC00AE55DE /* ParameterHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439A2200B4AB00AE55DE /* ParameterHandler.m */; };
 		6F1444502200B4AC00AE55DE /* NSData+Compression.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439E2200B4AB00AE55DE /* NSData+Compression.m */; };
-		6F1444512200B4AC00AE55DE /* ScenarioIndexParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */; };
 		6F1444522200B4AC00AE55DE /* GameSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A02200B4AB00AE55DE /* GameSerializer.m */; };
 		6F1444532200B4AC00AE55DE /* MapReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A12200B4AB00AE55DE /* MapReader.m */; };
 		6F1444542200B4AC00AE55DE /* PlayerPingPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A82200B4AB00AE55DE /* PlayerPingPacket.m */; };
@@ -117,22 +108,6 @@
 		6F1443632200B4AA00AE55DE /* AttackResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttackResult.m; sourceTree = "<group>"; };
 		6F1443642200B4AA00AE55DE /* Objective.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Objective.m; sourceTree = "<group>"; };
 		6F1443652200B4AA00AE55DE /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		6F1443682200B4AA00AE55DE /* ResultLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultLayer.m; sourceTree = "<group>"; };
-		6F1443692200B4AA00AE55DE /* TerrainLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainLayer.m; sourceTree = "<group>"; };
-		6F14436A2200B4AA00AE55DE /* PotentialFieldLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PotentialFieldLayer.h; sourceTree = "<group>"; };
-		6F14436B2200B4AA00AE55DE /* PotentialField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PotentialField.m; sourceTree = "<group>"; };
-		6F14436C2200B4AA00AE55DE /* OwnUnitsLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnUnitsLayer.h; sourceTree = "<group>"; };
-		6F14436D2200B4AA00AE55DE /* ObjectivesLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectivesLayer.h; sourceTree = "<group>"; };
-		6F14436E2200B4AA00AE55DE /* FrontLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrontLayer.m; sourceTree = "<group>"; };
-		6F14436F2200B4AA00AE55DE /* EnemyLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnemyLayer.h; sourceTree = "<group>"; };
-		6F1443702200B4AA00AE55DE /* TerrainLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainLayer.h; sourceTree = "<group>"; };
-		6F1443712200B4AA00AE55DE /* ResultLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultLayer.h; sourceTree = "<group>"; };
-		6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OwnUnitsLayer.m; sourceTree = "<group>"; };
-		6F1443732200B4AA00AE55DE /* PotentialField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PotentialField.h; sourceTree = "<group>"; };
-		6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PotentialFieldLayer.m; sourceTree = "<group>"; };
-		6F1443752200B4AA00AE55DE /* EnemyLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnemyLayer.m; sourceTree = "<group>"; };
-		6F1443762200B4AB00AE55DE /* FrontLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontLayer.h; sourceTree = "<group>"; };
-		6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjectivesLayer.m; sourceTree = "<group>"; };
 		6F1443902200B4AB00AE55DE /* CGPointExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGPointExtension.m; sourceTree = "<group>"; };
 		6F1443912200B4AB00AE55DE /* CGPointExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGPointExtension.h; sourceTree = "<group>"; };
 		6F1443922200B4AB00AE55DE /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Definitions.h; path = ../Definitions.h; sourceTree = "<group>"; };
@@ -143,12 +118,10 @@
 		6F14439B2200B4AB00AE55DE /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../Player.h; sourceTree = "<group>"; };
 		6F14439D2200B4AB00AE55DE /* MapReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapReader.h; sourceTree = "<group>"; };
 		6F14439E2200B4AB00AE55DE /* NSData+Compression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Compression.m"; sourceTree = "<group>"; };
-		6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScenarioIndexParser.m; sourceTree = "<group>"; };
 		6F1443A02200B4AB00AE55DE /* GameSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameSerializer.m; sourceTree = "<group>"; };
 		6F1443A12200B4AB00AE55DE /* MapReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapReader.m; sourceTree = "<group>"; };
 		6F1443A22200B4AB00AE55DE /* NSData+Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Compression.h"; sourceTree = "<group>"; };
 		6F1443A32200B4AB00AE55DE /* GameSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSerializer.h; sourceTree = "<group>"; };
-		6F1443A42200B4AB00AE55DE /* ScenarioIndexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenarioIndexParser.h; sourceTree = "<group>"; };
 		6F1443A62200B4AB00AE55DE /* HostedGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostedGame.h; sourceTree = "<group>"; };
 		6F1443A82200B4AB00AE55DE /* PlayerPingPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerPingPacket.m; sourceTree = "<group>"; };
 		6F1443A92200B4AB00AE55DE /* MissionPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissionPacket.h; sourceTree = "<group>"; };
@@ -297,7 +270,6 @@
 		6F1443292200B47500AE55DE = {
 			isa = PBXGroup;
 			children = (
-				6F1443662200B4AA00AE55DE /* AI */,
 				6F1443922200B4AB00AE55DE /* Definitions.h */,
 				6F1443942200B4AB00AE55DE /* Definitions.m */,
 				6F1444262200B4AC00AE55DE /* Engine */,
@@ -358,38 +330,6 @@
 			path = ../Map;
 			sourceTree = "<group>";
 		};
-		6F1443662200B4AA00AE55DE /* AI */ = {
-			isa = PBXGroup;
-			children = (
-				6F1443672200B4AA00AE55DE /* PotentialField */,
-			);
-			name = AI;
-			path = ../AI;
-			sourceTree = "<group>";
-		};
-		6F1443672200B4AA00AE55DE /* PotentialField */ = {
-			isa = PBXGroup;
-			children = (
-				6F1443682200B4AA00AE55DE /* ResultLayer.m */,
-				6F1443692200B4AA00AE55DE /* TerrainLayer.m */,
-				6F14436A2200B4AA00AE55DE /* PotentialFieldLayer.h */,
-				6F14436B2200B4AA00AE55DE /* PotentialField.m */,
-				6F14436C2200B4AA00AE55DE /* OwnUnitsLayer.h */,
-				6F14436D2200B4AA00AE55DE /* ObjectivesLayer.h */,
-				6F14436E2200B4AA00AE55DE /* FrontLayer.m */,
-				6F14436F2200B4AA00AE55DE /* EnemyLayer.h */,
-				6F1443702200B4AA00AE55DE /* TerrainLayer.h */,
-				6F1443712200B4AA00AE55DE /* ResultLayer.h */,
-				6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */,
-				6F1443732200B4AA00AE55DE /* PotentialField.h */,
-				6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */,
-				6F1443752200B4AA00AE55DE /* EnemyLayer.m */,
-				6F1443762200B4AB00AE55DE /* FrontLayer.h */,
-				6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */,
-			);
-			path = PotentialField;
-			sourceTree = "<group>";
-		};
 		6F14438F2200B4AB00AE55DE /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -424,14 +364,12 @@
 		6F14439C2200B4AB00AE55DE /* Serialization */ = {
 			isa = PBXGroup;
 			children = (
-				6F14439D2200B4AB00AE55DE /* MapReader.h */,
-				6F14439E2200B4AB00AE55DE /* NSData+Compression.m */,
-				6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */,
+				6F1443A32200B4AB00AE55DE /* GameSerializer.h */,
 				6F1443A02200B4AB00AE55DE /* GameSerializer.m */,
+				6F14439D2200B4AB00AE55DE /* MapReader.h */,
 				6F1443A12200B4AB00AE55DE /* MapReader.m */,
 				6F1443A22200B4AB00AE55DE /* NSData+Compression.h */,
-				6F1443A32200B4AB00AE55DE /* GameSerializer.h */,
-				6F1443A42200B4AB00AE55DE /* ScenarioIndexParser.h */,
+				6F14439E2200B4AB00AE55DE /* NSData+Compression.m */,
 			);
 			name = Serialization;
 			path = ../Serialization;
@@ -702,15 +640,11 @@
 				6F1444712200B4AC00AE55DE /* Unit.m in Sources */,
 				6F1444312200B4AC00AE55DE /* PolygonNode.m in Sources */,
 				6F1444622200B4AC00AE55DE /* WindPacket.m in Sources */,
-				6F14443D2200B4AC00AE55DE /* FrontLayer.m in Sources */,
-				6F1444402200B4AC00AE55DE /* EnemyLayer.m in Sources */,
 				6F1444382200B4AC00AE55DE /* Objective.m in Sources */,
 				6F1444582200B4AC00AE55DE /* MissionPacket.m in Sources */,
 				6F1444532200B4AC00AE55DE /* MapReader.m in Sources */,
 				6F1444942200B4AC00AE55DE /* Engine.m in Sources */,
-				6F14443B2200B4AC00AE55DE /* TerrainLayer.m in Sources */,
 				6F1444952200B4AC00AE55DE /* ParameterDefinitions.m in Sources */,
-				6F14443E2200B4AC00AE55DE /* OwnUnitsLayer.m in Sources */,
 				6F14444F2200B4AC00AE55DE /* ParameterHandler.m in Sources */,
 				6F1444502200B4AC00AE55DE /* NSData+Compression.m in Sources */,
 				6F14444E2200B4AC00AE55DE /* Definitions.m in Sources */,
@@ -719,7 +653,6 @@
 				6F14445A2200B4AC00AE55DE /* SetMissionPacket.m in Sources */,
 				6F1444842200B4AC00AE55DE /* Globals.m in Sources */,
 				6F14448C2200B4AC00AE55DE /* DestroyUnitCondition.m in Sources */,
-				6F14443F2200B4AC00AE55DE /* PotentialFieldLayer.m in Sources */,
 				6F1444352200B4AC00AE55DE /* Map.m in Sources */,
 				6F1444912200B4AC00AE55DE /* PathFinder.m in Sources */,
 				6F1444782200B4AC00AE55DE /* MeleeMission.m in Sources */,
@@ -749,12 +682,9 @@
 				6F1444862200B4AC00AE55DE /* ScoreCounter.m in Sources */,
 				6F1444682200B4AC00AE55DE /* KeepAlivePacket.m in Sources */,
 				6F1444612200B4AC00AE55DE /* AnnouncePacket.m in Sources */,
-				6F14443A2200B4AC00AE55DE /* ResultLayer.m in Sources */,
-				6F1444512200B4AC00AE55DE /* ScenarioIndexParser.m in Sources */,
 				6F1444892200B4AC00AE55DE /* TimeCondition.m in Sources */,
 				6F1444522200B4AC00AE55DE /* GameSerializer.m in Sources */,
 				6F14447C2200B4AC00AE55DE /* MoveMission.m in Sources */,
-				6F1444412200B4AC00AE55DE /* ObjectivesLayer.m in Sources */,
 				6F14446A2200B4AC00AE55DE /* TcpPacket.m in Sources */,
 				6F1444642200B4AC00AE55DE /* GameEndedPacket.m in Sources */,
 				6F1444882200B4AC00AE55DE /* VictoryCondition.m in Sources */,
@@ -775,7 +705,6 @@
 				6F1444732200B4AC00AE55DE /* FireMission.m in Sources */,
 				6F1444672200B4AC00AE55DE /* LoginPacket.m in Sources */,
 				6F1444822200B4AC00AE55DE /* ScoutMission.m in Sources */,
-				6F14443C2200B4AC00AE55DE /* PotentialField.m in Sources */,
 				6F1444632200B4AC00AE55DE /* ReadyToStartPacket.m in Sources */,
 				6F14448E2200B4AC00AE55DE /* MultiplayerTimeCondition.m in Sources */,
 				6F1444562200B4AC00AE55DE /* UnitStatsPacket.m in Sources */,

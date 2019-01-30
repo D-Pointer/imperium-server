@@ -12,26 +12,22 @@
 
 @end
 
+
 @implementation Clock
 
-@synthesize timeLabel;
-
-+ (Clock *) node {
-    node.elapsedTime = 0;
-    node.lastElapsedTime = 0;
-    return node;
+- (instancetype) init {
+    self = [super init];
+    if (self) {
+        self.elapsedTime = 0;
+        self.lastElapsedTime = 0;
+    }
+    return self;
 }
 
 
 - (float) currentTime {
     // time is in seconds
     return [Globals sharedInstance].scenario.startTime + self.elapsedTime;
-}
-
-
-- (void) setElapsedTime:(float)elapsedTime {
-    _elapsedTime = elapsedTime;
-    [self update];
 }
 
 

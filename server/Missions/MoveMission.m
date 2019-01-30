@@ -12,7 +12,7 @@
         self.type = kMoveMission;
         self.name = @"Moving";
         self.preparingName = @"Preparing to move";
-´
+
         // fatigue added per minute
         self.fatigueEffect = sParameters[kParamMoveFatigueEffectF].floatValue;
     }

@@ -4,13 +4,6 @@
 #import "Globals.h"
 #import "Map.h"
 
-@interface Message ()
-
-@property (nonatomic, strong) CCLabelBMFont *        label;
-@property (nonatomic, strong) CCSprite *             background;
-
-@end
-
 
 @implementation Message
 
@@ -41,8 +34,6 @@
 
 - (void) dealloc {
     self.unit  = nil;
-    self.label = nil;
-    self.background = nil;
 }
 
 
@@ -87,15 +78,5 @@
 }
 */
 
-- (void) messageDone:(id)sender {
-    [sender removeFromParentAndCleanup:YES];
-    self.label = nil;
-
-    if ( self.background ) {
-        [self.background stopAllActions];
-        [self.background removeFromParentAndCleanup:YES];
-        self.background = nil;
-    }
-}
 
 @end

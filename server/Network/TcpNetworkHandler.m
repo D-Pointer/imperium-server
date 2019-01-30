@@ -36,7 +36,7 @@
 
 @interface TcpNetworkHandler ()
 
-@property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
+//@property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
 @property (nonatomic, readwrite, strong) NSMutableArray *games;
 @property (nonatomic, strong) HostedGame *currentGame;
 @property (nonatomic, assign) unsigned int announcedGameId;
@@ -54,7 +54,7 @@
     self = [super init];
     if (self) {
         // create the socket
-        self.tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+        //self.tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
         self.isConnected = NO;
 
         // no games yet
@@ -67,13 +67,13 @@
         self.announcedGameId = UINT_MAX;
 
         // TODO: not needed?
-        [self.tcpSocket performBlock:^{
-            int fd = [self.tcpSocket socketFD];
-            int on = 1;
-            if (setsockopt( fd, IPPROTO_TCP, TCP_NODELAY, (char *) &on, sizeof( on ) ) == -1) {
-                NSLog( @"error disabling delay for TCP socket" );
-            }
-        }];
+//        [self.tcpSocket performBlock:^{
+//            int fd = [self.tcpSocket socketFD];
+//            int on = 1;
+//            if (setsockopt( fd, IPPROTO_TCP, TCP_NODELAY, (char *) &on, sizeof( on ) ) == -1) {
+//                NSLog( @"error disabling delay for TCP socket" );
+//            }
+//        }];
     }
 
     return self;
@@ -113,11 +113,11 @@
     NSLog( @"connecting to %@:%d", sServerHost, sServerPort);
 
     NSError *err = nil;
-    if (![self.tcpSocket connectToHost:sServerHost onPort:sServerPort withTimeout:5 error:&err]) {
-        // If there was an error, it's likely something like "already connected" or "no delegate set"
-        NSLog( @"failed to connect: %@", err );
-        return NO;
-    }
+//    if (![self.tcpSocket connectToHost:sServerHost onPort:sServerPort withTimeout:5 error:&err]) {
+//        // If there was an error, it's likely something like "already connected" or "no delegate set"
+//        NSLog( @"failed to connect: %@", err );
+//        return NO;
+//    }
 
     return YES;
 }
@@ -125,10 +125,10 @@
 
 - (void) disconnect {
     NSLog( @"disconnecting" );
-    if (self.tcpSocket) {
-        [self.tcpSocket disconnect];
-        self.tcpSocket = nil;
-    }
+//    if (self.tcpSocket) {
+//        [self.tcpSocket disconnect];
+//        self.tcpSocket = nil;
+//    }
 
     if ([Globals sharedInstance].udpConnection) {
         [[Globals sharedInstance].udpConnection disconnect];
@@ -140,7 +140,7 @@
     [self.games removeAllObjects];
 
     // no more keepalive
-    [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
+    //[[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
 }
 
 
@@ -205,13 +205,13 @@
     NSLog( @"writing packet: %@", packet );
 
     // do the real write
-    [self.tcpSocket writeData:packet.data withTimeout:-1 tag:0];
+    //[self.tcpSocket writeData:packet.data withTimeout:-1 tag:0];
 }
 
 
 //***************************************************************************************************************
 #pragma mark - TCP socket delegate
-
+/*
 - (void) socket:(GCDAsyncSocket *)sender didConnectToHost:(NSString *)host port:(UInt16)port {
     NSLog( @"connected ok to %@:%d", host, port );
     self.isConnected = YES;
@@ -226,7 +226,7 @@
     }
 
     // start sending TCP keepalive
-    [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( sendKeepAlive ) forTarget:self interval:2.0 paused:NO];
+    //[[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( sendKeepAlive ) forTarget:self interval:2.0 paused:NO];
 }
 
 
@@ -243,7 +243,7 @@
     }
 
     // start reading the first response
-    [self.tcpSocket readDataToLength:sTcpPacketHeaderLength withTimeout:-1 tag:TAG_HEADER];
+    // [self.tcpSocket readDataToLength:sTcpPacketHeaderLength withTimeout:-1 tag:TAG_HEADER];
 }
 
 
@@ -283,7 +283,7 @@
     }
 }
 
-
+*/
 - (void) handleHeader:(const UInt8 *)data {
     unsigned short offset = 0;
 
@@ -299,7 +299,7 @@
     }
     else {
         // start reading the payload
-        [self.tcpSocket readDataToLength:payloadLength withTimeout:-1 tag:TAG_PAYLOAD];
+       // [self.tcpSocket readDataToLength:payloadLength withTimeout:-1 tag:TAG_PAYLOAD];
     }
 }
 
@@ -375,7 +375,7 @@
     }
 
     // start reading the next header
-    [self.tcpSocket readDataToLength:sTcpPacketHeaderLength withTimeout:-1 tag:TAG_HEADER];
+   // [self.tcpSocket readDataToLength:sTcpPacketHeaderLength withTimeout:-1 tag:TAG_HEADER];
 }
 
 
@@ -390,11 +390,6 @@
             [delegate loginOk];
         }
     }
-
-    // log login
-    [Answers logLoginWithMethod:sServerHost
-                        success:@YES
-               customAttributes:@{ @"onlineName" : self.onlineName } ];
 }
 
 
@@ -406,11 +401,6 @@
             [delegate loginFailed:reason];
         }
     }
-
-    // log login failure
-    [Answers logLoginWithMethod:sServerHost
-                        success:@NO
-               customAttributes:@{ @"onlineName" : self.onlineName } ];
 }
 
 
@@ -669,7 +659,7 @@
     char nameBuffer[256];
 
     // id of the enemy
-    PlayerId owner = globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
+    PlayerId owner = kPlayer1; //globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
 
     // read all the units
     for (unsigned int index = 0; index < unitCount; ++index) {
@@ -703,9 +693,6 @@
         unit.position = ccp( x, y );
         unit.rotation = facing;
         unit.mode = mode;
-
-        // set up the icon
-        [unit updateIcon];
 
         switch (missionType) {
             case kAdvanceMission:
@@ -760,13 +747,6 @@
 
         // the mission needs to know the unit
         unit.mission.unit = unit;
-
-        // add to map
-        [globals.map addChild:unit z:kUnitZ];
-
-        if (unit.unitTypeIcon) {
-            [globals.map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
-        }
 
         // and save for later
         [[Globals sharedInstance].units addObject:unit];

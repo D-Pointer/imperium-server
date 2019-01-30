@@ -24,8 +24,5 @@
 
 - (NSString *) formattedTime;
 
-- (void) update;
-
-+ (Clock *) node;
 
 @end

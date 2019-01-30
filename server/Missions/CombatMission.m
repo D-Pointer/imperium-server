@@ -220,11 +220,6 @@
         // should the unit rout?
         BOOL defenderRouts = hitUnit.morale - percentageLost < sParameters[kParamMaxMoraleRoutedF].floatValue;
 
-        // in tutorial mode don't retreat
-        if ( [Globals sharedInstance].tutorial ) {
-            defenderRouts = NO;
-        }
-
         if ( defenderRouts ) {
             NSLog( @"percentage lost: %.1f, morale: %.1f => defender routs", percentageLost, hitUnit.morale );
         }
@@ -421,27 +416,13 @@
 
 
 - (void) createAttackVisualizationForAttacker:(Unit *)attacker casualties:( NSMutableArray *)casualties hitPosition:(CGPoint)hitPosition {
-    // create and show immediately
-    AttackVisualization * visualization = [[AttackVisualization alloc] initWithAttacker:attacker casualties:casualties hitPosition:hitPosition];
-    [visualization execute];
-
-    // for a multiplayer game send the result to the other player
-    if ([Globals sharedInstance].gameType == kMultiplayerGame) {
-        [[Globals sharedInstance].udpConnection sendFireWithAttacker:attacker casualties:casualties hitPosition:hitPosition];
-    }
+    [[Globals sharedInstance].udpConnection sendFireWithAttacker:attacker casualties:casualties hitPosition:hitPosition];
 }
 
 
 - (void) createSmokeVisualizationForAttacker:(Unit *)attacker hitPosition:(CGPoint)hitPosition {
-    // create and show immediately
-    AttackVisualization * visualization = [[AttackVisualization alloc] initWithAttacker:attacker smokePosition:hitPosition];
-    [visualization execute];
-
-    // for a multiplayer game send the result to the other player
-    if ([Globals sharedInstance].gameType == kMultiplayerGame) {
-        // send to the other player. Send no casualties as that marks it as a smoke packet
-        [[Globals sharedInstance].udpConnection sendFireWithAttacker:attacker casualties:nil hitPosition:hitPosition];
-    }
+    // send to the other player. Send no casualties as that marks it as a smoke packet
+    [[Globals sharedInstance].udpConnection sendFireWithAttacker:attacker casualties:nil hitPosition:hitPosition];
 }
 
 
@@ -452,21 +433,32 @@
     // destroyed outright?
     if (destroyed) {
         NSLog( @"defender destroyed" );
-        result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderDestroyed withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
-                                    targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDestroyEnemyF].floatValue];
+        result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderDestroyed
+                                          withAttacker:attacker
+                                             forTarget:defender
+                                            casualties:menLost
+                                    targetMoraleChange:percentageLost
+                                  attackerMoraleChange:sParameters[kParamMoraleBoostDestroyEnemyF].floatValue];
     }
     else if (menLost > 0) {
         // rout?
         if (routMission) {
             NSLog( @"defender retreats" );
-            result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen | kDefenderRouted withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
-                                        targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostRoutEnemyF].floatValue];
+            result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen | kDefenderRouted
+                                              withAttacker:attacker
+                                                 forTarget:defender
+                                                casualties:menLost
+                                        targetMoraleChange:percentageLost
+                                      attackerMoraleChange:sParameters[kParamMoraleBoostRoutEnemyF].floatValue];
         }
         else {
             // only lost some men, does not retreat
             NSLog( @"defender lost men" );
-            result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen withAttacker:attacker forTarget:defender casualties:menLost routMission:routMission
-                                        targetMoraleChange:percentageLost attackerMoraleChange:sParameters[kParamMoraleBoostDamageEnemyF].floatValue];
+            result = [[AttackResult alloc] initWithMessage:kMeleeAttack | kDefenderLostMen
+                                              withAttacker:attacker
+                                                 forTarget:defender casualties:menLost
+                                        targetMoraleChange:percentageLost
+                                      attackerMoraleChange:sParameters[kParamMoraleBoostDamageEnemyF].floatValue];
         }
     }
 
@@ -478,14 +470,11 @@
 
     [result execute];
 
-    // for a multiplayer game send the result to the other player
-    if ([Globals sharedInstance].gameType == kMultiplayerGame) {
-        [[Globals sharedInstance].udpConnection sendMeleeWithAttacker:result.attacker
-                                                               target:result.target
-                                                              message:result.messageType
-                                                           casualties:menLost
-                                                   targetMoraleChange:result.targetMoraleChange];
-    }
+    [[Globals sharedInstance].udpConnection sendMeleeWithAttacker:result.attacker
+                                                           target:result.target
+                                                          message:result.messageType
+                                                       casualties:menLost
+                                               targetMoraleChange:result.targetMoraleChange];
 }
 
 

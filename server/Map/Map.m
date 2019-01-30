@@ -64,10 +64,8 @@
     // no terrains yet
     int terrains[ kNoTerrain ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    MapLayer * map = [Globals sharedInstance].map;
-
     // directly under the unit
-    terrains[ [map getTerrainAt:unit.position] ] = 2;
+    terrains[ [self getTerrainAt:unit.position] ] = 2;
 
     // distance from the center point
     const int distance = 5;
@@ -77,7 +75,7 @@
         CGPoint pos = ccpAdd( unit.position, direction );
 
         // get the terrain under that position and add to the frequency table
-        TerrainType terrain = [map getTerrainAt:pos];
+        TerrainType terrain = [self getTerrainAt:pos];
 
         // column units always assume they are on the road if even one sample is on a road
         if ( terrain == kRoad && unit.mode == kColumn ) {
@@ -116,36 +114,36 @@
 }
 
 
-- (Unit *) getUnitAt:(CGPoint)pos {
-    Unit * found = nil;
-    float minDistance = 10000;
+//- (Unit *) getUnitAt:(CGPoint)pos {
+//    Unit * found = nil;
+//    float minDistance = 10000;
+//
+//    for ( Unit * unit in [Globals sharedInstance].units ) {
+//        float distance = ccpDistance( pos, unit.position );
+//
+//        // new closest hit?
+//        if ( distance < unit.selectionRadius && distance < minDistance ) {
+//            // new best unit
+//            found = unit;
+//            minDistance = distance;
+//        }
+//    }
+//
+//    // return whatever we found
+//    return found;
+//}
 
-    for ( Unit * unit in [Globals sharedInstance].units ) {
-        float distance = ccpDistance( pos, unit.position );
 
-        // new closest hit?
-        if ( distance < unit.selectionRadius && distance < minDistance ) {
-            // new best unit
-            found = unit;
-            minDistance = distance;
-        }
-    }
-
-    // return whatever we found
-    return found;
-}
-
-
-- (Objective *) getObjectiveAt:(CGPoint)pos {
-    for ( Objective * objective in [Globals sharedInstance].objectives ) {
-        if ( [objective isHit:pos] ) {
-            return objective;
-        }
-    }
-
-    // found no objective at that pos
-    return nil;
-}
+//- (Objective *) getObjectiveAt:(CGPoint)pos {
+//    for ( Objective * objective in [Globals sharedInstance].objectives ) {
+//        if ( [objective isHit:pos] ) {
+//            return objective;
+//        }
+//    }
+//
+//    // found no objective at that pos
+//    return nil;
+//}
 
 
 - (BOOL) canSeeFrom:(CGPoint)start to:(CGPoint)end visualize:(BOOL)visualize withMaxRange:(float)maxSightRange {
@@ -280,8 +278,8 @@
     }
 
     // check all smoke
-    NSArray * smoke = [Globals sharedInstance].smoke;
-    if ( self.smoke.count > 0 ) {
+    NSArray * allSmoke = [Globals sharedInstance].smoke;
+    if ( allSmoke.count > 0 ) {
         // a rect that contains start and losEnd with a 20 m margin in all directions. We check to see if any of the
         // smoke is inside this rect before doing anything more advanced
         CGRect rect = CGRectMake( MIN( start.x, losEnd.x) - 20,
@@ -293,7 +291,7 @@
         const float maxSmokeRadiusSq = 15.0f * 15.0f;
 
         CGPoint hit;
-        for ( Smoke * smoke in self.smoke ) {
+        for ( Smoke * smoke in allSmoke ) {
             if ( CGRectContainsPoint( rect, smoke.position ) ) {
                 // this smoke is inside, it can potentially block los
                 if ( visualize ) {

@@ -11,7 +11,8 @@
 
 @property (nonatomic)         int                      mapWidth;
 @property (nonatomic)         int                      mapHeight;
-@property (nonatomic, strong)  NSMutableArray *                polygons;
+@property (nonatomic, strong)  NSMutableArray *        polygons;
+@property (nonatomic, strong)  PolygonNode *           baseGrass;
 
 
 - (void) reset;
@@ -29,8 +30,8 @@
  **/
 - (TerrainType) getTerrainForUnit:(Unit *)unit;
 
-- (Unit *) getUnitAt:(CGPoint)pos;
-- (Objective *) getObjectiveAt:(CGPoint)pos;
+//- (Unit *) getUnitAt:(CGPoint)pos;
+//- (Objective *) getObjectiveAt:(CGPoint)pos;
 
 - (BOOL) canSeeFrom:(CGPoint)start to:(CGPoint)end visualize:(BOOL)visualize withMaxRange:(float)maxSightRange;
 

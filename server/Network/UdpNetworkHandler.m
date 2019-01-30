@@ -50,7 +50,7 @@
     unsigned int latePackets;
 }
 
-@property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
+//@property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) NSString *server;
 @property (nonatomic, assign) unsigned short port;
 @property (nonatomic, assign) BOOL receivingStarted;
@@ -87,7 +87,7 @@
         latePackets = 0;
 
         // create the socket
-        self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+        //self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     }
 
     return self;
@@ -100,18 +100,15 @@
 
 
 - (void) disconnect {
-    if (self.udpSocket) {
-        NSLog( @"disconnecting UDP socket" );
-
-        // no more ping updates
-        [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
-
-        // get rid of the socket
-        self.udpSocket = nil;
-    }
-
-    // no more pings
-    [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
+//    if (self.udpSocket) {
+//        NSLog( @"disconnecting UDP socket" );
+//
+//        // no more ping updates
+//        [[[CCDirector sharedDirector] scheduler] unscheduleAllForTarget:self];
+//
+//        // get rid of the socket
+//        self.udpSocket = nil;
+//    }
 }
 
 
@@ -167,14 +164,14 @@
 
 - (void) sendUdpPacket:(UdpPacket *)packet {
     NSLog( @"sending packet %@", packet );
-    [self.udpSocket sendData:packet.data toHost:self.server port:self.port withTimeout:-1 tag:0];
+    //[self.udpSocket sendData:packet.data toHost:self.server port:self.port withTimeout:-1 tag:0];
 
     // start receiving when we send the first packet
     if (!self.receivingStarted) {
         NSError *error = nil;
-        if (![self.udpSocket beginReceiving:&error]) {
-            NSLog( @"failed to begin receiving on UDP socket: %@", error );
-        }
+//        if (![self.udpSocket beginReceiving:&error]) {
+//            NSLog( @"failed to begin receiving on UDP socket: %@", error );
+//        }
 
         self.receivingStarted = YES;
     }
@@ -184,6 +181,7 @@
 //***************************************************************************************************************
 #pragma mark - UDP socket delegate
 
+/*
 - (void) udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
     const UInt8 *bytes = [data bytes];
 
@@ -214,7 +212,7 @@
             break;
     }
 }
-
+*/
 
 //****************************************************************************************************************************************
 // UDP packet handlers
@@ -227,14 +225,10 @@
 
         NSLog( @"game action started" );
         // prepare the game layer
-        [[Globals sharedInstance].gameLayer startOnlineGame];
+        //[[Globals sharedInstance].gameLayer startOnlineGame];
 
         // start the engine ticking
-        [[Globals sharedInstance].engine start];
-
-        // start sending a ping every few seconds
-        [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( sendPingToServer ) forTarget:self interval:2.0 paused:NO];
-        [[[CCDirector sharedDirector] scheduler] scheduleSelector:@selector( sendPingToPlayer ) forTarget:self interval:2.0 paused:NO];
+        //[[Globals sharedInstance].engine start];
     }
 }
 
@@ -416,14 +410,7 @@
         unit.morale = morale;
         unit.fatigue = fatigue;
 
-        // perform smooth moves and turns if required
-        if ((int) unit.position.x != (int) x || (int) unit.position.y != (int) y) {
-            [unit smoothMoveTo:ccp( x, y )];
-        }
-
-        if ((int) unit.rotation != (int) rotation) {
-            [unit smoothTurnTo:rotation];
-        }
+        // TODO: pos and rotation
 
         // create the mission if needed
         if (unit.mission.type != missionType) {
@@ -472,17 +459,13 @@
             }
 
             // add a result
-            [allCasualties addObject:[[AttackResult alloc] initWithMessage:messageType withAttacker:attacker forTarget:target casualties:casualties
-                                                               routMission:routMission targetMoraleChange:targetMoraleChange attackerMoraleChange:0]];
+            [allCasualties addObject:[[AttackResult alloc] initWithMessage:messageType
+                                                              withAttacker:attacker
+                                                                 forTarget:target
+                                                                casualties:casualties
+                                                        targetMoraleChange:targetMoraleChange
+                                                      attackerMoraleChange:0]];
         }
-        // create and show a visualization immediately
-        AttackVisualization *visualization = [[AttackVisualization alloc] initWithAttacker:attacker casualties:allCasualties hitPosition:ccp( hitX, hitY )];
-        [visualization execute];
-    }
-    else {
-        // we're creating smoke
-        AttackVisualization *visualization = [[AttackVisualization alloc] initWithAttacker:attacker smokePosition:ccp( hitX, hitY )];
-        [visualization execute];
     }
     
     // TODO: verify the thread as we now create UI stuff!
@@ -513,8 +496,12 @@
     }
 
     // add a result
-    AttackResult *result = [[AttackResult alloc] initWithMessage:messageType withAttacker:attacker forTarget:target casualties:casualties
-                                                     routMission:routMission targetMoraleChange:targetMoraleChange attackerMoraleChange:0];
+    AttackResult *result = [[AttackResult alloc] initWithMessage:messageType
+                                                    withAttacker:attacker
+                                                       forTarget:target
+                                                      casualties:casualties
+                                              targetMoraleChange:targetMoraleChange
+                                            attackerMoraleChange:0];
     [result execute];
 }
 
@@ -578,25 +565,25 @@
     unsigned short count = readInt16FromBuffer( data, &offset );
 
     Globals * globals = [Globals sharedInstance];
-    PlayerId enemyPlayerId = globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
+    PlayerId enemyPlayerId = kPlayer1; //globals.localPlayer.playerId == kPlayer1 ? kPlayer2 : kPlayer1;
 
-     NSMutableArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.map.smoke2 : globals.map.smoke1;
+     //NSMutableArray * enemySmoke = enemyPlayerId == kPlayer2 ? globals.map.smoke2 : globals.map.smoke1;
 
     // add smoke if needed
-    if ( enemySmoke.count < count ) {
-        while ( enemySmoke.count < count ) {
-            [globals.map addSmoke:ccp(0, 0) forPlayer:enemyPlayerId];
-        }
-    }
-
-    // remove smoke if needed
-    if ( enemySmoke.count > count ) {
-        while ( enemySmoke.count > count ) {
-            Smoke * remove = [enemySmoke lastObject];
-            [enemySmoke removeLastObject];
-            [remove removeFromParentAndCleanup:YES];
-        }
-    }
+//    if ( enemySmoke.count < count ) {
+//        while ( enemySmoke.count < count ) {
+//            [globals.map addSmoke:ccp(0, 0) forPlayer:enemyPlayerId];
+//        }
+//    }
+//
+//    // remove smoke if needed
+//    if ( enemySmoke.count > count ) {
+//        while ( enemySmoke.count > count ) {
+//            Smoke * remove = [enemySmoke lastObject];
+//            [enemySmoke removeLastObject];
+//            [remove removeFromParentAndCleanup:YES];
+//        }
+//    }
 
     // now we have exactly as much smoke as needed, loop and update the smoke we have with the given parameters
     for (unsigned int index = 0; index < count; ++index) {
@@ -604,22 +591,22 @@
         float y = readInt16FromBuffer( data, &offset ) / 10.0f;
         unsigned char opacity = data[offset++];
 
-        Smoke * updated = [enemySmoke objectAtIndex:index];
-        updated.position = ccp( x, y );
-        updated.opacity = opacity;
+//        Smoke * updated = [enemySmoke objectAtIndex:index];
+//        updated.position = ccp( x, y );
+//        updated.opacity = opacity;
     }
 }
 
 
 - (Unit *) getEnemyUnit:(unsigned short)unitId {
     // find among the enemies
-     NSMutableArray *units = [Globals sharedInstance].localPlayer.playerId == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
-
-    for (Unit *tmp in units) {
-        if (tmp.unitId == unitId) {
-            return tmp;
-        }
-    }
+//     NSMutableArray *units = [Globals sharedInstance].localPlayer.playerId == kPlayer1 ? [Globals sharedInstance].unitsPlayer2 : [Globals sharedInstance].unitsPlayer1;
+//
+//    for (Unit *tmp in units) {
+//        if (tmp.unitId == unitId) {
+//            return tmp;
+//        }
+//    }
 
     return nil;
 }
@@ -627,13 +614,13 @@
 
 - (Unit *) getOwnUnit:(unsigned short)unitId {
     // find among own units
-     NSMutableArray *units = [Globals sharedInstance].localUnits;
-
-    for (Unit *tmp in units) {
-        if (tmp.unitId == unitId) {
-            return tmp;
-        }
-    }
+//     NSMutableArray *units = [Globals sharedInstance].localUnits;
+//
+//    for (Unit *tmp in units) {
+//        if (tmp.unitId == unitId) {
+//            return tmp;
+//        }
+//    }
 
     return nil;
 }

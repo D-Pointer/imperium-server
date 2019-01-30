@@ -75,7 +75,7 @@
 /**
  * Returns a string representing the unit's current state. The string ends with a newline.
  **/
-- (NSString *) save;
+//- (NSString *) save;
 
 // creates a new unit.
 + (Unit *) createUnitType:(UnitType)type

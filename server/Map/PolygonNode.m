@@ -4,6 +4,7 @@
 
 #import "PolygonNode.h"
 #import "HitPosition.h"
+#import "CGPointExtension.h"
 
 @implementation PolygonNode
 
@@ -46,7 +47,7 @@
 //}
 
 
-- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type smoothing:(BOOL)smoothing {
+- (id) initWithPolygon:(NSMutableArray *)vertices terrainType:(TerrainType)type {
     self = [super init];
     if (self) {
         vertices_ = nil;
@@ -88,7 +89,7 @@
         // set a content size to match the bound
         [self setContentSize:CGSizeMake( max_x - min_x, max_y - min_y )];
 
-        boundingBox_ = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
+        self.boundingBox = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
     }
     
     return self;    
@@ -188,7 +189,7 @@
 - (BOOL) intersectsLineFrom:(CGPoint)start to:(CGPoint)end atPos:(float *)pos {
     float s, t;
     CGPoint p1, p2;
-    ccVertex2F v1, v2;
+    CGPoint v1, v2;
     BOOL found = NO;
     
     // reset the pos to something large
@@ -232,7 +233,7 @@
 - (void) addAllIntersectionsFrom:(CGPoint)start to:(CGPoint)end into:(NSMutableArray *)result {
     float s, t;
     CGPoint p1, p2;
-    ccVertex2F v1, v2;
+    CGPoint v1, v2;
 
     for ( unsigned int index = 0; index < vertexCount; ++index ) {
         // line along the polygon
@@ -260,9 +261,5 @@
     }
 }
 
-
-- (CGRect) boundingBox {
-    return boundingBox_;
-}
 
 @end

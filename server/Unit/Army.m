@@ -1,9 +1,11 @@
+
+#import <UIKit/UIKit.h>
+
 #import "Army.h"
 #import "Definitions.h"
 #import "Globals.h"
 #import "UnitDefinition.h"
 #import "Map.h"
-#import "MissionVisualizer.h"
 #import "Scenario.h"
 
 
@@ -209,21 +211,9 @@
                 unit.headquarter = hq;
             }
 
-            // add mission visualizers
-            unit.missionVisualizer = [[MissionVisualizer alloc] initWithUnit:unit];
-            [[Globals sharedInstance].map addChild:unit.missionVisualizer z:kMissionVisualizerZ];
-
             // set the position and facing
             [self findStartingPositionFor:unit fromPositions:startPositions];
 
-            // set up the icon
-            [unit updateIcon];
-
-            // add to map
-            [globals.map addChild:unit z:kUnitZ];
-            if (unit.unitTypeIcon) {
-                [[Globals sharedInstance].map addChild:unit.unitTypeIcon z:kUnitTypeIconZ];
-            }
 
             // and save for later
             [[Globals sharedInstance].units addObject:unit];

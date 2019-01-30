@@ -47,6 +47,7 @@
 //#import "ccMacros.h"
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 #import <math.h>
 #import <objc/objc.h>

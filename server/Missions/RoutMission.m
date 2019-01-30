@@ -68,7 +68,6 @@
 - (MissionState) execute {
     // first time called?
     if ( ! self.started ) {
-        [[Globals sharedInstance].audio playSound:kRetreatOrdered];
         self.started = YES;
 
         // turn the unit to face towards the first position of the retreat path

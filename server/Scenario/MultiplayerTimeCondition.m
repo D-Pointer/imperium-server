@@ -1,6 +1,4 @@
 
-#import <Crashlytics/Answers.h>
-
 #import "MultiplayerTimeCondition.h"
 #import "Globals.h"
 #import "Scenario.h"
@@ -28,11 +26,6 @@
         self.winner = kPlayer2;
         globals.onlineGame.endType = kTimeOut;
 
-        [Answers logCustomEventWithName:@"Multiplayer scenario over"
-                       customAttributes:@{ @"title" : globals.scenario.title,
-                                           @"reason" : @"Time out",
-                                           @"winner" : @"draw"
-                                           }];
         return kGameFinished;
     }
 
