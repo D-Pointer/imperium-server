@@ -2,6 +2,7 @@
 // doubly-linked list node.
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 typedef struct ListNode ListNode;
 struct ListNode {

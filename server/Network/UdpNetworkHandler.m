@@ -1,6 +1,5 @@
 #import "UdpNetworkHandler.h"
 #import "Globals.h"
-#import "GameLayer.h"
 #import "Engine.h"
 #import "ServerPingPacket.h"
 #import "MissionPacket.h"

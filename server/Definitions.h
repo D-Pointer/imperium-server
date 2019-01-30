@@ -1,4 +1,6 @@
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import "ParameterDefinitions.h"
 
 // ****************************************************************************************************

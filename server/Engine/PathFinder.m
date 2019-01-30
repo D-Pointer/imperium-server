@@ -1,4 +1,7 @@
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <UIKit/UIKit.h>
+
 #import "PathFinder.h"
 #import "Globals.h"
 #import "PathNode.h"

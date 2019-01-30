@@ -56,7 +56,6 @@
         self.name = @"Turning";
         self.preparingName = @"Preparing to turn";
         self.target = pos;
-        self.color = sRotateLineColor;
         self.endPoint = pos;
 
         // max deviation from the target angle

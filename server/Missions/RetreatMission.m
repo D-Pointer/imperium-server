@@ -55,11 +55,7 @@
 
 
 - (MissionState) execute {
-    // first time called?
-    if ( ! self.started ) {
-        [[Globals sharedInstance].audio playSound:kRetreatOrdered];
-        self.started = YES;
-    }
+    self.started = YES;
 
     // do the moving along the path
     MissionState result = [self moveUnit:self.unit alongPath:self.path withSpeed:self.unit.retreatSpeed];

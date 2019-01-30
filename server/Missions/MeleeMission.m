@@ -5,7 +5,6 @@
 #import "Unit.h"
 #import "Globals.h"
 #import "Map.h"
-#import "AttackVisualization.h"
 
 
 @implementation MeleeMission
@@ -17,7 +16,6 @@
         self.type = kMeleeMission;
         self.name = @"Meleeing";
         self.preparingName = @"Preparing to melee";
-        self.color = sMeleeLineColor;
         self.targetUnit = nil;
         self.rotation = nil;
 
@@ -39,7 +37,6 @@
         self.name       = @"Meleeing";
         self.preparingName = @"Preparing to melee";
         self.endPoint   = target.position;
-        self.color      = sMeleeLineColor;
         self.targetUnit = target;
 
         // this can not be cancelled by the player
@@ -149,13 +146,8 @@
             NSLog( @"disorganized, increasing morale loss: %.1f%%", percentageLost );
         }
 
-        // should the unit retreat? never retreat in the tutorial
-        if ( [Globals sharedInstance].tutorial ) {
-            defenderRouts = NO;
-        }
-        else {
-            defenderRouts = defender.morale < sParameters[kParamMaxMoraleRoutedF].floatValue;
-        }
+        // should the unit retreat?
+        defenderRouts = defender.morale < sParameters[kParamMaxMoraleRoutedF].floatValue;
     }
 
     NSLog( @"casualties: %d, routs: %@", defenderCasualties, (defenderRouts ? @"yes" : @"no" ) );

@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../imperium-server/Info.plist">
+   </FileRef>
+   <FileRef
       location = "self:imperium-server.xcodeproj">
    </FileRef>
 </Workspace>

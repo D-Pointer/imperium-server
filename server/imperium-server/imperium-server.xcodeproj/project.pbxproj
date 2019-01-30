@@ -1,0 +1,964 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6F1444312200B4AC00AE55DE /* PolygonNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443572200B4AA00AE55DE /* PolygonNode.m */; };
+		6F1444322200B4AC00AE55DE /* Smoke.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443582200B4AA00AE55DE /* Smoke.m */; };
+		6F1444332200B4AC00AE55DE /* VertexList.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14435D2200B4AA00AE55DE /* VertexList.m */; };
+		6F1444342200B4AC00AE55DE /* HitPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14435E2200B4AA00AE55DE /* HitPosition.m */; };
+		6F1444352200B4AC00AE55DE /* Map.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14435F2200B4AA00AE55DE /* Map.m */; };
+		6F1444372200B4AC00AE55DE /* AttackResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443632200B4AA00AE55DE /* AttackResult.m */; };
+		6F1444382200B4AC00AE55DE /* Objective.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443642200B4AA00AE55DE /* Objective.m */; };
+		6F1444392200B4AC00AE55DE /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443652200B4AA00AE55DE /* Message.m */; };
+		6F14443A2200B4AC00AE55DE /* ResultLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443682200B4AA00AE55DE /* ResultLayer.m */; };
+		6F14443B2200B4AC00AE55DE /* TerrainLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443692200B4AA00AE55DE /* TerrainLayer.m */; };
+		6F14443C2200B4AC00AE55DE /* PotentialField.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14436B2200B4AA00AE55DE /* PotentialField.m */; };
+		6F14443D2200B4AC00AE55DE /* FrontLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14436E2200B4AA00AE55DE /* FrontLayer.m */; };
+		6F14443E2200B4AC00AE55DE /* OwnUnitsLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */; };
+		6F14443F2200B4AC00AE55DE /* PotentialFieldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */; };
+		6F1444402200B4AC00AE55DE /* EnemyLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443752200B4AA00AE55DE /* EnemyLayer.m */; };
+		6F1444412200B4AC00AE55DE /* ObjectivesLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */; };
+		6F14444D2200B4AC00AE55DE /* CGPointExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443902200B4AB00AE55DE /* CGPointExtension.m */; };
+		6F14444E2200B4AC00AE55DE /* Definitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443942200B4AB00AE55DE /* Definitions.m */; };
+		6F14444F2200B4AC00AE55DE /* ParameterHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439A2200B4AB00AE55DE /* ParameterHandler.m */; };
+		6F1444502200B4AC00AE55DE /* NSData+Compression.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439E2200B4AB00AE55DE /* NSData+Compression.m */; };
+		6F1444512200B4AC00AE55DE /* ScenarioIndexParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */; };
+		6F1444522200B4AC00AE55DE /* GameSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A02200B4AB00AE55DE /* GameSerializer.m */; };
+		6F1444532200B4AC00AE55DE /* MapReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A12200B4AB00AE55DE /* MapReader.m */; };
+		6F1444542200B4AC00AE55DE /* PlayerPingPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443A82200B4AB00AE55DE /* PlayerPingPacket.m */; };
+		6F1444552200B4AC00AE55DE /* PlayerPongPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443AA2200B4AB00AE55DE /* PlayerPongPacket.m */; };
+		6F1444562200B4AC00AE55DE /* UnitStatsPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443AB2200B4AB00AE55DE /* UnitStatsPacket.m */; };
+		6F1444572200B4AC00AE55DE /* MeleePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443AE2200B4AB00AE55DE /* MeleePacket.m */; };
+		6F1444582200B4AC00AE55DE /* MissionPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443B22200B4AB00AE55DE /* MissionPacket.m */; };
+		6F1444592200B4AC00AE55DE /* SmokePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443B52200B4AB00AE55DE /* SmokePacket.m */; };
+		6F14445A2200B4AC00AE55DE /* SetMissionPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443B62200B4AB00AE55DE /* SetMissionPacket.m */; };
+		6F14445B2200B4AC00AE55DE /* FirePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443B92200B4AB00AE55DE /* FirePacket.m */; };
+		6F14445C2200B4AC00AE55DE /* ServerPingPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443BA2200B4AB00AE55DE /* ServerPingPacket.m */; };
+		6F14445D2200B4AC00AE55DE /* UdpPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443BB2200B4AB00AE55DE /* UdpPacket.m */; };
+		6F14445E2200B4AC00AE55DE /* UdpNetworkHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443BD2200B4AB00AE55DE /* UdpNetworkHandler.m */; };
+		6F14445F2200B4AC00AE55DE /* HostedGame.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443BE2200B4AB00AE55DE /* HostedGame.m */; };
+		6F1444602200B4AC00AE55DE /* TcpNetworkHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443C02200B4AB00AE55DE /* TcpNetworkHandler.m */; };
+		6F1444612200B4AC00AE55DE /* AnnouncePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443C22200B4AB00AE55DE /* AnnouncePacket.m */; };
+		6F1444622200B4AC00AE55DE /* WindPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443C32200B4AB00AE55DE /* WindPacket.m */; };
+		6F1444632200B4AC00AE55DE /* ReadyToStartPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443C42200B4AB00AE55DE /* ReadyToStartPacket.m */; };
+		6F1444642200B4AC00AE55DE /* GameEndedPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443CB2200B4AB00AE55DE /* GameEndedPacket.m */; };
+		6F1444652200B4AC00AE55DE /* SetupUnitsPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443CD2200B4AB00AE55DE /* SetupUnitsPacket.m */; };
+		6F1444662200B4AC00AE55DE /* JoinPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D12200B4AB00AE55DE /* JoinPacket.m */; };
+		6F1444672200B4AC00AE55DE /* LoginPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D22200B4AB00AE55DE /* LoginPacket.m */; };
+		6F1444682200B4AC00AE55DE /* KeepAlivePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D32200B4AB00AE55DE /* KeepAlivePacket.m */; };
+		6F1444692200B4AC00AE55DE /* LeavePacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D42200B4AB00AE55DE /* LeavePacket.m */; };
+		6F14446A2200B4AC00AE55DE /* TcpPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D52200B4AB00AE55DE /* TcpPacket.m */; };
+		6F14446B2200B4AC00AE55DE /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443D82200B4AB00AE55DE /* Player.m */; };
+		6F14446C2200B4AC00AE55DE /* Weapon.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443DB2200B4AB00AE55DE /* Weapon.m */; };
+		6F14446D2200B4AC00AE55DE /* Army.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443DE2200B4AB00AE55DE /* Army.m */; };
+		6F14446E2200B4AC00AE55DE /* UnitDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E12200B4AB00AE55DE /* UnitDefinition.m */; };
+		6F14446F2200B4AC00AE55DE /* Path.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E22200B4AB00AE55DE /* Path.m */; };
+		6F1444702200B4AC00AE55DE /* Organization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E32200B4AB00AE55DE /* Organization.m */; };
+		6F1444712200B4AC00AE55DE /* Unit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E52200B4AB00AE55DE /* Unit.m */; };
+		6F1444722200B4AC00AE55DE /* AreaFireMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E72200B4AB00AE55DE /* AreaFireMission.m */; };
+		6F1444732200B4AC00AE55DE /* FireMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443E92200B4AB00AE55DE /* FireMission.m */; };
+		6F1444742200B4AC00AE55DE /* CombatMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443EA2200B4AB00AE55DE /* CombatMission.m */; };
+		6F1444752200B4AC00AE55DE /* IdleMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443F22200B4AB00AE55DE /* IdleMission.m */; };
+		6F1444762200B4AC00AE55DE /* Mission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443F32200B4AB00AE55DE /* Mission.m */; };
+		6F1444772200B4AC00AE55DE /* RotateMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443F42200B4AB00AE55DE /* RotateMission.m */; };
+		6F1444782200B4AC00AE55DE /* MeleeMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443F82200B4AB00AE55DE /* MeleeMission.m */; };
+		6F1444792200B4AC00AE55DE /* RoutMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443FA2200B4AB00AE55DE /* RoutMission.m */; };
+		6F14447A2200B4AC00AE55DE /* ChangeModeMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443FC2200B4AB00AE55DE /* ChangeModeMission.m */; };
+		6F14447B2200B4AC00AE55DE /* AdvanceMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443FD2200B4AB00AE55DE /* AdvanceMission.m */; };
+		6F14447C2200B4AC00AE55DE /* MoveMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1443FE2200B4AB00AE55DE /* MoveMission.m */; };
+		6F14447D2200B4AC00AE55DE /* AssaultMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444002200B4AB00AE55DE /* AssaultMission.m */; };
+		6F14447E2200B4AC00AE55DE /* RetreatMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444012200B4AB00AE55DE /* RetreatMission.m */; };
+		6F14447F2200B4AC00AE55DE /* RallyMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444022200B4AB00AE55DE /* RallyMission.m */; };
+		6F1444802200B4AC00AE55DE /* SmokeMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444032200B4AB00AE55DE /* SmokeMission.m */; };
+		6F1444812200B4AC00AE55DE /* MoveFastMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444052200B4AB00AE55DE /* MoveFastMission.m */; };
+		6F1444822200B4AC00AE55DE /* ScoutMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444062200B4AB00AE55DE /* ScoutMission.m */; };
+		6F1444832200B4AC00AE55DE /* DisorganizedMission.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444072200B4AB00AE55DE /* DisorganizedMission.m */; };
+		6F1444842200B4AC00AE55DE /* Globals.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14440B2200B4AB00AE55DE /* Globals.m */; };
+		6F1444852200B4AC00AE55DE /* Clock.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14440D2200B4AB00AE55DE /* Clock.m */; };
+		6F1444862200B4AC00AE55DE /* ScoreCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444112200B4AB00AE55DE /* ScoreCounter.m */; };
+		6F1444872200B4AC00AE55DE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444122200B4AB00AE55DE /* main.m */; };
+		6F1444882200B4AC00AE55DE /* VictoryCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444162200B4AC00AE55DE /* VictoryCondition.m */; };
+		6F1444892200B4AC00AE55DE /* TimeCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444192200B4AC00AE55DE /* TimeCondition.m */; };
+		6F14448A2200B4AC00AE55DE /* MultiplayerCasualtiesCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14441A2200B4AC00AE55DE /* MultiplayerCasualtiesCondition.m */; };
+		6F14448B2200B4AC00AE55DE /* EscortUnitCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14441B2200B4AC00AE55DE /* EscortUnitCondition.m */; };
+		6F14448C2200B4AC00AE55DE /* DestroyUnitCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14441C2200B4AC00AE55DE /* DestroyUnitCondition.m */; };
+		6F14448D2200B4AC00AE55DE /* CasualtiesCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14441D2200B4AC00AE55DE /* CasualtiesCondition.m */; };
+		6F14448E2200B4AC00AE55DE /* MultiplayerTimeCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14441E2200B4AC00AE55DE /* MultiplayerTimeCondition.m */; };
+		6F14448F2200B4AC00AE55DE /* Scenario.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444202200B4AC00AE55DE /* Scenario.m */; };
+		6F1444902200B4AC00AE55DE /* HoldAllObjectivesCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444212200B4AC00AE55DE /* HoldAllObjectivesCondition.m */; };
+		6F1444912200B4AC00AE55DE /* PathFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444272200B4AC00AE55DE /* PathFinder.m */; };
+		6F1444922200B4AC00AE55DE /* LineOfSight.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14442A2200B4AC00AE55DE /* LineOfSight.m */; };
+		6F1444932200B4AC00AE55DE /* LineOfSightData.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14442B2200B4AC00AE55DE /* LineOfSightData.m */; };
+		6F1444942200B4AC00AE55DE /* Engine.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F14442C2200B4AC00AE55DE /* Engine.m */; };
+		6F1444952200B4AC00AE55DE /* ParameterDefinitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F1444302200B4AC00AE55DE /* ParameterDefinitions.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6F1443322200B47500AE55DE /* imperium-server.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "imperium-server.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F1443532200B4AA00AE55DE /* HitPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitPosition.h; sourceTree = "<group>"; };
+		6F1443542200B4AA00AE55DE /* VertexList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VertexList.h; sourceTree = "<group>"; };
+		6F1443562200B4AA00AE55DE /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
+		6F1443572200B4AA00AE55DE /* PolygonNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PolygonNode.m; sourceTree = "<group>"; };
+		6F1443582200B4AA00AE55DE /* Smoke.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Smoke.m; sourceTree = "<group>"; };
+		6F1443592200B4AA00AE55DE /* TerrainModifiers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainModifiers.h; sourceTree = "<group>"; };
+		6F14435A2200B4AA00AE55DE /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
+		6F14435B2200B4AA00AE55DE /* Objective.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Objective.h; sourceTree = "<group>"; };
+		6F14435C2200B4AA00AE55DE /* AttackResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttackResult.h; sourceTree = "<group>"; };
+		6F14435D2200B4AA00AE55DE /* VertexList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VertexList.m; sourceTree = "<group>"; };
+		6F14435E2200B4AA00AE55DE /* HitPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitPosition.m; sourceTree = "<group>"; };
+		6F14435F2200B4AA00AE55DE /* Map.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Map.m; sourceTree = "<group>"; };
+		6F1443612200B4AA00AE55DE /* Smoke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Smoke.h; sourceTree = "<group>"; };
+		6F1443622200B4AA00AE55DE /* PolygonNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonNode.h; sourceTree = "<group>"; };
+		6F1443632200B4AA00AE55DE /* AttackResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttackResult.m; sourceTree = "<group>"; };
+		6F1443642200B4AA00AE55DE /* Objective.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Objective.m; sourceTree = "<group>"; };
+		6F1443652200B4AA00AE55DE /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
+		6F1443682200B4AA00AE55DE /* ResultLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultLayer.m; sourceTree = "<group>"; };
+		6F1443692200B4AA00AE55DE /* TerrainLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainLayer.m; sourceTree = "<group>"; };
+		6F14436A2200B4AA00AE55DE /* PotentialFieldLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PotentialFieldLayer.h; sourceTree = "<group>"; };
+		6F14436B2200B4AA00AE55DE /* PotentialField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PotentialField.m; sourceTree = "<group>"; };
+		6F14436C2200B4AA00AE55DE /* OwnUnitsLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnUnitsLayer.h; sourceTree = "<group>"; };
+		6F14436D2200B4AA00AE55DE /* ObjectivesLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectivesLayer.h; sourceTree = "<group>"; };
+		6F14436E2200B4AA00AE55DE /* FrontLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrontLayer.m; sourceTree = "<group>"; };
+		6F14436F2200B4AA00AE55DE /* EnemyLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnemyLayer.h; sourceTree = "<group>"; };
+		6F1443702200B4AA00AE55DE /* TerrainLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainLayer.h; sourceTree = "<group>"; };
+		6F1443712200B4AA00AE55DE /* ResultLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultLayer.h; sourceTree = "<group>"; };
+		6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OwnUnitsLayer.m; sourceTree = "<group>"; };
+		6F1443732200B4AA00AE55DE /* PotentialField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PotentialField.h; sourceTree = "<group>"; };
+		6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PotentialFieldLayer.m; sourceTree = "<group>"; };
+		6F1443752200B4AA00AE55DE /* EnemyLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnemyLayer.m; sourceTree = "<group>"; };
+		6F1443762200B4AB00AE55DE /* FrontLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontLayer.h; sourceTree = "<group>"; };
+		6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjectivesLayer.m; sourceTree = "<group>"; };
+		6F1443902200B4AB00AE55DE /* CGPointExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGPointExtension.m; sourceTree = "<group>"; };
+		6F1443912200B4AB00AE55DE /* CGPointExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGPointExtension.h; sourceTree = "<group>"; };
+		6F1443922200B4AB00AE55DE /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Definitions.h; path = ../Definitions.h; sourceTree = "<group>"; };
+		6F1443932200B4AB00AE55DE /* ScoreCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScoreCounter.h; path = ../ScoreCounter.h; sourceTree = "<group>"; };
+		6F1443942200B4AB00AE55DE /* Definitions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Definitions.m; path = ../Definitions.m; sourceTree = "<group>"; };
+		6F1443972200B4AB00AE55DE /* imperium-server.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "imperium-server.xcodeproj"; sourceTree = "<group>"; };
+		6F14439A2200B4AB00AE55DE /* ParameterHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ParameterHandler.m; path = ../ParameterHandler.m; sourceTree = "<group>"; };
+		6F14439B2200B4AB00AE55DE /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../Player.h; sourceTree = "<group>"; };
+		6F14439D2200B4AB00AE55DE /* MapReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapReader.h; sourceTree = "<group>"; };
+		6F14439E2200B4AB00AE55DE /* NSData+Compression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Compression.m"; sourceTree = "<group>"; };
+		6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScenarioIndexParser.m; sourceTree = "<group>"; };
+		6F1443A02200B4AB00AE55DE /* GameSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameSerializer.m; sourceTree = "<group>"; };
+		6F1443A12200B4AB00AE55DE /* MapReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapReader.m; sourceTree = "<group>"; };
+		6F1443A22200B4AB00AE55DE /* NSData+Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Compression.h"; sourceTree = "<group>"; };
+		6F1443A32200B4AB00AE55DE /* GameSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSerializer.h; sourceTree = "<group>"; };
+		6F1443A42200B4AB00AE55DE /* ScenarioIndexParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenarioIndexParser.h; sourceTree = "<group>"; };
+		6F1443A62200B4AB00AE55DE /* HostedGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostedGame.h; sourceTree = "<group>"; };
+		6F1443A82200B4AB00AE55DE /* PlayerPingPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerPingPacket.m; sourceTree = "<group>"; };
+		6F1443A92200B4AB00AE55DE /* MissionPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissionPacket.h; sourceTree = "<group>"; };
+		6F1443AA2200B4AB00AE55DE /* PlayerPongPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerPongPacket.m; sourceTree = "<group>"; };
+		6F1443AB2200B4AB00AE55DE /* UnitStatsPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnitStatsPacket.m; sourceTree = "<group>"; };
+		6F1443AC2200B4AB00AE55DE /* SetMissionPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetMissionPacket.h; sourceTree = "<group>"; };
+		6F1443AD2200B4AB00AE55DE /* SmokePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmokePacket.h; sourceTree = "<group>"; };
+		6F1443AE2200B4AB00AE55DE /* MeleePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeleePacket.m; sourceTree = "<group>"; };
+		6F1443AF2200B4AB00AE55DE /* FirePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirePacket.h; sourceTree = "<group>"; };
+		6F1443B02200B4AB00AE55DE /* UdpPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpPacket.h; sourceTree = "<group>"; };
+		6F1443B12200B4AB00AE55DE /* ServerPingPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerPingPacket.h; sourceTree = "<group>"; };
+		6F1443B22200B4AB00AE55DE /* MissionPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MissionPacket.m; sourceTree = "<group>"; };
+		6F1443B32200B4AB00AE55DE /* PlayerPingPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerPingPacket.h; sourceTree = "<group>"; };
+		6F1443B42200B4AB00AE55DE /* MeleePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeleePacket.h; sourceTree = "<group>"; };
+		6F1443B52200B4AB00AE55DE /* SmokePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmokePacket.m; sourceTree = "<group>"; };
+		6F1443B62200B4AB00AE55DE /* SetMissionPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetMissionPacket.m; sourceTree = "<group>"; };
+		6F1443B72200B4AB00AE55DE /* UnitStatsPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnitStatsPacket.h; sourceTree = "<group>"; };
+		6F1443B82200B4AB00AE55DE /* PlayerPongPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerPongPacket.h; sourceTree = "<group>"; };
+		6F1443B92200B4AB00AE55DE /* FirePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirePacket.m; sourceTree = "<group>"; };
+		6F1443BA2200B4AB00AE55DE /* ServerPingPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerPingPacket.m; sourceTree = "<group>"; };
+		6F1443BB2200B4AB00AE55DE /* UdpPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpPacket.m; sourceTree = "<group>"; };
+		6F1443BC2200B4AB00AE55DE /* TcpNetworkHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TcpNetworkHandler.h; sourceTree = "<group>"; };
+		6F1443BD2200B4AB00AE55DE /* UdpNetworkHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpNetworkHandler.m; sourceTree = "<group>"; };
+		6F1443BE2200B4AB00AE55DE /* HostedGame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostedGame.m; sourceTree = "<group>"; };
+		6F1443BF2200B4AB00AE55DE /* NetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkUtils.h; sourceTree = "<group>"; };
+		6F1443C02200B4AB00AE55DE /* TcpNetworkHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TcpNetworkHandler.m; sourceTree = "<group>"; };
+		6F1443C22200B4AB00AE55DE /* AnnouncePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnouncePacket.m; sourceTree = "<group>"; };
+		6F1443C32200B4AB00AE55DE /* WindPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindPacket.m; sourceTree = "<group>"; };
+		6F1443C42200B4AB00AE55DE /* ReadyToStartPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReadyToStartPacket.m; sourceTree = "<group>"; };
+		6F1443C52200B4AB00AE55DE /* SetupUnitsPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupUnitsPacket.h; sourceTree = "<group>"; };
+		6F1443C62200B4AB00AE55DE /* TcpPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TcpPacket.h; sourceTree = "<group>"; };
+		6F1443C72200B4AB00AE55DE /* LeavePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeavePacket.h; sourceTree = "<group>"; };
+		6F1443C82200B4AB00AE55DE /* KeepAlivePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeepAlivePacket.h; sourceTree = "<group>"; };
+		6F1443C92200B4AB00AE55DE /* LoginPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginPacket.h; sourceTree = "<group>"; };
+		6F1443CA2200B4AB00AE55DE /* JoinPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoinPacket.h; sourceTree = "<group>"; };
+		6F1443CB2200B4AB00AE55DE /* GameEndedPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameEndedPacket.m; sourceTree = "<group>"; };
+		6F1443CC2200B4AB00AE55DE /* AnnouncePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnouncePacket.h; sourceTree = "<group>"; };
+		6F1443CD2200B4AB00AE55DE /* SetupUnitsPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupUnitsPacket.m; sourceTree = "<group>"; };
+		6F1443CE2200B4AB00AE55DE /* ReadyToStartPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReadyToStartPacket.h; sourceTree = "<group>"; };
+		6F1443CF2200B4AB00AE55DE /* WindPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindPacket.h; sourceTree = "<group>"; };
+		6F1443D02200B4AB00AE55DE /* GameEndedPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameEndedPacket.h; sourceTree = "<group>"; };
+		6F1443D12200B4AB00AE55DE /* JoinPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JoinPacket.m; sourceTree = "<group>"; };
+		6F1443D22200B4AB00AE55DE /* LoginPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginPacket.m; sourceTree = "<group>"; };
+		6F1443D32200B4AB00AE55DE /* KeepAlivePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeepAlivePacket.m; sourceTree = "<group>"; };
+		6F1443D42200B4AB00AE55DE /* LeavePacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeavePacket.m; sourceTree = "<group>"; };
+		6F1443D52200B4AB00AE55DE /* TcpPacket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TcpPacket.m; sourceTree = "<group>"; };
+		6F1443D62200B4AB00AE55DE /* UdpNetworkHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpNetworkHandler.h; sourceTree = "<group>"; };
+		6F1443D72200B4AB00AE55DE /* ParameterHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParameterHandler.h; path = ../ParameterHandler.h; sourceTree = "<group>"; };
+		6F1443D82200B4AB00AE55DE /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Player.m; path = ../Player.m; sourceTree = "<group>"; };
+		6F1443DA2200B4AB00AE55DE /* UnitDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnitDefinition.h; sourceTree = "<group>"; };
+		6F1443DB2200B4AB00AE55DE /* Weapon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Weapon.m; sourceTree = "<group>"; };
+		6F1443DC2200B4AB00AE55DE /* Organization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Organization.h; sourceTree = "<group>"; };
+		6F1443DD2200B4AB00AE55DE /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
+		6F1443DE2200B4AB00AE55DE /* Army.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Army.m; sourceTree = "<group>"; };
+		6F1443DF2200B4AB00AE55DE /* Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit.h; sourceTree = "<group>"; };
+		6F1443E02200B4AB00AE55DE /* Weapon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Weapon.h; sourceTree = "<group>"; };
+		6F1443E12200B4AB00AE55DE /* UnitDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnitDefinition.m; sourceTree = "<group>"; };
+		6F1443E22200B4AB00AE55DE /* Path.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Path.m; sourceTree = "<group>"; };
+		6F1443E32200B4AB00AE55DE /* Organization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Organization.m; sourceTree = "<group>"; };
+		6F1443E42200B4AB00AE55DE /* Army.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Army.h; sourceTree = "<group>"; };
+		6F1443E52200B4AB00AE55DE /* Unit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Unit.m; sourceTree = "<group>"; };
+		6F1443E72200B4AB00AE55DE /* AreaFireMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AreaFireMission.m; sourceTree = "<group>"; };
+		6F1443E82200B4AB00AE55DE /* RoutMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoutMission.h; sourceTree = "<group>"; };
+		6F1443E92200B4AB00AE55DE /* FireMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FireMission.m; sourceTree = "<group>"; };
+		6F1443EA2200B4AB00AE55DE /* CombatMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CombatMission.m; sourceTree = "<group>"; };
+		6F1443EB2200B4AB00AE55DE /* MoveMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoveMission.h; sourceTree = "<group>"; };
+		6F1443EC2200B4AB00AE55DE /* AdvanceMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvanceMission.h; sourceTree = "<group>"; };
+		6F1443ED2200B4AB00AE55DE /* ChangeModeMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeModeMission.h; sourceTree = "<group>"; };
+		6F1443EE2200B4AB00AE55DE /* SmokeMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmokeMission.h; sourceTree = "<group>"; };
+		6F1443EF2200B4AB00AE55DE /* RallyMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RallyMission.h; sourceTree = "<group>"; };
+		6F1443F02200B4AB00AE55DE /* AssaultMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssaultMission.h; sourceTree = "<group>"; };
+		6F1443F12200B4AB00AE55DE /* RetreatMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetreatMission.h; sourceTree = "<group>"; };
+		6F1443F22200B4AB00AE55DE /* IdleMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdleMission.m; sourceTree = "<group>"; };
+		6F1443F32200B4AB00AE55DE /* Mission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mission.m; sourceTree = "<group>"; };
+		6F1443F42200B4AB00AE55DE /* RotateMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RotateMission.m; sourceTree = "<group>"; };
+		6F1443F52200B4AB00AE55DE /* DisorganizedMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisorganizedMission.h; sourceTree = "<group>"; };
+		6F1443F62200B4AB00AE55DE /* ScoutMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoutMission.h; sourceTree = "<group>"; };
+		6F1443F72200B4AB00AE55DE /* MoveFastMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoveFastMission.h; sourceTree = "<group>"; };
+		6F1443F82200B4AB00AE55DE /* MeleeMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeleeMission.m; sourceTree = "<group>"; };
+		6F1443F92200B4AB00AE55DE /* FireMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FireMission.h; sourceTree = "<group>"; };
+		6F1443FA2200B4AB00AE55DE /* RoutMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoutMission.m; sourceTree = "<group>"; };
+		6F1443FB2200B4AB00AE55DE /* AreaFireMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AreaFireMission.h; sourceTree = "<group>"; };
+		6F1443FC2200B4AB00AE55DE /* ChangeModeMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeModeMission.m; sourceTree = "<group>"; };
+		6F1443FD2200B4AB00AE55DE /* AdvanceMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvanceMission.m; sourceTree = "<group>"; };
+		6F1443FE2200B4AB00AE55DE /* MoveMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoveMission.m; sourceTree = "<group>"; };
+		6F1443FF2200B4AB00AE55DE /* CombatMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CombatMission.h; sourceTree = "<group>"; };
+		6F1444002200B4AB00AE55DE /* AssaultMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssaultMission.m; sourceTree = "<group>"; };
+		6F1444012200B4AB00AE55DE /* RetreatMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RetreatMission.m; sourceTree = "<group>"; };
+		6F1444022200B4AB00AE55DE /* RallyMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RallyMission.m; sourceTree = "<group>"; };
+		6F1444032200B4AB00AE55DE /* SmokeMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmokeMission.m; sourceTree = "<group>"; };
+		6F1444042200B4AB00AE55DE /* MeleeMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeleeMission.h; sourceTree = "<group>"; };
+		6F1444052200B4AB00AE55DE /* MoveFastMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoveFastMission.m; sourceTree = "<group>"; };
+		6F1444062200B4AB00AE55DE /* ScoutMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoutMission.m; sourceTree = "<group>"; };
+		6F1444072200B4AB00AE55DE /* DisorganizedMission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisorganizedMission.m; sourceTree = "<group>"; };
+		6F1444082200B4AB00AE55DE /* Mission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mission.h; sourceTree = "<group>"; };
+		6F1444092200B4AB00AE55DE /* RotateMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RotateMission.h; sourceTree = "<group>"; };
+		6F14440A2200B4AB00AE55DE /* IdleMission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdleMission.h; sourceTree = "<group>"; };
+		6F14440B2200B4AB00AE55DE /* Globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Globals.m; path = ../Globals.m; sourceTree = "<group>"; };
+		6F14440D2200B4AB00AE55DE /* Clock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Clock.m; sourceTree = "<group>"; };
+		6F14440E2200B4AB00AE55DE /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
+		6F14440F2200B4AB00AE55DE /* ParameterDefinitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParameterDefinitions.h; path = ../ParameterDefinitions.h; sourceTree = "<group>"; };
+		6F1444102200B4AB00AE55DE /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Globals.h; path = ../Globals.h; sourceTree = "<group>"; };
+		6F1444112200B4AB00AE55DE /* ScoreCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScoreCounter.m; path = ../ScoreCounter.m; sourceTree = "<group>"; };
+		6F1444122200B4AB00AE55DE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../main.m; sourceTree = "<group>"; };
+		6F1444142200B4AC00AE55DE /* HoldAllObjectivesCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HoldAllObjectivesCondition.h; sourceTree = "<group>"; };
+		6F1444152200B4AC00AE55DE /* Scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scenario.h; sourceTree = "<group>"; };
+		6F1444162200B4AC00AE55DE /* VictoryCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VictoryCondition.m; sourceTree = "<group>"; };
+		6F1444172200B4AC00AE55DE /* MultiplayerTimeCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiplayerTimeCondition.h; sourceTree = "<group>"; };
+		6F1444182200B4AC00AE55DE /* CasualtiesCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CasualtiesCondition.h; sourceTree = "<group>"; };
+		6F1444192200B4AC00AE55DE /* TimeCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeCondition.m; sourceTree = "<group>"; };
+		6F14441A2200B4AC00AE55DE /* MultiplayerCasualtiesCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiplayerCasualtiesCondition.m; sourceTree = "<group>"; };
+		6F14441B2200B4AC00AE55DE /* EscortUnitCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EscortUnitCondition.m; sourceTree = "<group>"; };
+		6F14441C2200B4AC00AE55DE /* DestroyUnitCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestroyUnitCondition.m; sourceTree = "<group>"; };
+		6F14441D2200B4AC00AE55DE /* CasualtiesCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CasualtiesCondition.m; sourceTree = "<group>"; };
+		6F14441E2200B4AC00AE55DE /* MultiplayerTimeCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiplayerTimeCondition.m; sourceTree = "<group>"; };
+		6F14441F2200B4AC00AE55DE /* VictoryCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VictoryCondition.h; sourceTree = "<group>"; };
+		6F1444202200B4AC00AE55DE /* Scenario.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Scenario.m; sourceTree = "<group>"; };
+		6F1444212200B4AC00AE55DE /* HoldAllObjectivesCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HoldAllObjectivesCondition.m; sourceTree = "<group>"; };
+		6F1444222200B4AC00AE55DE /* MultiplayerCasualtiesCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiplayerCasualtiesCondition.h; sourceTree = "<group>"; };
+		6F1444232200B4AC00AE55DE /* TimeCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeCondition.h; sourceTree = "<group>"; };
+		6F1444242200B4AC00AE55DE /* DestroyUnitCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestroyUnitCondition.h; sourceTree = "<group>"; };
+		6F1444252200B4AC00AE55DE /* EscortUnitCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EscortUnitCondition.h; sourceTree = "<group>"; };
+		6F1444272200B4AC00AE55DE /* PathFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathFinder.m; sourceTree = "<group>"; };
+		6F1444282200B4AC00AE55DE /* Engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
+		6F1444292200B4AC00AE55DE /* LineOfSightData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineOfSightData.h; sourceTree = "<group>"; };
+		6F14442A2200B4AC00AE55DE /* LineOfSight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineOfSight.m; sourceTree = "<group>"; };
+		6F14442B2200B4AC00AE55DE /* LineOfSightData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineOfSightData.m; sourceTree = "<group>"; };
+		6F14442C2200B4AC00AE55DE /* Engine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Engine.m; sourceTree = "<group>"; };
+		6F14442D2200B4AC00AE55DE /* PathNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathNode.h; sourceTree = "<group>"; };
+		6F14442E2200B4AC00AE55DE /* PathFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathFinder.h; sourceTree = "<group>"; };
+		6F14442F2200B4AC00AE55DE /* LineOfSight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineOfSight.h; sourceTree = "<group>"; };
+		6F1444302200B4AC00AE55DE /* ParameterDefinitions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ParameterDefinitions.m; path = ../ParameterDefinitions.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6F14432F2200B47500AE55DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6F1443292200B47500AE55DE = {
+			isa = PBXGroup;
+			children = (
+				6F1443662200B4AA00AE55DE /* AI */,
+				6F1443922200B4AB00AE55DE /* Definitions.h */,
+				6F1443942200B4AB00AE55DE /* Definitions.m */,
+				6F1444262200B4AC00AE55DE /* Engine */,
+				6F14438F2200B4AB00AE55DE /* Extensions */,
+				6F14440C2200B4AB00AE55DE /* Game */,
+				6F1444102200B4AB00AE55DE /* Globals.h */,
+				6F14440B2200B4AB00AE55DE /* Globals.m */,
+				6F1443952200B4AB00AE55DE /* imperium-server */,
+				6F1444122200B4AB00AE55DE /* main.m */,
+				6F1443522200B4AA00AE55DE /* Map */,
+				6F1443E62200B4AB00AE55DE /* Missions */,
+				6F1443A52200B4AB00AE55DE /* Network */,
+				6F14440F2200B4AB00AE55DE /* ParameterDefinitions.h */,
+				6F1444302200B4AC00AE55DE /* ParameterDefinitions.m */,
+				6F1443D72200B4AB00AE55DE /* ParameterHandler.h */,
+				6F14439A2200B4AB00AE55DE /* ParameterHandler.m */,
+				6F14439B2200B4AB00AE55DE /* Player.h */,
+				6F1443D82200B4AB00AE55DE /* Player.m */,
+				6F1444132200B4AC00AE55DE /* Scenario */,
+				6F1443932200B4AB00AE55DE /* ScoreCounter.h */,
+				6F1444112200B4AB00AE55DE /* ScoreCounter.m */,
+				6F14439C2200B4AB00AE55DE /* Serialization */,
+				6F1443D92200B4AB00AE55DE /* Unit */,
+				6F1443332200B47500AE55DE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6F1443332200B47500AE55DE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443322200B47500AE55DE /* imperium-server.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6F1443522200B4AA00AE55DE /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				6F14435C2200B4AA00AE55DE /* AttackResult.h */,
+				6F1443632200B4AA00AE55DE /* AttackResult.m */,
+				6F1443532200B4AA00AE55DE /* HitPosition.h */,
+				6F14435E2200B4AA00AE55DE /* HitPosition.m */,
+				6F1443562200B4AA00AE55DE /* Map.h */,
+				6F14435F2200B4AA00AE55DE /* Map.m */,
+				6F14435A2200B4AA00AE55DE /* Message.h */,
+				6F1443652200B4AA00AE55DE /* Message.m */,
+				6F14435B2200B4AA00AE55DE /* Objective.h */,
+				6F1443642200B4AA00AE55DE /* Objective.m */,
+				6F1443622200B4AA00AE55DE /* PolygonNode.h */,
+				6F1443572200B4AA00AE55DE /* PolygonNode.m */,
+				6F1443612200B4AA00AE55DE /* Smoke.h */,
+				6F1443582200B4AA00AE55DE /* Smoke.m */,
+				6F1443592200B4AA00AE55DE /* TerrainModifiers.h */,
+				6F1443542200B4AA00AE55DE /* VertexList.h */,
+				6F14435D2200B4AA00AE55DE /* VertexList.m */,
+			);
+			name = Map;
+			path = ../Map;
+			sourceTree = "<group>";
+		};
+		6F1443662200B4AA00AE55DE /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443672200B4AA00AE55DE /* PotentialField */,
+			);
+			name = AI;
+			path = ../AI;
+			sourceTree = "<group>";
+		};
+		6F1443672200B4AA00AE55DE /* PotentialField */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443682200B4AA00AE55DE /* ResultLayer.m */,
+				6F1443692200B4AA00AE55DE /* TerrainLayer.m */,
+				6F14436A2200B4AA00AE55DE /* PotentialFieldLayer.h */,
+				6F14436B2200B4AA00AE55DE /* PotentialField.m */,
+				6F14436C2200B4AA00AE55DE /* OwnUnitsLayer.h */,
+				6F14436D2200B4AA00AE55DE /* ObjectivesLayer.h */,
+				6F14436E2200B4AA00AE55DE /* FrontLayer.m */,
+				6F14436F2200B4AA00AE55DE /* EnemyLayer.h */,
+				6F1443702200B4AA00AE55DE /* TerrainLayer.h */,
+				6F1443712200B4AA00AE55DE /* ResultLayer.h */,
+				6F1443722200B4AA00AE55DE /* OwnUnitsLayer.m */,
+				6F1443732200B4AA00AE55DE /* PotentialField.h */,
+				6F1443742200B4AA00AE55DE /* PotentialFieldLayer.m */,
+				6F1443752200B4AA00AE55DE /* EnemyLayer.m */,
+				6F1443762200B4AB00AE55DE /* FrontLayer.h */,
+				6F1443772200B4AB00AE55DE /* ObjectivesLayer.m */,
+			);
+			path = PotentialField;
+			sourceTree = "<group>";
+		};
+		6F14438F2200B4AB00AE55DE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443902200B4AB00AE55DE /* CGPointExtension.m */,
+				6F1443912200B4AB00AE55DE /* CGPointExtension.h */,
+			);
+			name = Extensions;
+			path = ../Extensions;
+			sourceTree = "<group>";
+		};
+		6F1443952200B4AB00AE55DE /* imperium-server */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443962200B4AB00AE55DE /* imperium-server */,
+				6F1443972200B4AB00AE55DE /* imperium-server.xcodeproj */,
+			);
+			name = "imperium-server";
+			sourceTree = "<group>";
+		};
+		6F1443962200B4AB00AE55DE /* imperium-server */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "imperium-server";
+			sourceTree = "<group>";
+		};
+		6F1443982200B4AB00AE55DE /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6F14439C2200B4AB00AE55DE /* Serialization */ = {
+			isa = PBXGroup;
+			children = (
+				6F14439D2200B4AB00AE55DE /* MapReader.h */,
+				6F14439E2200B4AB00AE55DE /* NSData+Compression.m */,
+				6F14439F2200B4AB00AE55DE /* ScenarioIndexParser.m */,
+				6F1443A02200B4AB00AE55DE /* GameSerializer.m */,
+				6F1443A12200B4AB00AE55DE /* MapReader.m */,
+				6F1443A22200B4AB00AE55DE /* NSData+Compression.h */,
+				6F1443A32200B4AB00AE55DE /* GameSerializer.h */,
+				6F1443A42200B4AB00AE55DE /* ScenarioIndexParser.h */,
+			);
+			name = Serialization;
+			path = ../Serialization;
+			sourceTree = "<group>";
+		};
+		6F1443A52200B4AB00AE55DE /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443A62200B4AB00AE55DE /* HostedGame.h */,
+				6F1443A72200B4AB00AE55DE /* UdpPackets */,
+				6F1443BC2200B4AB00AE55DE /* TcpNetworkHandler.h */,
+				6F1443BD2200B4AB00AE55DE /* UdpNetworkHandler.m */,
+				6F1443BE2200B4AB00AE55DE /* HostedGame.m */,
+				6F1443BF2200B4AB00AE55DE /* NetworkUtils.h */,
+				6F1443C02200B4AB00AE55DE /* TcpNetworkHandler.m */,
+				6F1443C12200B4AB00AE55DE /* TcpPackets */,
+				6F1443D62200B4AB00AE55DE /* UdpNetworkHandler.h */,
+			);
+			name = Network;
+			path = ../Network;
+			sourceTree = "<group>";
+		};
+		6F1443A72200B4AB00AE55DE /* UdpPackets */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443A82200B4AB00AE55DE /* PlayerPingPacket.m */,
+				6F1443A92200B4AB00AE55DE /* MissionPacket.h */,
+				6F1443AA2200B4AB00AE55DE /* PlayerPongPacket.m */,
+				6F1443AB2200B4AB00AE55DE /* UnitStatsPacket.m */,
+				6F1443AC2200B4AB00AE55DE /* SetMissionPacket.h */,
+				6F1443AD2200B4AB00AE55DE /* SmokePacket.h */,
+				6F1443AE2200B4AB00AE55DE /* MeleePacket.m */,
+				6F1443AF2200B4AB00AE55DE /* FirePacket.h */,
+				6F1443B02200B4AB00AE55DE /* UdpPacket.h */,
+				6F1443B12200B4AB00AE55DE /* ServerPingPacket.h */,
+				6F1443B22200B4AB00AE55DE /* MissionPacket.m */,
+				6F1443B32200B4AB00AE55DE /* PlayerPingPacket.h */,
+				6F1443B42200B4AB00AE55DE /* MeleePacket.h */,
+				6F1443B52200B4AB00AE55DE /* SmokePacket.m */,
+				6F1443B62200B4AB00AE55DE /* SetMissionPacket.m */,
+				6F1443B72200B4AB00AE55DE /* UnitStatsPacket.h */,
+				6F1443B82200B4AB00AE55DE /* PlayerPongPacket.h */,
+				6F1443B92200B4AB00AE55DE /* FirePacket.m */,
+				6F1443BA2200B4AB00AE55DE /* ServerPingPacket.m */,
+				6F1443BB2200B4AB00AE55DE /* UdpPacket.m */,
+			);
+			path = UdpPackets;
+			sourceTree = "<group>";
+		};
+		6F1443C12200B4AB00AE55DE /* TcpPackets */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443C22200B4AB00AE55DE /* AnnouncePacket.m */,
+				6F1443C32200B4AB00AE55DE /* WindPacket.m */,
+				6F1443C42200B4AB00AE55DE /* ReadyToStartPacket.m */,
+				6F1443C52200B4AB00AE55DE /* SetupUnitsPacket.h */,
+				6F1443C62200B4AB00AE55DE /* TcpPacket.h */,
+				6F1443C72200B4AB00AE55DE /* LeavePacket.h */,
+				6F1443C82200B4AB00AE55DE /* KeepAlivePacket.h */,
+				6F1443C92200B4AB00AE55DE /* LoginPacket.h */,
+				6F1443CA2200B4AB00AE55DE /* JoinPacket.h */,
+				6F1443CB2200B4AB00AE55DE /* GameEndedPacket.m */,
+				6F1443CC2200B4AB00AE55DE /* AnnouncePacket.h */,
+				6F1443CD2200B4AB00AE55DE /* SetupUnitsPacket.m */,
+				6F1443CE2200B4AB00AE55DE /* ReadyToStartPacket.h */,
+				6F1443CF2200B4AB00AE55DE /* WindPacket.h */,
+				6F1443D02200B4AB00AE55DE /* GameEndedPacket.h */,
+				6F1443D12200B4AB00AE55DE /* JoinPacket.m */,
+				6F1443D22200B4AB00AE55DE /* LoginPacket.m */,
+				6F1443D32200B4AB00AE55DE /* KeepAlivePacket.m */,
+				6F1443D42200B4AB00AE55DE /* LeavePacket.m */,
+				6F1443D52200B4AB00AE55DE /* TcpPacket.m */,
+			);
+			path = TcpPackets;
+			sourceTree = "<group>";
+		};
+		6F1443D92200B4AB00AE55DE /* Unit */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443DA2200B4AB00AE55DE /* UnitDefinition.h */,
+				6F1443DB2200B4AB00AE55DE /* Weapon.m */,
+				6F1443DC2200B4AB00AE55DE /* Organization.h */,
+				6F1443DD2200B4AB00AE55DE /* Path.h */,
+				6F1443DE2200B4AB00AE55DE /* Army.m */,
+				6F1443DF2200B4AB00AE55DE /* Unit.h */,
+				6F1443E02200B4AB00AE55DE /* Weapon.h */,
+				6F1443E12200B4AB00AE55DE /* UnitDefinition.m */,
+				6F1443E22200B4AB00AE55DE /* Path.m */,
+				6F1443E32200B4AB00AE55DE /* Organization.m */,
+				6F1443E42200B4AB00AE55DE /* Army.h */,
+				6F1443E52200B4AB00AE55DE /* Unit.m */,
+			);
+			name = Unit;
+			path = ../Unit;
+			sourceTree = "<group>";
+		};
+		6F1443E62200B4AB00AE55DE /* Missions */ = {
+			isa = PBXGroup;
+			children = (
+				6F1443E72200B4AB00AE55DE /* AreaFireMission.m */,
+				6F1443E82200B4AB00AE55DE /* RoutMission.h */,
+				6F1443E92200B4AB00AE55DE /* FireMission.m */,
+				6F1443EA2200B4AB00AE55DE /* CombatMission.m */,
+				6F1443EB2200B4AB00AE55DE /* MoveMission.h */,
+				6F1443EC2200B4AB00AE55DE /* AdvanceMission.h */,
+				6F1443ED2200B4AB00AE55DE /* ChangeModeMission.h */,
+				6F1443EE2200B4AB00AE55DE /* SmokeMission.h */,
+				6F1443EF2200B4AB00AE55DE /* RallyMission.h */,
+				6F1443F02200B4AB00AE55DE /* AssaultMission.h */,
+				6F1443F12200B4AB00AE55DE /* RetreatMission.h */,
+				6F1443F22200B4AB00AE55DE /* IdleMission.m */,
+				6F1443F32200B4AB00AE55DE /* Mission.m */,
+				6F1443F42200B4AB00AE55DE /* RotateMission.m */,
+				6F1443F52200B4AB00AE55DE /* DisorganizedMission.h */,
+				6F1443F62200B4AB00AE55DE /* ScoutMission.h */,
+				6F1443F72200B4AB00AE55DE /* MoveFastMission.h */,
+				6F1443F82200B4AB00AE55DE /* MeleeMission.m */,
+				6F1443F92200B4AB00AE55DE /* FireMission.h */,
+				6F1443FA2200B4AB00AE55DE /* RoutMission.m */,
+				6F1443FB2200B4AB00AE55DE /* AreaFireMission.h */,
+				6F1443FC2200B4AB00AE55DE /* ChangeModeMission.m */,
+				6F1443FD2200B4AB00AE55DE /* AdvanceMission.m */,
+				6F1443FE2200B4AB00AE55DE /* MoveMission.m */,
+				6F1443FF2200B4AB00AE55DE /* CombatMission.h */,
+				6F1444002200B4AB00AE55DE /* AssaultMission.m */,
+				6F1444012200B4AB00AE55DE /* RetreatMission.m */,
+				6F1444022200B4AB00AE55DE /* RallyMission.m */,
+				6F1444032200B4AB00AE55DE /* SmokeMission.m */,
+				6F1444042200B4AB00AE55DE /* MeleeMission.h */,
+				6F1444052200B4AB00AE55DE /* MoveFastMission.m */,
+				6F1444062200B4AB00AE55DE /* ScoutMission.m */,
+				6F1444072200B4AB00AE55DE /* DisorganizedMission.m */,
+				6F1444082200B4AB00AE55DE /* Mission.h */,
+				6F1444092200B4AB00AE55DE /* RotateMission.h */,
+				6F14440A2200B4AB00AE55DE /* IdleMission.h */,
+			);
+			name = Missions;
+			path = ../Missions;
+			sourceTree = "<group>";
+		};
+		6F14440C2200B4AB00AE55DE /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				6F14440D2200B4AB00AE55DE /* Clock.m */,
+				6F14440E2200B4AB00AE55DE /* Clock.h */,
+			);
+			name = Game;
+			path = ../Game;
+			sourceTree = "<group>";
+		};
+		6F1444132200B4AC00AE55DE /* Scenario */ = {
+			isa = PBXGroup;
+			children = (
+				6F1444142200B4AC00AE55DE /* HoldAllObjectivesCondition.h */,
+				6F1444152200B4AC00AE55DE /* Scenario.h */,
+				6F1444162200B4AC00AE55DE /* VictoryCondition.m */,
+				6F1444172200B4AC00AE55DE /* MultiplayerTimeCondition.h */,
+				6F1444182200B4AC00AE55DE /* CasualtiesCondition.h */,
+				6F1444192200B4AC00AE55DE /* TimeCondition.m */,
+				6F14441A2200B4AC00AE55DE /* MultiplayerCasualtiesCondition.m */,
+				6F14441B2200B4AC00AE55DE /* EscortUnitCondition.m */,
+				6F14441C2200B4AC00AE55DE /* DestroyUnitCondition.m */,
+				6F14441D2200B4AC00AE55DE /* CasualtiesCondition.m */,
+				6F14441E2200B4AC00AE55DE /* MultiplayerTimeCondition.m */,
+				6F14441F2200B4AC00AE55DE /* VictoryCondition.h */,
+				6F1444202200B4AC00AE55DE /* Scenario.m */,
+				6F1444212200B4AC00AE55DE /* HoldAllObjectivesCondition.m */,
+				6F1444222200B4AC00AE55DE /* MultiplayerCasualtiesCondition.h */,
+				6F1444232200B4AC00AE55DE /* TimeCondition.h */,
+				6F1444242200B4AC00AE55DE /* DestroyUnitCondition.h */,
+				6F1444252200B4AC00AE55DE /* EscortUnitCondition.h */,
+			);
+			name = Scenario;
+			path = ../Scenario;
+			sourceTree = "<group>";
+		};
+		6F1444262200B4AC00AE55DE /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				6F1444272200B4AC00AE55DE /* PathFinder.m */,
+				6F1444282200B4AC00AE55DE /* Engine.h */,
+				6F1444292200B4AC00AE55DE /* LineOfSightData.h */,
+				6F14442A2200B4AC00AE55DE /* LineOfSight.m */,
+				6F14442B2200B4AC00AE55DE /* LineOfSightData.m */,
+				6F14442C2200B4AC00AE55DE /* Engine.m */,
+				6F14442D2200B4AC00AE55DE /* PathNode.h */,
+				6F14442E2200B4AC00AE55DE /* PathFinder.h */,
+				6F14442F2200B4AC00AE55DE /* LineOfSight.h */,
+			);
+			name = Engine;
+			path = ../Engine;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6F1443312200B47500AE55DE /* imperium-server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6F14434F2200B47700AE55DE /* Build configuration list for PBXNativeTarget "imperium-server" */;
+			buildPhases = (
+				6F14432E2200B47500AE55DE /* Sources */,
+				6F14432F2200B47500AE55DE /* Frameworks */,
+				6F1443302200B47500AE55DE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "imperium-server";
+			productName = "imperium-server";
+			productReference = 6F1443322200B47500AE55DE /* imperium-server.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6F14432A2200B47500AE55DE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "D-Pointer Oy";
+				TargetAttributes = {
+					6F1443312200B47500AE55DE = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = 6F14432D2200B47500AE55DE /* Build configuration list for PBXProject "imperium-server" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6F1443292200B47500AE55DE;
+			productRefGroup = 6F1443332200B47500AE55DE /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 6F1443982200B4AB00AE55DE /* Products */;
+					ProjectRef = 6F1443972200B4AB00AE55DE /* imperium-server.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				6F1443312200B47500AE55DE /* imperium-server */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6F1443302200B47500AE55DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6F14432E2200B47500AE55DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F1444762200B4AC00AE55DE /* Mission.m in Sources */,
+				6F1444712200B4AC00AE55DE /* Unit.m in Sources */,
+				6F1444312200B4AC00AE55DE /* PolygonNode.m in Sources */,
+				6F1444622200B4AC00AE55DE /* WindPacket.m in Sources */,
+				6F14443D2200B4AC00AE55DE /* FrontLayer.m in Sources */,
+				6F1444402200B4AC00AE55DE /* EnemyLayer.m in Sources */,
+				6F1444382200B4AC00AE55DE /* Objective.m in Sources */,
+				6F1444582200B4AC00AE55DE /* MissionPacket.m in Sources */,
+				6F1444532200B4AC00AE55DE /* MapReader.m in Sources */,
+				6F1444942200B4AC00AE55DE /* Engine.m in Sources */,
+				6F14443B2200B4AC00AE55DE /* TerrainLayer.m in Sources */,
+				6F1444952200B4AC00AE55DE /* ParameterDefinitions.m in Sources */,
+				6F14443E2200B4AC00AE55DE /* OwnUnitsLayer.m in Sources */,
+				6F14444F2200B4AC00AE55DE /* ParameterHandler.m in Sources */,
+				6F1444502200B4AC00AE55DE /* NSData+Compression.m in Sources */,
+				6F14444E2200B4AC00AE55DE /* Definitions.m in Sources */,
+				6F14448B2200B4AC00AE55DE /* EscortUnitCondition.m in Sources */,
+				6F14445B2200B4AC00AE55DE /* FirePacket.m in Sources */,
+				6F14445A2200B4AC00AE55DE /* SetMissionPacket.m in Sources */,
+				6F1444842200B4AC00AE55DE /* Globals.m in Sources */,
+				6F14448C2200B4AC00AE55DE /* DestroyUnitCondition.m in Sources */,
+				6F14443F2200B4AC00AE55DE /* PotentialFieldLayer.m in Sources */,
+				6F1444352200B4AC00AE55DE /* Map.m in Sources */,
+				6F1444912200B4AC00AE55DE /* PathFinder.m in Sources */,
+				6F1444782200B4AC00AE55DE /* MeleeMission.m in Sources */,
+				6F14446D2200B4AC00AE55DE /* Army.m in Sources */,
+				6F14447E2200B4AC00AE55DE /* RetreatMission.m in Sources */,
+				6F14448F2200B4AC00AE55DE /* Scenario.m in Sources */,
+				6F14447F2200B4AC00AE55DE /* RallyMission.m in Sources */,
+				6F14448A2200B4AC00AE55DE /* MultiplayerCasualtiesCondition.m in Sources */,
+				6F1444332200B4AC00AE55DE /* VertexList.m in Sources */,
+				6F1444342200B4AC00AE55DE /* HitPosition.m in Sources */,
+				6F14447B2200B4AC00AE55DE /* AdvanceMission.m in Sources */,
+				6F1444872200B4AC00AE55DE /* main.m in Sources */,
+				6F1444852200B4AC00AE55DE /* Clock.m in Sources */,
+				6F14444D2200B4AC00AE55DE /* CGPointExtension.m in Sources */,
+				6F14445C2200B4AC00AE55DE /* ServerPingPacket.m in Sources */,
+				6F1444772200B4AC00AE55DE /* RotateMission.m in Sources */,
+				6F1444572200B4AC00AE55DE /* MeleePacket.m in Sources */,
+				6F1444832200B4AC00AE55DE /* DisorganizedMission.m in Sources */,
+				6F1444702200B4AC00AE55DE /* Organization.m in Sources */,
+				6F1444692200B4AC00AE55DE /* LeavePacket.m in Sources */,
+				6F1444592200B4AC00AE55DE /* SmokePacket.m in Sources */,
+				6F14445F2200B4AC00AE55DE /* HostedGame.m in Sources */,
+				6F1444662200B4AC00AE55DE /* JoinPacket.m in Sources */,
+				6F14447A2200B4AC00AE55DE /* ChangeModeMission.m in Sources */,
+				6F1444542200B4AC00AE55DE /* PlayerPingPacket.m in Sources */,
+				6F1444742200B4AC00AE55DE /* CombatMission.m in Sources */,
+				6F1444862200B4AC00AE55DE /* ScoreCounter.m in Sources */,
+				6F1444682200B4AC00AE55DE /* KeepAlivePacket.m in Sources */,
+				6F1444612200B4AC00AE55DE /* AnnouncePacket.m in Sources */,
+				6F14443A2200B4AC00AE55DE /* ResultLayer.m in Sources */,
+				6F1444512200B4AC00AE55DE /* ScenarioIndexParser.m in Sources */,
+				6F1444892200B4AC00AE55DE /* TimeCondition.m in Sources */,
+				6F1444522200B4AC00AE55DE /* GameSerializer.m in Sources */,
+				6F14447C2200B4AC00AE55DE /* MoveMission.m in Sources */,
+				6F1444412200B4AC00AE55DE /* ObjectivesLayer.m in Sources */,
+				6F14446A2200B4AC00AE55DE /* TcpPacket.m in Sources */,
+				6F1444642200B4AC00AE55DE /* GameEndedPacket.m in Sources */,
+				6F1444882200B4AC00AE55DE /* VictoryCondition.m in Sources */,
+				6F14446B2200B4AC00AE55DE /* Player.m in Sources */,
+				6F14448D2200B4AC00AE55DE /* CasualtiesCondition.m in Sources */,
+				6F1444322200B4AC00AE55DE /* Smoke.m in Sources */,
+				6F1444922200B4AC00AE55DE /* LineOfSight.m in Sources */,
+				6F14445D2200B4AC00AE55DE /* UdpPacket.m in Sources */,
+				6F1444812200B4AC00AE55DE /* MoveFastMission.m in Sources */,
+				6F1444802200B4AC00AE55DE /* SmokeMission.m in Sources */,
+				6F14447D2200B4AC00AE55DE /* AssaultMission.m in Sources */,
+				6F1444392200B4AC00AE55DE /* Message.m in Sources */,
+				6F1444752200B4AC00AE55DE /* IdleMission.m in Sources */,
+				6F1444902200B4AC00AE55DE /* HoldAllObjectivesCondition.m in Sources */,
+				6F1444722200B4AC00AE55DE /* AreaFireMission.m in Sources */,
+				6F1444552200B4AC00AE55DE /* PlayerPongPacket.m in Sources */,
+				6F1444372200B4AC00AE55DE /* AttackResult.m in Sources */,
+				6F1444732200B4AC00AE55DE /* FireMission.m in Sources */,
+				6F1444672200B4AC00AE55DE /* LoginPacket.m in Sources */,
+				6F1444822200B4AC00AE55DE /* ScoutMission.m in Sources */,
+				6F14443C2200B4AC00AE55DE /* PotentialField.m in Sources */,
+				6F1444632200B4AC00AE55DE /* ReadyToStartPacket.m in Sources */,
+				6F14448E2200B4AC00AE55DE /* MultiplayerTimeCondition.m in Sources */,
+				6F1444562200B4AC00AE55DE /* UnitStatsPacket.m in Sources */,
+				6F14446F2200B4AC00AE55DE /* Path.m in Sources */,
+				6F1444652200B4AC00AE55DE /* SetupUnitsPacket.m in Sources */,
+				6F14445E2200B4AC00AE55DE /* UdpNetworkHandler.m in Sources */,
+				6F1444602200B4AC00AE55DE /* TcpNetworkHandler.m in Sources */,
+				6F14446E2200B4AC00AE55DE /* UnitDefinition.m in Sources */,
+				6F1444792200B4AC00AE55DE /* RoutMission.m in Sources */,
+				6F14446C2200B4AC00AE55DE /* Weapon.m in Sources */,
+				6F1444932200B4AC00AE55DE /* LineOfSightData.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6F14434D2200B47700AE55DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		6F14434E2200B47700AE55DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6F1443502200B47700AE55DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4725WV3RB4;
+				INFOPLIST_FILE = "imperium-server/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.d-pointer.imperium-server";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6F1443512200B47700AE55DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4725WV3RB4;
+				INFOPLIST_FILE = "imperium-server/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.d-pointer.imperium-server";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6F14432D2200B47500AE55DE /* Build configuration list for PBXProject "imperium-server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F14434D2200B47700AE55DE /* Debug */,
+				6F14434E2200B47700AE55DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6F14434F2200B47700AE55DE /* Build configuration list for PBXNativeTarget "imperium-server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F1443502200B47700AE55DE /* Debug */,
+				6F1443512200B47700AE55DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6F14432A2200B47500AE55DE /* Project object */;
+}

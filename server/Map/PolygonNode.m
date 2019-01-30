@@ -1,4 +1,7 @@
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <UIKit/UIKit.h>
+
 #import "PolygonNode.h"
 #import "HitPosition.h"
 
@@ -70,7 +73,8 @@
         
         for ( unsigned int index = 0; index < vertexCount; ++index ) {
             // copy the position into our own array
-            CGPoint pos = [vertices[index] CGPointValue];
+            NSValue * value = vertices[index];
+            CGPoint pos = [value CGPointValue];
             vertices_[ index ].x = pos.x;
             vertices_[ index ].y = pos.y;
             

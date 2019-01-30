@@ -63,7 +63,7 @@
                     data[ index ] += maxFirepower;
 
                     // new max value?
-                    self.max = max( self.max, data[ index ] );
+                    self.max = MAX( self.max, data[ index ] );
                 }
 
                 else {
@@ -80,7 +80,7 @@
                         data[ index ] += firepower;
 
                         // new max value?
-                        self.max = max( self.max, data[ index ] );
+                        self.max = MAX( self.max, data[ index ] );
                     }
                 }
             }

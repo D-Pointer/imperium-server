@@ -13,7 +13,6 @@
 #import "IdleMission.h"
 #import "AssaultMission.h"
 #import "AdvanceMission.h"
-#import "ScenarioScript.h"
 #import "UdpNetworkHandler.h"
 
 @interface Engine () {
@@ -52,11 +51,11 @@
 
     // we should run the engine normally
     if (!self.timer) {
-      self.timer = [NSTimer scheduledTimerWithTimeInterval:sParameters[kParamEngineUpdateIntervalF].floatValue
-						    target:self
-						  selector:@selector(simulate)
-						  userInfo:nil
-						   repeats:YES];
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:sParameters[kParamEngineUpdateIntervalF].floatValue
+                                                      target:self
+                                                    selector:@selector(simulate)
+                                                    userInfo:nil
+                                                     repeats:YES];
         NSLog( @"started timer" );
 
         // also start the time clock
@@ -68,9 +67,7 @@
 - (void) stop {
     if (self.timer) {
         [self.timer invalidate];
-	self.timer = nil;
-        [[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( simulate ) forTarget:self];
-	//[[[CCDirector sharedDirector] scheduler] unscheduleSelector:@selector( runLineOfSight ) forTarget:self];
+        self.timer = nil;
 
         NSLog( @"stopped simulation timer" );
     }
@@ -82,7 +79,7 @@
     //NSLog( @"running line of sight" );
 
     dispatch_async( dispatch_get_main_queue(), ^(void) {
-//        dispatch_async( losQueue, ^(void) {
+        //        dispatch_async( losQueue, ^(void) {
         // run the LOS update
         [globals.lineOfSight update];
     } );
@@ -231,11 +228,6 @@
 
     Globals *globals = [Globals sharedInstance];
 
-    // in tutorial mode only player 1 finds targets
-    if (globals.tutorial != nil && attacker.owner == kPlayer2) {
-        return nil;
-    }
-
     Unit *bestTarget = nil;
     float bestDistance = 1000000;
 
@@ -259,9 +251,9 @@
         }
 
         // can't fire at what we don't see
-        if (target.visible == NO) {
-            continue;
-        }
+//        if (target.visible == NO) {
+//            continue;
+//        }
 
         // distance to the target
         float distance = ccpDistance( attacker.position, target.position );

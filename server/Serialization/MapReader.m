@@ -11,7 +11,6 @@
 #import "HoldAllObjectivesCondition.h"
 #import "DestroyUnitCondition.h"
 #import "EscortUnitCondition.h"
-#import "TutorialCondition.h"
 #import "MultiplayerTimeCondition.h"
 #import "MultiplayerCasualtiesCondition.h"
 

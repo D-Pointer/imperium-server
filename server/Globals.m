@@ -3,12 +3,9 @@
 #import "Globals.h"
 #import "Smoke.h"
 #import "Map.h"
-#import "GameLayer.h"
 #import "Engine.h"
-#import "GameInput.h"
 #import "UdpNetworkHandler.h"
 #import "Army.h"
-#import "GameCenter.h"
 #import "ParameterHandler.h"
 
 @implementation Globals

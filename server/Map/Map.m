@@ -6,7 +6,6 @@
 #import "Globals.h"
 #import "Scenario.h"
 #import "HitPosition.h"
-#import "House.h"
 #import "Smoke.h"
 
 

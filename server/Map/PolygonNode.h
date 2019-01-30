@@ -1,4 +1,5 @@
 
+#import <CoreGraphics/CoreGraphics.h>
 
 #import "Definitions.h"
 

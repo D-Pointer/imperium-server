@@ -1,7 +1,6 @@
 
 #import "ParameterHandler.h"
 #import "Definitions.h"
-#import "ResourceHandler.h"
 
 @implementation ParameterHandler
 
@@ -23,7 +22,7 @@
 
     // do we have any parameters?
     // read everything from text
-    NSString *contents = [ResourceHandler loadResource:name];
+    NSString *contents = nil;//[ResourceHandler loadResource:name];
 //    [NSString stringWithContentsOfFile:parametersPath
 //                                                   encoding:NSUTF8StringEncoding error:nil];
     if ( contents == nil ) {
