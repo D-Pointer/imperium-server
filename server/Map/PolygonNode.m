@@ -87,7 +87,7 @@
         }
                 
         // set a content size to match the bound
-        [self setContentSize:CGSizeMake( max_x - min_x, max_y - min_y )];
+        //[self setContentSize:CGSizeMake( max_x - min_x, max_y - min_y )];
 
         self.boundingBox = CGRectMake( min_x, min_y, max_x - min_x, max_y - min_y );
     }

@@ -5,12 +5,12 @@
 @interface LineOfSightData () {
     UInt8 * data;
     int *   seen;
-    int *   oldSeen;
+    //int *   oldSeen;
 }
 
-@property (nonatomic, readwrite) unsigned int count;
-@property (nonatomic, readwrite) unsigned int seenCount;
-@property (nonatomic, readwrite) unsigned int oldSeenCount;
+@property (nonatomic, readwrite) NSUInteger count;
+@property (nonatomic, readwrite) NSUInteger seenCount;
+//@property (nonatomic, readwrite) unsigned int oldSeenCount;
 @property (nonatomic, weak)       NSMutableArray *    units;
 
 @end
@@ -22,8 +22,8 @@
     if (self) {
         self.count = units.count;
         self.units = units;
-        self.seenCount = 0;
-        self.oldSeenCount = 0;
+        //self.seenCount = 0;
+        //self.oldSeenCount = 0;
         self.didSpotNewEnemies = NO;
 
         // allocate space for the internal data
@@ -35,8 +35,8 @@
         memset( seen, 0, self.count * sizeof( int ) );
 
         // an array of old seen units, used to check what units we no longer see
-        oldSeen = malloc( self.count * sizeof( int ) );
-        memset( oldSeen, 0, self.count * sizeof( int ) );
+//        oldSeen = malloc( self.count * sizeof( int ) );
+//        memset( oldSeen, 0, self.count * sizeof( int ) );
     }
 
     return self;
@@ -46,22 +46,22 @@
 - (void) dealloc {
     free( data );
     free( seen );
-    free( oldSeen );
+    //free( oldSeen );
 }
 
 
 - (void) clearSeen {
-    _oldSeenCount = 0;
+//    _oldSeenCount = 0;
     _didSpotNewEnemies = NO;
 
     // copy the old data
-    unsigned int oldSeenIndex = 0;
-    for ( unsigned int index = 0; index < self.count; ++index ) {
-        if ( data[ index ] > 0 ) {
-            oldSeen[ oldSeenIndex++ ] = index;
-            _oldSeenCount++;
-        }
-    }
+//    unsigned int oldSeenIndex = 0;
+//    for ( unsigned int index = 0; index < self.count; ++index ) {
+//        if ( data[ index ] > 0 ) {
+//            oldSeen[ oldSeenIndex++ ] = index;
+//            _oldSeenCount++;
+//        }
+//    }
 
     // clear
     memset( data, 0, self.count * sizeof( UInt8 ) );
@@ -93,21 +93,21 @@
 }
 
 
-- (Unit *) getPreviouslySeenUnit:(unsigned int)index {
-    return [ _units objectAtIndex:oldSeen[ index ]];
-}
+//- (Unit *) getPreviouslySeenUnit:(unsigned int)index {
+//    return [ _units objectAtIndex:oldSeen[ index ]];
+//}
 
 
-- (BOOL) wasUnitPreviouslySeen:(Unit *)unit {
-    for ( unsigned int index = 0; index < _oldSeenCount; ++index ) {
-        if ( unit.losIndex == oldSeen[ index ] ) {
-            // yes, it was seen during the last update
-            return YES;
-        }
-    }
-
-    // the unit was not previously seen
-    return NO;
-}
+//- (BOOL) wasUnitPreviouslySeen:(Unit *)unit {
+//    for ( unsigned int index = 0; index < _oldSeenCount; ++index ) {
+//        if ( unit.losIndex == oldSeen[ index ] ) {
+//            // yes, it was seen during the last update
+//            return YES;
+//        }
+//    }
+//
+//    // the unit was not previously seen
+//    return NO;
+//}
 
 @end

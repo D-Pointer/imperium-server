@@ -175,18 +175,12 @@
 - (void) parseTrees:(NSArray *)parts {
     // precautions
     NSAssert( self.currentTerrain && (self.currentTerrain.terrainType == kScatteredTrees || self.currentTerrain.terrainType == kWoods), @"invalid terrain" );
-
-    // have the scattered trees node create the trees
-    [(ScatteredTrees *) self.currentTerrain createTreesFrom:parts];
 }
 
 
 - (void) parseRocks:(NSArray *)parts {
     // precautions
     NSAssert( self.currentTerrain && self.currentTerrain.terrainType == kRocky, @"invalid terrain" );
-
-    // have the scattered trees node create the trees
-    [(Rocky *) self.currentTerrain createRocksFrom:parts];
 }
 
 

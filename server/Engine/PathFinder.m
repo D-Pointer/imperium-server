@@ -285,14 +285,9 @@
     Path * path = [Path new];
 
     // reverse the path to be correct
-    [pathPositions reverseObjects];
+    NSArray * reversed = [[pathPositions reverseObjectEnumerator] allObjects];
 
-    // DEBUG
-    if ( sPathFinderDebugging ) {
-        [self debugResult:pathPositions];
-    }
-
-    for ( NSValue * element in pathPositions ) {
+    for ( NSValue * element in reversed ) {
         [path addPosition:[element CGPointValue]];
     }
 

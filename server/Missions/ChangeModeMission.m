@@ -86,15 +86,15 @@
         self.unit.mode = mode;
 
         // for a multiplayer case we need special handling.
-        if ( [Globals sharedInstance].gameType == kMultiplayerGame ) {
-            // create data with the unit id and target position
-            int unitId = self.unit.unitId;
-            NSMutableData * data = [NSMutableData dataWithBytes:&unitId length: sizeof(unitId)];
-            [data appendData:[NSMutableData dataWithBytes:&mode length: sizeof(mode)]];
-
-            // TODO: multiplayer
-            //[[Globals sharedInstance].connection sendMessage:kChangeModeMessage withData:data];
-        }
+//        if ( [Globals sharedInstance].gameType == kMultiplayerGame ) {
+//            // create data with the unit id and target position
+//            int unitId = self.unit.unitId;
+//            NSMutableData * data = [NSMutableData dataWithBytes:&unitId length: sizeof(unitId)];
+//            [data appendData:[NSMutableData dataWithBytes:&mode length: sizeof(mode)]];
+//
+//            // TODO: multiplayer
+//            //[[Globals sharedInstance].connection sendMessage:kChangeModeMessage withData:data];
+//        }
         
         NSLog( @"completed mode change for %@, now: %d", self.unit.name, mode );
         return kCompleted;
