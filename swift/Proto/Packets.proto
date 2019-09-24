@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message Packet {
+    enum PacketType {
+        udpPingPacket     = 0;
+        udpPongPacket     = 1;
+        udpDataPacket     = 2;
+        startActionPacket = 3;
+    }
+
+    PacketType type = 1;
+
+};
