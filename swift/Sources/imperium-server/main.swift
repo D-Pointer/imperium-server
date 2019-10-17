@@ -22,7 +22,9 @@ func main() throws {
     // connected players. For this PacketHandler MUST be thread-safe!
     let packetHandler = PacketHandler(serverState: serverState)
 
-    let group = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
+    Log.debug("cores: \(System.coreCount)")
+
+    let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
     let bootstrap = ServerBootstrap(group: group)
         // Specify backlog and enable SO_REUSEADDR for the server itself
         .serverChannelOption(ChannelOptions.backlog, value: 256)
@@ -42,7 +44,9 @@ func main() throws {
         .childChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
         .childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)
         .childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
+
     defer {
+        // when done, shut down
         try! group.syncShutdownGracefully()
     }
 

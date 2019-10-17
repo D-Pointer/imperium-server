@@ -44,7 +44,7 @@ class LoginPacket : Packet {
         self.password = password
     }
 
-    
+
     func handle (ctx: ChannelHandlerContext, state: ServerState) throws {
         state.mutex.lock()
         defer {
@@ -63,15 +63,15 @@ class LoginPacket : Packet {
 
         // login ok
         var buffer1 = ctx.channel.allocator.buffer(capacity: 4)
-        buffer1.write(integer: UInt16(2))
-        buffer1.write(integer: PacketType.loginOkPacket.rawValue)
+        buffer1.writeInteger(UInt16(2))
+        buffer1.writeInteger(PacketType.loginOkPacket.rawValue)
         state.send(buffer: buffer1, channel: ctx.channel)
 
         // player count
         var buffer2 = ctx.channel.allocator.buffer(capacity: 6)
-        buffer2.write(integer: UInt16(4))
-        buffer2.write(integer: PacketType.playerCountPacket.rawValue)
-        buffer2.write(integer: UInt16(state.players.count))
+        buffer2.writeInteger(UInt16(4))
+        buffer2.writeInteger(PacketType.playerCountPacket.rawValue)
+        buffer2.writeInteger(UInt16(state.players.count))
         state.send(buffer: buffer2, channels: state.players.map{ (key, value) in
             return value.channel
         })
@@ -81,12 +81,12 @@ class LoginPacket : Packet {
             let nameBytes: [UInt8] = Array(game.owner.name.utf8)
             let length = 2 + 4 + 2 + 2 + nameBytes.count
             var gameBuffer = ctx.channel.allocator.buffer(capacity: 2 + length)
-            gameBuffer.write(integer: UInt16(length))
-            gameBuffer.write(integer: PacketType.gameAddedPacket.rawValue)
-            gameBuffer.write(integer: UInt32(gameId))
-            gameBuffer.write(integer: game.scenarioId)
-            gameBuffer.write(integer: UInt16(nameBytes.count))
-            gameBuffer.write(bytes: nameBytes)
+            gameBuffer.writeInteger(UInt16(length))
+            gameBuffer.writeInteger(PacketType.gameAddedPacket.rawValue)
+            gameBuffer.writeInteger(UInt32(gameId))
+            gameBuffer.writeInteger(game.scenarioId)
+            gameBuffer.writeInteger(UInt16(nameBytes.count))
+            gameBuffer.writeBytes(nameBytes)
             state.send(buffer: gameBuffer, channel: ctx.channel)
         }
     }
