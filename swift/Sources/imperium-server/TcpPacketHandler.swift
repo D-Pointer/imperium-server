@@ -14,7 +14,7 @@ final class PacketHandler: ChannelInboundHandler {
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let packet = self.unwrapInboundIn(data)
-        
+
         do {
             try packet.handle(ctx: ctx, state: self.serverState)
         }
@@ -45,7 +45,7 @@ final class PacketHandler: ChannelInboundHandler {
         ctx.close(promise: nil)
     }
 
-    
+
     public func channelActive(ctx: ChannelHandlerContext) {
         let remoteAddress = ctx.remoteAddress!
         let channel = ctx.channel
@@ -86,8 +86,8 @@ final class PacketHandler: ChannelInboundHandler {
             if game.started {
                 // send "game ended" to the opponent
                 var buffer = ctx.channel.allocator.buffer(capacity: 2)
-                buffer.write(integer: UInt16(2))
-                buffer.write(integer: PacketType.gameEndedPacket.rawValue)
+                buffer.writeInteger(UInt16(2))
+                buffer.writeInteger(PacketType.gameEndedPacket.rawValue)
                 self.serverState.send(buffer: buffer, channel: game.players[1].channel)
 
                 game.endTime = Date()
@@ -95,9 +95,9 @@ final class PacketHandler: ChannelInboundHandler {
             else {
                 // broadcast "game removed"
                 var buffer = ctx.channel.allocator.buffer(capacity: 8)
-                buffer.write(integer: UInt16(6))
-                buffer.write(integer: PacketType.gameRemovedPacket.rawValue)
-                buffer.write(integer: UInt32(game.id))
+                buffer.writeInteger(UInt16(6))
+                buffer.writeInteger(PacketType.gameRemovedPacket.rawValue)
+                buffer.writeInteger(UInt32(game.id))
                 self.serverState.send(buffer: buffer, channels: self.serverState.players.map{ (key, value) in
                     return value.channel
                 })
@@ -115,4 +115,3 @@ final class PacketHandler: ChannelInboundHandler {
         return self.serverState.players[id]
     }
 }
-

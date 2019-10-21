@@ -20,7 +20,7 @@ class DataPacket : Packet {
         self.data = buffer.slice()
     }
 
-    
+
     func handle (ctx: ChannelHandlerContext, state: ServerState) throws {
         state.mutex.lock()
         defer {
@@ -36,8 +36,8 @@ class DataPacket : Packet {
         guard let game = player.game else {
             // send "no game"
             var buffer = ctx.channel.allocator.buffer(capacity: 4)
-            buffer.write(integer: UInt16(2))
-            buffer.write(integer: PacketType.noGamePacket.rawValue)
+            buffer.writeInteger(UInt16(2))
+            buffer.writeInteger(PacketType.noGamePacket.rawValue)
             state.send(buffer: buffer, channel: ctx.channel)
             return
         }

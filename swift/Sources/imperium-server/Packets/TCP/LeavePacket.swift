@@ -14,7 +14,7 @@ class LeavePacket : Packet {
         self.type = .leaveGamePacket
     }
 
-    
+
     func handle (ctx: ChannelHandlerContext, state: ServerState) throws {
         state.mutex.lock()
         defer {
@@ -31,8 +31,8 @@ class LeavePacket : Packet {
         guard let game = player.game else {
             // no, send "no game"
             var buffer = ctx.channel.allocator.buffer(capacity: 4)
-            buffer.write(integer: UInt16(2))
-            buffer.write(integer: PacketType.noGamePacket.rawValue)
+            buffer.writeInteger(UInt16(2))
+            buffer.writeInteger(PacketType.noGamePacket.rawValue)
             state.send(buffer: buffer, channel: ctx.channel)
             return
         }
@@ -50,9 +50,9 @@ class LeavePacket : Packet {
             Log.info("\(player): left game \(game), removing it")
 
             var buffer = ctx.channel.allocator.buffer(capacity: 8)
-            buffer.write(integer: UInt16(6))
-            buffer.write(integer: PacketType.gameRemovedPacket.rawValue)
-            buffer.write(integer: UInt32(game.id))
+            buffer.writeInteger(UInt16(6))
+            buffer.writeInteger(PacketType.gameRemovedPacket.rawValue)
+            buffer.writeInteger(UInt32(game.id))
             state.send(buffer: buffer, channels: state.players.map{ (key, value) in
                 return value.channel
             })
@@ -70,8 +70,8 @@ class LeavePacket : Packet {
 
     private func sendGameEnded(to player: Player, state: ServerState) {
         var buffer = player.channel.allocator.buffer(capacity: 2)
-        buffer.write(integer: UInt16(2))
-        buffer.write(integer: PacketType.gameEndedPacket.rawValue)
+        buffer.writeInteger(UInt16(2))
+        buffer.writeInteger(PacketType.gameEndedPacket.rawValue)
         state.send(buffer: buffer, channel: player.channel)
     }
 }

@@ -64,11 +64,10 @@ class UdpDataPacket : UdpPacket {
 
         // send "data"
         var buffer = ctx.channel.allocator.buffer(capacity: 1 + data.readableBytes)
-        buffer.write(integer: UdpPacketType.udpDataPacket.rawValue)
-        buffer.write(buffer: &self.data)
+        buffer.writeInteger(UdpPacketType.udpDataPacket.rawValue)
+        buffer.writeData(&self.data)
 
         let envelope = AddressedEnvelope(remoteAddress: opponentAddress, data: buffer)
         ctx.writeAndFlush(NIOAny(envelope), promise: nil)
     }
 }
-

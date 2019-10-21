@@ -55,11 +55,10 @@ class PingPacket : UdpPacket {
 
         // send "pong"
         var buffer = ctx.channel.allocator.buffer(capacity: 5)
-        buffer.write(integer: UdpPacketType.udpPongPacket.rawValue)
-        buffer.write(integer: timestamp)
+        buffer.writeInteger(UdpPacketType.udpPongPacket.rawValue)
+        buffer.writeInteger(timestamp)
 
         let envelope = AddressedEnvelope(remoteAddress: sender, data: buffer)
         ctx.writeAndFlush(NIOAny(envelope), promise: nil)
     }
 }
-

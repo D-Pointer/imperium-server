@@ -31,8 +31,8 @@ class ReadyToStartPacket : Packet {
         guard let game = player.game else {
             // no, send "no game"
             var buffer = ctx.channel.allocator.buffer(capacity: 4)
-            buffer.write(integer: UInt16(2))
-            buffer.write(integer: PacketType.noGamePacket.rawValue)
+            buffer.writeInteger(UInt16(2))
+            buffer.writeInteger(PacketType.noGamePacket.rawValue)
             state.send(buffer: buffer, channel: ctx.channel)
             return
         }
@@ -41,8 +41,8 @@ class ReadyToStartPacket : Packet {
         guard game.players.count == 2 else {
             // no, send "invalid game"
             var buffer = ctx.channel.allocator.buffer(capacity: 4)
-            buffer.write(integer: UInt16(2))
-            buffer.write(integer: PacketType.invalidGamePacket.rawValue)
+            buffer.writeInteger(UInt16(2))
+            buffer.writeInteger(PacketType.invalidGamePacket.rawValue)
             state.send(buffer: buffer, channel: ctx.channel)
             return
         }
@@ -67,7 +67,7 @@ class ReadyToStartPacket : Packet {
                     }
 
                     var buffer = ctx.channel.allocator.buffer(capacity: 2)
-                    buffer.write(integer: UdpPacketType.startActionPacket.rawValue)
+                    buffer.writeInteger(UdpPacketType.startActionPacket.rawValue)
 
                     let envelope = AddressedEnvelope(remoteAddress: address, data: buffer)
                     ctx.writeAndFlush(NIOAny(envelope), promise: nil)

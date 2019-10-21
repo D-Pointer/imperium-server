@@ -40,8 +40,8 @@ class AnnouncePacket : Packet {
         if player.game != nil {
             // send "already announced"
             var buffer = ctx.channel.allocator.buffer(capacity: 4)
-            buffer.write(integer: UInt16(2))
-            buffer.write(integer: PacketType.alreadyAnnouncedPacket.rawValue)
+            buffer.writeInteger(UInt16(2))
+            buffer.writeInteger(PacketType.alreadyAnnouncedPacket.rawValue)
             state.send(buffer: buffer, channel: ctx.channel)
             return
         }
@@ -54,21 +54,21 @@ class AnnouncePacket : Packet {
 
         // send "announce ok"
         var buffer = ctx.channel.allocator.buffer(capacity: 8)
-        buffer.write(integer: UInt16(6))
-        buffer.write(integer: PacketType.announceOkPacket.rawValue)
-        buffer.write(integer: game.id)
+        buffer.writeInteger(UInt16(6))
+        buffer.writeInteger(PacketType.announceOkPacket.rawValue)
+        buffer.writeInteger(game.id)
         state.send(buffer: buffer, channel: ctx.channel)
 
         // send "game added"
         let nameBytes: [UInt8] = Array(game.owner.name.utf8)
         let length = 2 + 4 + 2 + 2 + nameBytes.count
         var gameBuffer = ctx.channel.allocator.buffer(capacity: 2 + length)
-        gameBuffer.write(integer: UInt16(length))
-        gameBuffer.write(integer: PacketType.gameAddedPacket.rawValue)
-        gameBuffer.write(integer: UInt32(game.id))
-        gameBuffer.write(integer: game.scenarioId)
-        gameBuffer.write(integer: UInt16(nameBytes.count))
-        gameBuffer.write(bytes: nameBytes)
+        gameBuffer.writeInteger(UInt16(length))
+        gameBuffer.writeInteger(PacketType.gameAddedPacket.rawValue)
+        gameBuffer.writeInteger(UInt32(game.id))
+        gameBuffer.writeInteger(game.scenarioId)
+        gameBuffer.writeInteger(UInt16(nameBytes.count))
+        gameBuffer.writeBytes(nameBytes)
 
         state.send(buffer: gameBuffer, channels: state.players.map{ (key, value) in
             return value.channel
