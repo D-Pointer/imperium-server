@@ -33,9 +33,9 @@ func main() throws {
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
             // a codec that can read the incoming packets
-            channel.pipeline.add(handler: PacketCodec()).then { v in
+            channel.pipeline.addHandler(PacketCodec()).then { v in
                 // Its important we use the same handler for all accepted channels. The packet handler is thread-safe!
-                channel.pipeline.add(handler: packetHandler)
+                channel.pipeline.addHandler(packetHandler)
             }
         }
 
@@ -55,7 +55,7 @@ func main() throws {
         // Enable SO_REUSEADDR.
         .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
         .channelInitializer { channel in
-            channel.pipeline.add(handler: UdpPacketHandler(serverState: serverState, factory: UdpPacketFactory()))
+            channel.pipeline.addHandler(UdpPacketHandler(serverState: serverState, factory: UdpPacketFactory()))
     }
 
     let udpChannel = try udpBootstrap.bind(host: host, port: 12000).wait()

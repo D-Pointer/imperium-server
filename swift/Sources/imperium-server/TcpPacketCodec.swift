@@ -13,7 +13,7 @@ final class PacketCodec: ByteToMessageDecoder {
 
     let factory = PacketFactory()
 
-    func decode(ctx: ChannelHandlerContext, buffer: inout ByteBuffer) throws -> DecodingState {
+    func decode(context: ChannelHandlerContext, buffer: inout ByteBuffer) throws -> DecodingState {
         guard let length = buffer.getInteger(at: 0, endianness: .big, as: UInt16.self) else {
             return .needMoreData
         }
@@ -30,7 +30,12 @@ final class PacketCodec: ByteToMessageDecoder {
 
         // consume the bytes
         _ = buffer.readSlice(length: 2 + Int(length))
-        ctx.fireChannelRead(self.wrapInboundOut(packet))
+        context.fireChannelRead(self.wrapInboundOut(packet))
         return .continue
     }
+
+    func decodeLast(context: ChannelHandlerContext, buffer: inout ByteBuffer, seenEOF: Bool) throws  -> DecodingState {
+        return try decode(context: context, buffer: &buffer)
+    }
+
 }
