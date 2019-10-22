@@ -33,7 +33,7 @@ func main() throws {
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
             // a codec that can read the incoming packets
-            channel.pipeline.addHandler(PacketCodec()).then { v in
+            channel.pipeline.addHandler(ByteToMessageHandler(TcpPacketCodec())).flatMap { v in
                 // Its important we use the same handler for all accepted channels. The packet handler is thread-safe!
                 channel.pipeline.addHandler(packetHandler)
             }
@@ -41,7 +41,6 @@ func main() throws {
 
         // Enable TCP_NODELAY and SO_REUSEADDR for the accepted Channels
         .childChannelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
-        .childChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
         .childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)
         .childChannelOption(ChannelOptions.recvAllocator, value: AdaptiveRecvByteBufferAllocator())
 

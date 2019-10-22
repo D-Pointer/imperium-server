@@ -5,7 +5,7 @@ enum DecodingException : Error {
     case invalidData
 }
 
-final class PacketCodec: ByteToMessageDecoder {
+final class TcpPacketCodec: ByteToMessageDecoder {
     public typealias InboundIn = ByteBuffer
     public typealias InboundOut = Packet
 
