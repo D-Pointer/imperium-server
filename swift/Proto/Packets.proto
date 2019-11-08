@@ -1,13 +1,101 @@
 syntax = "proto3";
 
-message Packet {
-    enum PacketType {
-        udpPingPacket     = 0;
-        udpPongPacket     = 1;
-        udpDataPacket     = 2;
-        startActionPacket = 3;
-    }
+/************************************************************************************************
+ * Packet types
+ **/
+enum UdpPacketType {
+    udpPingPacket     = 0;
+    udpPongPacket     = 1;
+    udpDataPacket     = 2;
+    startActionPacket = 3;
+};
 
-    PacketType type = 1;
+enum TcpPacketType {
+    // requests
+    announcePacket     = 0;
+    dataPacket         = 1;
+    joinPacket         = 2;
+    leavePacket        = 3;
+    loginPacket        = 4;
+    readyToStartPacket = 5;
+    getGames           = 6;
+    getPlayers         = 7;
 
+    // ok responses
+    loginOkPacket      = 8;
+    getGamesResponse   = 9;
+    getPlayersResponse = 10;
+
+    // error response
+    loginFailedPacket  = 11;
+};
+
+
+/************************************************************************************************
+ * Various internal classes.
+ **/
+enum GameState {
+    waitingForPlayers             = 0;
+    readyToStart                  = 1;
+    inProgress                    = 2;
+};
+
+message Game {
+    uint32          id            = 0;
+    uint32          scenarioId    = 1;
+    uint32          ownerId       = 2;
+    GameState       state         = 3;
+};
+
+message Player {
+    uint32          id            = 0;
+    string          name          = 0;
+};
+
+
+/************************************************************************************************
+ * Requests
+ **/
+
+// logging in
+message LoginRequest {
+    TcpPacketType   packetType      = 1;
+    int32           protocolVersion = 2;
+    string          username        = 3;
+    string          password        = 4;
+};
+
+
+message LoginOkResponse {
+    TcpPacketType packetType      = 1;
+    uint32        id              = 2;
+};
+
+
+message LoginFailedResponse {
+    TcpPacketType   packetType    = 1;
+    uint32          reason        = 2;
+    string          message       = 3;
+};
+
+
+// get games
+message GetGamesRequest {
+    TcpPacketType   packetType    = 1;
+};
+
+message GetGamesResponse {
+    TcpPacketType   packetType    = 1;
+    repeated Game   games         = 2;
+};
+
+
+// get all connected players
+message GetPlayersRequest {
+    TcpPacketType   packetType    = 1;
+};
+
+message GetPlayersResponse {
+    TcpPacketType   packetType    = 1;
+    repeated Player players       = 2;
 };
