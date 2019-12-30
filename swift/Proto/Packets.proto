@@ -41,24 +41,22 @@ enum GameState {
 };
 
 message Game {
-    uint32          id            = 0;
-    uint32          scenarioId    = 1;
-    uint32          ownerId       = 2;
-    GameState       state         = 3;
+    uint32          id            = 1;
+    uint32          scenarioId    = 2;
+    uint32          ownerId       = 3;
+    GameState       state         = 4;
 };
 
 message Player {
-    uint32          id            = 0;
-    string          name          = 0;
+    uint32          id            = 1;
+    string          name          = 2;
 };
 
 
 /************************************************************************************************
- * Requests
- **/
-
-// logging in
-message LoginRequest {
+ * Logging in
+ ************************************************************************************************/
+ message LoginRequest {
     TcpPacketType   packetType      = 1;
     int32           protocolVersion = 2;
     string          username        = 3;
@@ -72,15 +70,17 @@ message LoginOkResponse {
 };
 
 
-message LoginFailedResponse {
+message LoginFailedErrorResponse {
     TcpPacketType   packetType    = 1;
     uint32          reason        = 2;
     string          message       = 3;
 };
 
 
-// get games
-message GetGamesRequest {
+/************************************************************************************************
+ * Get games
+ ************************************************************************************************/
+ message GetGamesRequest {
     TcpPacketType   packetType    = 1;
 };
 
@@ -90,7 +90,9 @@ message GetGamesResponse {
 };
 
 
-// get all connected players
+/************************************************************************************************
+ * Get all connected players
+ ************************************************************************************************/
 message GetPlayersRequest {
     TcpPacketType   packetType    = 1;
 };
@@ -98,4 +100,57 @@ message GetPlayersRequest {
 message GetPlayersResponse {
     TcpPacketType   packetType    = 1;
     repeated Player players       = 2;
+};
+
+/************************************************************************************************
+ * Game announcements
+ ************************************************************************************************/
+message AnnounceGameRequest {
+    TcpPacketType   packetType    = 1;
+    uint32          scenarioId    = 2;
+}
+
+message AnnounceOkResponse {
+    TcpPacketType   packetType    = 1;
+};
+
+message AlreadyAnnouncedErrorResponse {
+    TcpPacketType   packetType    = 1;
+};
+
+message GameAddedResponse {
+    TcpPacketType   packetType    = 1;
+    uint32          gameId        = 2;
+    Player          owner         = 3;
+};
+
+/************************************************************************************************
+ * Joining a game
+ ************************************************************************************************/
+message JoinGameRequest {
+    TcpPacketType   packetType    = 1;
+    uint32          gameId        = 2;
+}
+
+message GameJoinedResponse {
+    TcpPacketType   packetType    = 1;
+    uint32          gameId        = 2;
+    Player          joiner        = 3;
+};
+
+message GameRemovedResponse {
+    TcpPacketType   packetType    = 1;
+    uint32          gameId        = 2;
+};
+
+message AlreadyInGameErrorResponse {
+    TcpPacketType   packetType    = 1;
+};
+
+message InvalidGameErrorResponse {
+    TcpPacketType   packetType    = 1;
+};
+
+message GameFullErrorResponse {
+    TcpPacketType   packetType    = 1;
 };
