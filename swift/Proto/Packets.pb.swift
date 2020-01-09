@@ -19,57 +19,47 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Packet {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
+///***********************************************************************************************
+/// Packet types
+enum UdpPacketType: SwiftProtobuf.Enum {
+  typealias RawValue = Int
+  case udpPingPacket // = 0
+  case udpPongPacket // = 1
+  case udpDataPacket // = 2
+  case startActionPacket // = 3
+  case UNRECOGNIZED(Int)
 
-  var type: Packet.PacketType = .udpPingPacket
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  enum PacketType: SwiftProtobuf.Enum {
-    typealias RawValue = Int
-    case udpPingPacket // = 0
-    case udpPongPacket // = 1
-    case udpDataPacket // = 2
-    case startActionPacket // = 3
-    case UNRECOGNIZED(Int)
-
-    init() {
-      self = .udpPingPacket
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .udpPingPacket
-      case 1: self = .udpPongPacket
-      case 2: self = .udpDataPacket
-      case 3: self = .startActionPacket
-      default: self = .UNRECOGNIZED(rawValue)
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .udpPingPacket: return 0
-      case .udpPongPacket: return 1
-      case .udpDataPacket: return 2
-      case .startActionPacket: return 3
-      case .UNRECOGNIZED(let i): return i
-      }
-    }
-
+  init() {
+    self = .udpPingPacket
   }
 
-  init() {}
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .udpPingPacket
+    case 1: self = .udpPongPacket
+    case 2: self = .udpDataPacket
+    case 3: self = .startActionPacket
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .udpPingPacket: return 0
+    case .udpPongPacket: return 1
+    case .udpDataPacket: return 2
+    case .startActionPacket: return 3
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
 }
 
 #if swift(>=4.2)
 
-extension Packet.PacketType: CaseIterable {
+extension UdpPacketType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Packet.PacketType] = [
+  static var allCases: [UdpPacketType] = [
     .udpPingPacket,
     .udpPongPacket,
     .udpDataPacket,
@@ -79,42 +69,1218 @@ extension Packet.PacketType: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-// MARK: - Code below here is support for the SwiftProtobuf runtime.
+enum TcpPacketType: SwiftProtobuf.Enum {
+  typealias RawValue = Int
 
-extension Packet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = "Packet"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-  ]
+  /// requests
+  case announcePacket // = 0
+  case dataPacket // = 1
+  case joinPacket // = 2
+  case leavePacket // = 3
+  case loginPacket // = 4
+  case readyToStartPacket // = 5
+  case getGames // = 6
+  case getPlayers // = 7
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self.type)
-      default: break
-      }
+  /// ok responses
+  case loginOkPacket // = 8
+  case getGamesResponse // = 9
+  case getPlayersResponse // = 10
+
+  /// error response
+  case loginFailedPacket // = 11
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .announcePacket
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .announcePacket
+    case 1: self = .dataPacket
+    case 2: self = .joinPacket
+    case 3: self = .leavePacket
+    case 4: self = .loginPacket
+    case 5: self = .readyToStartPacket
+    case 6: self = .getGames
+    case 7: self = .getPlayers
+    case 8: self = .loginOkPacket
+    case 9: self = .getGamesResponse
+    case 10: self = .getPlayersResponse
+    case 11: self = .loginFailedPacket
+    default: self = .UNRECOGNIZED(rawValue)
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.type != .udpPingPacket {
-      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 1)
+  var rawValue: Int {
+    switch self {
+    case .announcePacket: return 0
+    case .dataPacket: return 1
+    case .joinPacket: return 2
+    case .leavePacket: return 3
+    case .loginPacket: return 4
+    case .readyToStartPacket: return 5
+    case .getGames: return 6
+    case .getPlayers: return 7
+    case .loginOkPacket: return 8
+    case .getGamesResponse: return 9
+    case .getPlayersResponse: return 10
+    case .loginFailedPacket: return 11
+    case .UNRECOGNIZED(let i): return i
     }
-    try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Packet, rhs: Packet) -> Bool {
-    if lhs.type != rhs.type {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
 }
 
-extension Packet.PacketType: SwiftProtobuf._ProtoNameProviding {
+#if swift(>=4.2)
+
+extension TcpPacketType: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [TcpPacketType] = [
+    .announcePacket,
+    .dataPacket,
+    .joinPacket,
+    .leavePacket,
+    .loginPacket,
+    .readyToStartPacket,
+    .getGames,
+    .getPlayers,
+    .loginOkPacket,
+    .getGamesResponse,
+    .getPlayersResponse,
+    .loginFailedPacket,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
+///***********************************************************************************************
+/// Various internal classes.
+enum GameState: SwiftProtobuf.Enum {
+  typealias RawValue = Int
+  case waitingForPlayers // = 0
+  case readyToStart // = 1
+  case inProgress // = 2
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .waitingForPlayers
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .waitingForPlayers
+    case 1: self = .readyToStart
+    case 2: self = .inProgress
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .waitingForPlayers: return 0
+    case .readyToStart: return 1
+    case .inProgress: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+}
+
+#if swift(>=4.2)
+
+extension GameState: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [GameState] = [
+    .waitingForPlayers,
+    .readyToStart,
+    .inProgress,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
+struct Game {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var id: UInt32 = 0
+
+  var scenarioID: UInt32 = 0
+
+  var ownerID: UInt32 = 0
+
+  var state: GameState = .waitingForPlayers
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct Player {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var id: UInt32 = 0
+
+  var name: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+///***********************************************************************************************
+/// Logging in
+///**********************************************************************************************
+struct LoginRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var protocolVersion: Int32 = 0
+
+  var username: String = String()
+
+  var password: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct LoginOkResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var id: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct LoginFailedErrorResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var reason: UInt32 = 0
+
+  var message: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+///***********************************************************************************************
+/// Get games
+///**********************************************************************************************
+struct GetGamesRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GetGamesResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var games: [Game] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+///***********************************************************************************************
+/// Get all connected players
+///**********************************************************************************************
+struct GetPlayersRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GetPlayersResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var players: [Player] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+///***********************************************************************************************
+/// Game announcements
+///**********************************************************************************************
+struct AnnounceGameRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var scenarioID: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct AnnounceOkResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct AlreadyAnnouncedErrorResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GameAddedResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType {
+    get {return _storage._packetType}
+    set {_uniqueStorage()._packetType = newValue}
+  }
+
+  var gameID: UInt32 {
+    get {return _storage._gameID}
+    set {_uniqueStorage()._gameID = newValue}
+  }
+
+  var owner: Player {
+    get {return _storage._owner ?? Player()}
+    set {_uniqueStorage()._owner = newValue}
+  }
+  /// Returns true if `owner` has been explicitly set.
+  var hasOwner: Bool {return _storage._owner != nil}
+  /// Clears the value of `owner`. Subsequent reads from it will return its default value.
+  mutating func clearOwner() {_uniqueStorage()._owner = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+///***********************************************************************************************
+/// Joining a game
+///**********************************************************************************************
+struct JoinGameRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var gameID: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GameJoinedResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType {
+    get {return _storage._packetType}
+    set {_uniqueStorage()._packetType = newValue}
+  }
+
+  var gameID: UInt32 {
+    get {return _storage._gameID}
+    set {_uniqueStorage()._gameID = newValue}
+  }
+
+  var joiner: Player {
+    get {return _storage._joiner ?? Player()}
+    set {_uniqueStorage()._joiner = newValue}
+  }
+  /// Returns true if `joiner` has been explicitly set.
+  var hasJoiner: Bool {return _storage._joiner != nil}
+  /// Clears the value of `joiner`. Subsequent reads from it will return its default value.
+  mutating func clearJoiner() {_uniqueStorage()._joiner = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+struct GameRemovedResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var gameID: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct AlreadyInGameErrorResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct InvalidGameErrorResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct GameFullErrorResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var packetType: TcpPacketType = .announcePacket
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+// MARK: - Code below here is support for the SwiftProtobuf runtime.
+
+extension UdpPacketType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "udpPingPacket"),
     1: .same(proto: "udpPongPacket"),
     2: .same(proto: "udpDataPacket"),
     3: .same(proto: "startActionPacket"),
   ]
+}
+
+extension TcpPacketType: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "announcePacket"),
+    1: .same(proto: "dataPacket"),
+    2: .same(proto: "joinPacket"),
+    3: .same(proto: "leavePacket"),
+    4: .same(proto: "loginPacket"),
+    5: .same(proto: "readyToStartPacket"),
+    6: .same(proto: "getGames"),
+    7: .same(proto: "getPlayers"),
+    8: .same(proto: "loginOkPacket"),
+    9: .same(proto: "getGamesResponse"),
+    10: .same(proto: "getPlayersResponse"),
+    11: .same(proto: "loginFailedPacket"),
+  ]
+}
+
+extension GameState: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "waitingForPlayers"),
+    1: .same(proto: "readyToStart"),
+    2: .same(proto: "inProgress"),
+  ]
+}
+
+extension Game: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "Game"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "scenarioId"),
+    3: .same(proto: "ownerId"),
+    4: .same(proto: "state"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularUInt32Field(value: &self.id)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.scenarioID)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self.ownerID)
+      case 4: try decoder.decodeSingularEnumField(value: &self.state)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.id != 0 {
+      try visitor.visitSingularUInt32Field(value: self.id, fieldNumber: 1)
+    }
+    if self.scenarioID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.scenarioID, fieldNumber: 2)
+    }
+    if self.ownerID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.ownerID, fieldNumber: 3)
+    }
+    if self.state != .waitingForPlayers {
+      try visitor.visitSingularEnumField(value: self.state, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Game, rhs: Game) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.scenarioID != rhs.scenarioID {return false}
+    if lhs.ownerID != rhs.ownerID {return false}
+    if lhs.state != rhs.state {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Player: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "Player"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "name"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularUInt32Field(value: &self.id)
+      case 2: try decoder.decodeSingularStringField(value: &self.name)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.id != 0 {
+      try visitor.visitSingularUInt32Field(value: self.id, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Player, rhs: Player) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension LoginRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "LoginRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "protocolVersion"),
+    3: .same(proto: "username"),
+    4: .same(proto: "password"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularInt32Field(value: &self.protocolVersion)
+      case 3: try decoder.decodeSingularStringField(value: &self.username)
+      case 4: try decoder.decodeSingularStringField(value: &self.password)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.protocolVersion != 0 {
+      try visitor.visitSingularInt32Field(value: self.protocolVersion, fieldNumber: 2)
+    }
+    if !self.username.isEmpty {
+      try visitor.visitSingularStringField(value: self.username, fieldNumber: 3)
+    }
+    if !self.password.isEmpty {
+      try visitor.visitSingularStringField(value: self.password, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: LoginRequest, rhs: LoginRequest) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.protocolVersion != rhs.protocolVersion {return false}
+    if lhs.username != rhs.username {return false}
+    if lhs.password != rhs.password {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension LoginOkResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "LoginOkResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "id"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.id)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.id != 0 {
+      try visitor.visitSingularUInt32Field(value: self.id, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: LoginOkResponse, rhs: LoginOkResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.id != rhs.id {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension LoginFailedErrorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "LoginFailedErrorResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "reason"),
+    3: .same(proto: "message"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.reason)
+      case 3: try decoder.decodeSingularStringField(value: &self.message)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.reason != 0 {
+      try visitor.visitSingularUInt32Field(value: self.reason, fieldNumber: 2)
+    }
+    if !self.message.isEmpty {
+      try visitor.visitSingularStringField(value: self.message, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: LoginFailedErrorResponse, rhs: LoginFailedErrorResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.reason != rhs.reason {return false}
+    if lhs.message != rhs.message {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GetGamesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetGamesRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GetGamesRequest, rhs: GetGamesRequest) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GetGamesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetGamesResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "games"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeRepeatedMessageField(value: &self.games)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if !self.games.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.games, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GetGamesResponse, rhs: GetGamesResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.games != rhs.games {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GetPlayersRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetPlayersRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GetPlayersRequest, rhs: GetPlayersRequest) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GetPlayersResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetPlayersResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "players"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeRepeatedMessageField(value: &self.players)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if !self.players.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.players, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GetPlayersResponse, rhs: GetPlayersResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.players != rhs.players {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension AnnounceGameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "AnnounceGameRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "scenarioId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.scenarioID)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.scenarioID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.scenarioID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: AnnounceGameRequest, rhs: AnnounceGameRequest) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.scenarioID != rhs.scenarioID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension AnnounceOkResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "AnnounceOkResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: AnnounceOkResponse, rhs: AnnounceOkResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension AlreadyAnnouncedErrorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "AlreadyAnnouncedErrorResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: AlreadyAnnouncedErrorResponse, rhs: AlreadyAnnouncedErrorResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GameAddedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GameAddedResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "gameId"),
+    3: .same(proto: "owner"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _packetType: TcpPacketType = .announcePacket
+    var _gameID: UInt32 = 0
+    var _owner: Player? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _packetType = source._packetType
+      _gameID = source._gameID
+      _owner = source._owner
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularEnumField(value: &_storage._packetType)
+        case 2: try decoder.decodeSingularUInt32Field(value: &_storage._gameID)
+        case 3: try decoder.decodeSingularMessageField(value: &_storage._owner)
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if _storage._packetType != .announcePacket {
+        try visitor.visitSingularEnumField(value: _storage._packetType, fieldNumber: 1)
+      }
+      if _storage._gameID != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._gameID, fieldNumber: 2)
+      }
+      if let v = _storage._owner {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GameAddedResponse, rhs: GameAddedResponse) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._packetType != rhs_storage._packetType {return false}
+        if _storage._gameID != rhs_storage._gameID {return false}
+        if _storage._owner != rhs_storage._owner {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension JoinGameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "JoinGameRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "gameId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.gameID)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.gameID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.gameID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: JoinGameRequest, rhs: JoinGameRequest) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.gameID != rhs.gameID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GameJoinedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GameJoinedResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "gameId"),
+    3: .same(proto: "joiner"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _packetType: TcpPacketType = .announcePacket
+    var _gameID: UInt32 = 0
+    var _joiner: Player? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _packetType = source._packetType
+      _gameID = source._gameID
+      _joiner = source._joiner
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularEnumField(value: &_storage._packetType)
+        case 2: try decoder.decodeSingularUInt32Field(value: &_storage._gameID)
+        case 3: try decoder.decodeSingularMessageField(value: &_storage._joiner)
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if _storage._packetType != .announcePacket {
+        try visitor.visitSingularEnumField(value: _storage._packetType, fieldNumber: 1)
+      }
+      if _storage._gameID != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._gameID, fieldNumber: 2)
+      }
+      if let v = _storage._joiner {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GameJoinedResponse, rhs: GameJoinedResponse) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._packetType != rhs_storage._packetType {return false}
+        if _storage._gameID != rhs_storage._gameID {return false}
+        if _storage._joiner != rhs_storage._joiner {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GameRemovedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GameRemovedResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+    2: .same(proto: "gameId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.gameID)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    if self.gameID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.gameID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GameRemovedResponse, rhs: GameRemovedResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.gameID != rhs.gameID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension AlreadyInGameErrorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "AlreadyInGameErrorResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: AlreadyInGameErrorResponse, rhs: AlreadyInGameErrorResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension InvalidGameErrorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "InvalidGameErrorResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: InvalidGameErrorResponse, rhs: InvalidGameErrorResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GameFullErrorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GameFullErrorResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packetType"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self.packetType)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.packetType != .announcePacket {
+      try visitor.visitSingularEnumField(value: self.packetType, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GameFullErrorResponse, rhs: GameFullErrorResponse) -> Bool {
+    if lhs.packetType != rhs.packetType {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
