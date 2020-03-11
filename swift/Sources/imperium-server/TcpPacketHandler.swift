@@ -2,7 +2,7 @@
 import NIO
 import Foundation
 
-final class PacketHandler: ChannelInboundHandler {
+final class TcpPacketHandler: ChannelInboundHandler {
     public typealias InboundIn = Packet
     public typealias OutboundOut = ByteBuffer
 

@@ -8,7 +8,7 @@ enum UdpPacketType {
     udpPongPacket     = 1;
     udpDataPacket     = 2;
     startActionPacket = 3;
-};
+}
 
 enum TcpPacketType {
     // requests
@@ -28,7 +28,7 @@ enum TcpPacketType {
 
     // error response
     loginFailedPacket  = 11;
-};
+}
 
 
 /************************************************************************************************
@@ -38,19 +38,19 @@ enum GameState {
     waitingForPlayers             = 0;
     readyToStart                  = 1;
     inProgress                    = 2;
-};
+}
 
 message Game {
     uint32          id            = 1;
     uint32          scenarioId    = 2;
     uint32          ownerId       = 3;
     GameState       state         = 4;
-};
+}
 
 message Player {
     uint32          id            = 1;
     string          name          = 2;
-};
+}
 
 
 /************************************************************************************************
@@ -61,20 +61,20 @@ message Player {
     int32           protocolVersion = 2;
     string          username        = 3;
     string          password        = 4;
-};
+}
 
 
 message LoginOkResponse {
     TcpPacketType packetType      = 1;
     uint32        id              = 2;
-};
+}
 
 
 message LoginFailedErrorResponse {
     TcpPacketType   packetType    = 1;
     uint32          reason        = 2;
     string          message       = 3;
-};
+}
 
 
 /************************************************************************************************
@@ -82,12 +82,12 @@ message LoginFailedErrorResponse {
  ************************************************************************************************/
  message GetGamesRequest {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message GetGamesResponse {
     TcpPacketType   packetType    = 1;
     repeated Game   games         = 2;
-};
+}
 
 
 /************************************************************************************************
@@ -95,12 +95,12 @@ message GetGamesResponse {
  ************************************************************************************************/
 message GetPlayersRequest {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message GetPlayersResponse {
     TcpPacketType   packetType    = 1;
     repeated Player players       = 2;
-};
+}
 
 /************************************************************************************************
  * Game announcements
@@ -112,17 +112,17 @@ message AnnounceGameRequest {
 
 message AnnounceOkResponse {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message AlreadyAnnouncedErrorResponse {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message GameAddedResponse {
     TcpPacketType   packetType    = 1;
     uint32          gameId        = 2;
     Player          owner         = 3;
-};
+}
 
 /************************************************************************************************
  * Joining a game
@@ -136,21 +136,21 @@ message GameJoinedResponse {
     TcpPacketType   packetType    = 1;
     uint32          gameId        = 2;
     Player          joiner        = 3;
-};
+}
 
 message GameRemovedResponse {
     TcpPacketType   packetType    = 1;
     uint32          gameId        = 2;
-};
+}
 
 message AlreadyInGameErrorResponse {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message InvalidGameErrorResponse {
     TcpPacketType   packetType    = 1;
-};
+}
 
 message GameFullErrorResponse {
     TcpPacketType   packetType    = 1;
-};
+}

@@ -1,2 +1,0 @@
-
-* disable Nagle's algorithm to avoid buffering of small packets

@@ -18,9 +18,9 @@ func main() throws {
 
     let serverState = ServerState()
 
-    // We need to share the same PacketHandler for all as it keeps track of all
+    // We need to share the same TcpPacketHandler for all as it keeps track of all
     // connected players. For this PacketHandler MUST be thread-safe!
-    let packetHandler = PacketHandler(serverState: serverState)
+    let tcpPacketHandler = TcpPacketHandler(serverState: serverState)
 
     Log.debug("cores: \(System.coreCount)")
 
@@ -35,7 +35,7 @@ func main() throws {
             // a codec that can read the incoming packets
             channel.pipeline.addHandler(ByteToMessageHandler(TcpPacketCodec())).flatMap { v in
                 // Its important we use the same handler for all accepted channels. The packet handler is thread-safe!
-                channel.pipeline.addHandler(packetHandler)
+                channel.pipeline.addHandler(tcpPacketHandler)
             }
         }
 
@@ -72,7 +72,9 @@ func main() throws {
         fatalError("TCP address was unable to bind. Please check that the socket was not closed or that the address family was understood.")
     }
 
-    Log.info("Imperium server \(VERSION_STRING) started, listening on TCP: \(localAddress) and UDP: \(localUdpAddress)")
+    Log.info("Imperium server \(VERSION_STRING) started")
+    Log.info("listening on TCP: \(localAddress)")
+    Log.info("             UDP: \(localUdpAddress)")
 
     // This will never unblock as we don't close the ServerChannel.
     try _ = udpChannel.closeFuture.and(channel.closeFuture).wait()
