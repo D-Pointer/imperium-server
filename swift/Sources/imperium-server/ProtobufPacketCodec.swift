@@ -1,7 +1,7 @@
 
 import NIO
 
-final class TcpPacketCodec: ByteToMessageDecoder {
+final class ProtobufPacketCodec: ByteToMessageDecoder {
     public typealias InboundIn = ByteBuffer
     public typealias InboundOut = Packet
 
